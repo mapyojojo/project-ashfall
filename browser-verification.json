@@ -1,0 +1,23 @@
+{
+  "browser": "Chromium headless 1243",
+  "date": "2026-09-30",
+  "passed": [
+    "HTTP startup",
+    "title and help",
+    "audio activated by player click",
+    "real keyboard movement",
+    "mouse shooting",
+    "dash",
+    "pause and resume",
+    "upgrade UI click",
+    "combat rendering",
+    "final boss",
+    "victory",
+    "death",
+    "restart",
+    "title return",
+    "1024x640 layout",
+    "direct file startup"
+  ],
+  "runtimeErrors": 0
+}

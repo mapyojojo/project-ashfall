@@ -1,0 +1,7 @@
+{
+  "name": "project-ashfall",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A dependency-free action roguelite about stitching fallen ash into fire.",
+  "scripts": { "start": "node server.js", "test": "node tests/smoke.cjs" }
+}

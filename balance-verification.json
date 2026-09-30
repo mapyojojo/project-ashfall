@@ -1,0 +1,303 @@
+[
+  {
+    "build": "gun",
+    "state": "result",
+    "time": 771,
+    "hp": 63,
+    "level": 24,
+    "kills": 3944,
+    "stitchKills": 243,
+    "ashUsed": 2602,
+    "bosses": 4,
+    "upgrades": {
+      "scatter": 3,
+      "ricochet": 3,
+      "heavy": 3,
+      "pierce": 3,
+      "rapid": 4,
+      "quick": 3,
+      "vital": 3,
+      "magnet": 1
+    },
+    "events": [
+      {
+        "time": 0,
+        "hp": 110,
+        "level": 1,
+        "enemies": 0,
+        "kills": 0
+      },
+      {
+        "time": 59,
+        "hp": 110,
+        "level": 2,
+        "enemies": 2,
+        "kills": 59
+      },
+      {
+        "time": 119,
+        "hp": 110,
+        "level": 4,
+        "enemies": 3,
+        "kills": 123
+      },
+      {
+        "time": 179,
+        "hp": 110,
+        "level": 5,
+        "enemies": 5,
+        "kills": 191
+      },
+      {
+        "time": 239,
+        "hp": 110,
+        "level": 7,
+        "enemies": 6,
+        "kills": 264
+      },
+      {
+        "time": 300,
+        "hp": 99,
+        "level": 8,
+        "enemies": 24,
+        "kills": 401
+      },
+      {
+        "time": 360,
+        "hp": 110,
+        "level": 11,
+        "enemies": 24,
+        "kills": 669
+      },
+      {
+        "time": 420,
+        "hp": 110,
+        "level": 13,
+        "enemies": 22,
+        "kills": 947
+      },
+      {
+        "time": 480,
+        "hp": 110,
+        "level": 15,
+        "enemies": 20,
+        "kills": 1272
+      },
+      {
+        "time": 540,
+        "hp": 110,
+        "level": 16,
+        "enemies": 28,
+        "kills": 1639
+      },
+      {
+        "time": 600,
+        "hp": 88,
+        "level": 19,
+        "enemies": 35,
+        "kills": 2277
+      },
+      {
+        "time": 660,
+        "hp": 135,
+        "level": 21,
+        "enemies": 38,
+        "kills": 3027
+      },
+      {
+        "time": 720,
+        "hp": 163,
+        "level": 24,
+        "enemies": 1,
+        "kills": 3876
+      }
+    ]
+  },
+  {
+    "build": "stitch",
+    "state": "result",
+    "time": 767,
+    "hp": 180,
+    "level": 25,
+    "kills": 4023,
+    "stitchKills": 3539,
+    "ashUsed": 3703,
+    "bosses": 4,
+    "upgrades": {
+      "width": 3,
+      "echo": 2,
+      "quick": 3,
+      "heal": 2,
+      "frost": 2,
+      "vital": 3,
+      "scatter": 1,
+      "magnet": 2,
+      "rapid": 4,
+      "regen": 2
+    },
+    "events": [
+      {
+        "time": 0,
+        "hp": 110,
+        "level": 1,
+        "enemies": 0,
+        "kills": 0
+      },
+      {
+        "time": 59,
+        "hp": 110,
+        "level": 2,
+        "enemies": 1,
+        "kills": 60
+      },
+      {
+        "time": 119,
+        "hp": 110,
+        "level": 4,
+        "enemies": 4,
+        "kills": 122
+      },
+      {
+        "time": 179,
+        "hp": 110,
+        "level": 5,
+        "enemies": 8,
+        "kills": 188
+      },
+      {
+        "time": 239,
+        "hp": 99,
+        "level": 7,
+        "enemies": 19,
+        "kills": 251
+      },
+      {
+        "time": 300,
+        "hp": 80,
+        "level": 9,
+        "enemies": 21,
+        "kills": 404
+      },
+      {
+        "time": 360,
+        "hp": 110,
+        "level": 12,
+        "enemies": 20,
+        "kills": 718
+      },
+      {
+        "time": 420,
+        "hp": 135,
+        "level": 14,
+        "enemies": 20,
+        "kills": 1036
+      },
+      {
+        "time": 480,
+        "hp": 132,
+        "level": 16,
+        "enemies": 24,
+        "kills": 1358
+      },
+      {
+        "time": 540,
+        "hp": 135,
+        "level": 17,
+        "enemies": 35,
+        "kills": 1704
+      },
+      {
+        "time": 600,
+        "hp": 185,
+        "level": 20,
+        "enemies": 40,
+        "kills": 2332
+      },
+      {
+        "time": 660,
+        "hp": 185,
+        "level": 22,
+        "enemies": 51,
+        "kills": 3080
+      },
+      {
+        "time": 720,
+        "hp": 185,
+        "level": 25,
+        "enemies": 1,
+        "kills": 3966
+      }
+    ]
+  },
+  {
+    "build": "orbit",
+    "state": "result",
+    "time": 415,
+    "hp": 0,
+    "level": 14,
+    "kills": 989,
+    "stitchKills": 436,
+    "ashUsed": 774,
+    "bosses": 2,
+    "upgrades": {
+      "orbit": 2,
+      "quick": 2,
+      "regen": 2,
+      "vital": 3,
+      "scatter": 2,
+      "rapid": 1,
+      "orbitPower": 1
+    },
+    "events": [
+      {
+        "time": 0,
+        "hp": 110,
+        "level": 1,
+        "enemies": 0,
+        "kills": 0
+      },
+      {
+        "time": 59,
+        "hp": 110,
+        "level": 2,
+        "enemies": 2,
+        "kills": 59
+      },
+      {
+        "time": 119,
+        "hp": 110,
+        "level": 4,
+        "enemies": 6,
+        "kills": 120
+      },
+      {
+        "time": 179,
+        "hp": 135,
+        "level": 5,
+        "enemies": 11,
+        "kills": 185
+      },
+      {
+        "time": 239,
+        "hp": 135,
+        "level": 7,
+        "enemies": 11,
+        "kills": 259
+      },
+      {
+        "time": 300,
+        "hp": 148,
+        "level": 9,
+        "enemies": 26,
+        "kills": 408
+      },
+      {
+        "time": 360,
+        "hp": 128,
+        "level": 12,
+        "enemies": 27,
+        "kills": 699
+      }
+    ]
+  }
+]

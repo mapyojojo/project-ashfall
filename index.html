@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10171b">
+  <title>Project Ashfall — 灰を縫え、火を生きろ。</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="game" aria-label="Project Ashfall ゲーム画面"></canvas>
+  <div id="hud" hidden>
+    <div class="topbar">
+      <div class="identity"><span class="eyebrow">PROJECT</span><strong>ASHFALL</strong></div>
+      <div class="health-block"><div class="meter-label"><span>耐久</span><span id="hpText"></span></div><div class="bar"><i id="hpBar"></i></div></div>
+      <div class="clock"><strong id="timeText">00:00</strong><span id="phaseText">灰の庭</span></div>
+      <button id="pauseButton" class="small-button" title="一時停止 [Esc]">Ⅱ</button>
+    </div>
+    <div class="xp"><i id="xpBar"></i><span id="levelText">LV 1</span></div>
+    <div id="bossHud" hidden><div class="meter-label"><span id="bossName"></span><span id="bossHp"></span></div><div class="bar boss"><i id="bossBar"></i></div></div>
+    <div id="announcement"></div>
+    <div class="bottom-hud">
+      <div class="dash-widget"><span class="key">SPACE</span><div><b>灰縫い</b><div class="bar dash"><i id="dashBar"></i></div></div><span id="dashText">READY</span></div>
+      <div id="buildChips"></div>
+      <div class="kills"><span id="killText">0</span> 討伐</div>
+    </div>
+    <div id="hint">WASD 移動 · マウス 照準 · 左クリック 射撃 · SPACE 灰縫い · F 自動射撃 · Esc 休止</div>
+  </div>
+  <main id="title" class="screen">
+    <div class="title-copy"><span class="eyebrow accent">ACTION ROGUELITE / LOCAL PROTOTYPE</span><h1>ASH<span>FALL</span><em>PROJECT</em></h1><p class="tagline">灰を縫え。火を生きろ。</p><p class="intro">崩れた炉の底、消えない残り火。<br>倒した敵の灰をダッシュで結び、<br>爆発する軌跡を戦場に描く。</p>
+    <button id="startButton" class="primary">炉へ降りる <span>→</span></button>
+    <div class="title-actions"><button id="helpButton" class="text-button">操作と灰縫い</button><button id="soundButton" class="text-button">音声 ON</button><button id="fullscreenButton" class="text-button">全画面</button></div>
+    <button id="relicButton" class="text-button">持ち込み：旅人の護符</button><div class="record" id="recordText">12分の戦闘 + 最終ボス / 1ラン約12〜16分</div></div>
+    <div class="title-aside"><span class="vertical">THE FURNACE REMEMBERS</span><div class="mechanic-note"><span class="eyebrow">01 / ASH STITCH</span><p>敵を倒す → 灰が残る<br>灰を縫う → 軌跡が燃える<br><b>次の一歩が、次の武器になる。</b></p></div></div>
+    <footer>WASD + MOUSE <span>v0.1 / OFFLINE / NO DEPENDENCIES</span></footer>
+  </main>
+  <section id="help" class="screen overlay" hidden><div class="panel help-panel"><span class="eyebrow accent">FIELD MANUAL</span><h2>灰を味方にする。</h2><div class="help-grid"><p><b>01 — 狙って倒す</b><br>WASD / 矢印で移動。マウスで照準、左クリック長押しで射撃。Fで自動射撃を切り替え。</p><p><b>02 — 灰を縫う</b><br>SPACEで移動方向へダッシュ。停止中は照準方向へ。軌跡の近くにある灰を取り込み、0.35秒後に爆発する。</p><p><b>03 — 火を育てる</b><br>青い残火を拾うとレベルアップ。3つの選択肢から強化。銃、灰縫い、自律火球を組み合わせる。</p><p><b>04 — 炉心を断つ</b><br>3分ごとに番人が出現。12分後、最終ボス。赤い予告を見てダッシュで避ける。</p></div><p class="muted">灰のあるダッシュは大ダメージとクールダウン短縮。灰は約20秒で消える。<br>Esc / Pで一時停止。音声 M。数字1〜3で強化を選択。途中のラン保存はありません。</p><button id="closeHelp" class="primary">戻る</button></div></section>
+  <section id="upgrade" class="screen overlay" hidden><div class="upgrade-panel"><span class="eyebrow accent">THE FIRE CHANGES YOU</span><h2>残火を選ぶ。</h2><p id="upgradeSub" class="muted">戦闘は一時停止中。今のビルドを変える一手。</p><div id="upgradeCards"></div><p class="muted keyboard-note">クリック または 1 / 2 / 3 で選択</p></div></section>
+  <section id="pause" class="screen overlay" hidden><div class="panel"><span class="eyebrow accent">A MOMENT IN THE ASH</span><h2>残火は、まだある。</h2><button id="resumeButton" class="primary">戦闘へ戻る</button><button id="pauseSound" class="secondary">音声切替 [M]</button><button id="quitButton" class="text-button">タイトルへ戻る</button></div></section>
+  <section id="result" class="screen overlay" hidden><div class="panel result-panel"><span class="eyebrow accent" id="resultEyebrow">THE FIRE FADES</span><h2 id="resultTitle">灰へ還る。</h2><p id="resultCopy" class="muted"></p><div id="resultStats"></div><div id="resultBuild"></div><p class="muted" id="metaText"></p><button id="restartButton" class="primary">もう一度、炉へ <span>↻</span></button><button id="titleButton" class="text-button">タイトルへ</button></div></section>
+  <script src="game.js"></script>
+</body>
+</html>

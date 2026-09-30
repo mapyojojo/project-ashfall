@@ -1,0 +1,28 @@
+# Dependencies and package-manager logs
+node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local environment and editor/agent settings
+.env
+.env.*
+!.env.example
+.codex/
+.idea/
+.vscode/
+
+# Scratch files and generated test artifacts
+/work/
+/coverage/
+/playwright-report/
+/test-results/
+*.tmp
+*.bak
+
+# Operating-system metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
