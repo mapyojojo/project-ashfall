@@ -1,303 +1,568 @@
-[
-  {
-    "build": "gun",
-    "state": "result",
-    "time": 771,
-    "hp": 63,
-    "level": 24,
-    "kills": 3944,
-    "stitchKills": 243,
-    "ashUsed": 2602,
-    "bosses": 4,
-    "upgrades": {
-      "scatter": 3,
-      "ricochet": 3,
-      "heavy": 3,
-      "pierce": 3,
-      "rapid": 4,
-      "quick": 3,
-      "vital": 3,
-      "magnet": 1
+{
+  "version": "0.2",
+  "date": "2026-10-01",
+  "method": "deterministic accelerated simulation; normal HP/damage; exact route knowledge; no added fuel/XP/invulnerability",
+  "results": [
+    {
+      "version": "0.1",
+      "mode": "shoot-only",
+      "build": "gun",
+      "seed": 4721,
+      "limit": 300,
+      "outcome": "time-limit",
+      "time": 300,
+      "hp": 110,
+      "level": 7,
+      "kills": 419,
+      "stitchKills": 0,
+      "bosses": 1,
+      "poweredLeaps": 0,
+      "dryLeaps": 0,
+      "firstSeed": null,
+      "firstPoweredLeap": null,
+      "firstStitchKill": null,
+      "stitchDamageShare": null,
+      "damageTotals": null,
+      "upgrades": {
+        "scatter": 1,
+        "rapid": 2,
+        "ricochet": 1,
+        "heavy": 1,
+        "pierce": 1
+      },
+      "events": [
+        {
+          "time": 0,
+          "hp": 110,
+          "level": 1,
+          "enemies": 0,
+          "kills": 0,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 60,
+          "hp": 110,
+          "level": 2,
+          "enemies": 2,
+          "kills": 59,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 120,
+          "hp": 110,
+          "level": 3,
+          "enemies": 5,
+          "kills": 121,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 180,
+          "hp": 110,
+          "level": 4,
+          "enemies": 4,
+          "kills": 192,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 240,
+          "hp": 99,
+          "level": 5,
+          "enemies": 7,
+          "kills": 264,
+          "poweredLeaps": 0
+        }
+      ]
     },
-    "events": [
-      {
-        "time": 0,
-        "hp": 110,
-        "level": 1,
-        "enemies": 0,
-        "kills": 0
+    {
+      "version": "0.2",
+      "mode": "shoot-only",
+      "build": "weave",
+      "seed": 4721,
+      "limit": 300,
+      "outcome": "loss",
+      "time": 101,
+      "hp": 0,
+      "level": 1,
+      "kills": 0,
+      "stitchKills": 0,
+      "bosses": 0,
+      "poweredLeaps": 0,
+      "dryLeaps": 0,
+      "firstSeed": 0.13333333333333333,
+      "firstPoweredLeap": null,
+      "firstStitchKill": null,
+      "stitchDamageShare": 0,
+      "damageTotals": {
+        "bullet": 225.85853333333424,
+        "stitch": 0,
+        "orbit": 0
       },
-      {
-        "time": 59,
-        "hp": 110,
-        "level": 2,
-        "enemies": 2,
-        "kills": 59
-      },
-      {
-        "time": 119,
-        "hp": 110,
-        "level": 4,
-        "enemies": 3,
-        "kills": 123
-      },
-      {
-        "time": 179,
-        "hp": 110,
-        "level": 5,
-        "enemies": 5,
-        "kills": 191
-      },
-      {
-        "time": 239,
-        "hp": 110,
-        "level": 7,
-        "enemies": 6,
-        "kills": 264
-      },
-      {
-        "time": 300,
-        "hp": 99,
-        "level": 8,
-        "enemies": 24,
-        "kills": 401
-      },
-      {
-        "time": 360,
-        "hp": 110,
-        "level": 11,
-        "enemies": 24,
-        "kills": 669
-      },
-      {
-        "time": 420,
-        "hp": 110,
-        "level": 13,
-        "enemies": 22,
-        "kills": 947
-      },
-      {
-        "time": 480,
-        "hp": 110,
-        "level": 15,
-        "enemies": 20,
-        "kills": 1272
-      },
-      {
-        "time": 540,
-        "hp": 110,
-        "level": 16,
-        "enemies": 28,
-        "kills": 1639
-      },
-      {
-        "time": 600,
-        "hp": 88,
-        "level": 19,
-        "enemies": 35,
-        "kills": 2277
-      },
-      {
-        "time": 660,
-        "hp": 135,
-        "level": 21,
-        "enemies": 38,
-        "kills": 3027
-      },
-      {
-        "time": 720,
-        "hp": 163,
-        "level": 24,
-        "enemies": 1,
-        "kills": 3876
-      }
-    ]
-  },
-  {
-    "build": "stitch",
-    "state": "result",
-    "time": 767,
-    "hp": 180,
-    "level": 25,
-    "kills": 4023,
-    "stitchKills": 3539,
-    "ashUsed": 3703,
-    "bosses": 4,
-    "upgrades": {
-      "width": 3,
-      "echo": 2,
-      "quick": 3,
-      "heal": 2,
-      "frost": 2,
-      "vital": 3,
-      "scatter": 1,
-      "magnet": 2,
-      "rapid": 4,
-      "regen": 2
+      "upgrades": {},
+      "events": [
+        {
+          "time": 0,
+          "hp": 110,
+          "level": 1,
+          "enemies": 3,
+          "kills": 0,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 60,
+          "hp": 80,
+          "level": 1,
+          "enemies": 57,
+          "kills": 0,
+          "poweredLeaps": 0
+        }
+      ]
     },
-    "events": [
-      {
-        "time": 0,
-        "hp": 110,
-        "level": 1,
-        "enemies": 0,
-        "kills": 0
+    {
+      "version": "0.2",
+      "mode": "leap-only",
+      "build": "weave",
+      "seed": 4721,
+      "limit": 300,
+      "outcome": "loss",
+      "time": 164,
+      "hp": 0,
+      "level": 1,
+      "kills": 0,
+      "stitchKills": 0,
+      "bosses": 0,
+      "poweredLeaps": 0,
+      "dryLeaps": 29,
+      "firstSeed": null,
+      "firstPoweredLeap": null,
+      "firstStitchKill": null,
+      "stitchDamageShare": null,
+      "damageTotals": {
+        "bullet": 0,
+        "stitch": 0,
+        "orbit": 0
       },
-      {
-        "time": 59,
-        "hp": 110,
-        "level": 2,
-        "enemies": 1,
-        "kills": 60
-      },
-      {
-        "time": 119,
-        "hp": 110,
-        "level": 4,
-        "enemies": 4,
-        "kills": 122
-      },
-      {
-        "time": 179,
-        "hp": 110,
-        "level": 5,
-        "enemies": 8,
-        "kills": 188
-      },
-      {
-        "time": 239,
-        "hp": 99,
-        "level": 7,
-        "enemies": 19,
-        "kills": 251
-      },
-      {
-        "time": 300,
-        "hp": 80,
-        "level": 9,
-        "enemies": 21,
-        "kills": 404
-      },
-      {
-        "time": 360,
-        "hp": 110,
-        "level": 12,
-        "enemies": 20,
-        "kills": 718
-      },
-      {
-        "time": 420,
-        "hp": 135,
-        "level": 14,
-        "enemies": 20,
-        "kills": 1036
-      },
-      {
-        "time": 480,
-        "hp": 132,
-        "level": 16,
-        "enemies": 24,
-        "kills": 1358
-      },
-      {
-        "time": 540,
-        "hp": 135,
-        "level": 17,
-        "enemies": 35,
-        "kills": 1704
-      },
-      {
-        "time": 600,
-        "hp": 185,
-        "level": 20,
-        "enemies": 40,
-        "kills": 2332
-      },
-      {
-        "time": 660,
-        "hp": 185,
-        "level": 22,
-        "enemies": 51,
-        "kills": 3080
-      },
-      {
-        "time": 720,
-        "hp": 185,
-        "level": 25,
-        "enemies": 1,
-        "kills": 3966
-      }
-    ]
-  },
-  {
-    "build": "orbit",
-    "state": "result",
-    "time": 415,
-    "hp": 0,
-    "level": 14,
-    "kills": 989,
-    "stitchKills": 436,
-    "ashUsed": 774,
-    "bosses": 2,
-    "upgrades": {
-      "orbit": 2,
-      "quick": 2,
-      "regen": 2,
-      "vital": 3,
-      "scatter": 2,
-      "rapid": 1,
-      "orbitPower": 1
+      "upgrades": {},
+      "events": [
+        {
+          "time": 0,
+          "hp": 110,
+          "level": 1,
+          "enemies": 3,
+          "kills": 0,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 60,
+          "hp": 100,
+          "level": 1,
+          "enemies": 57,
+          "kills": 0,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 120,
+          "hp": 57,
+          "level": 1,
+          "enemies": 122,
+          "kills": 0,
+          "poweredLeaps": 0
+        }
+      ]
     },
-    "events": [
-      {
-        "time": 0,
-        "hp": 110,
-        "level": 1,
-        "enemies": 0,
-        "kills": 0
+    {
+      "version": "0.2",
+      "mode": "cycle",
+      "build": "weave",
+      "seed": 4721,
+      "limit": 900,
+      "outcome": "loss",
+      "time": 490,
+      "hp": 0,
+      "level": 16,
+      "kills": 1388,
+      "stitchKills": 1388,
+      "bosses": 2,
+      "poweredLeaps": 285,
+      "dryLeaps": 5,
+      "firstSeed": 0.13333333333333333,
+      "firstPoweredLeap": 0.36666666666666664,
+      "firstStitchKill": 0.4333333333333333,
+      "stitchDamageShare": 0.9532,
+      "damageTotals": {
+        "bullet": 3807.349366666989,
+        "stitch": 77481.00770741151,
+        "orbit": 0
       },
-      {
-        "time": 59,
-        "hp": 110,
-        "level": 2,
-        "enemies": 2,
-        "kills": 59
+      "upgrades": {
+        "pierce": 3,
+        "scatter": 3,
+        "echo": 2,
+        "quick": 3,
+        "width": 3,
+        "ricochet": 1
       },
-      {
-        "time": 119,
-        "hp": 110,
-        "level": 4,
-        "enemies": 6,
-        "kills": 120
+      "events": [
+        {
+          "time": 0,
+          "hp": 110,
+          "level": 1,
+          "enemies": 3,
+          "kills": 0,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 60,
+          "hp": 110,
+          "level": 3,
+          "enemies": 6,
+          "kills": 51,
+          "poweredLeaps": 20
+        },
+        {
+          "time": 120,
+          "hp": 103,
+          "level": 5,
+          "enemies": 12,
+          "kills": 110,
+          "poweredLeaps": 46
+        },
+        {
+          "time": 180,
+          "hp": 94,
+          "level": 6,
+          "enemies": 12,
+          "kills": 181,
+          "poweredLeaps": 73
+        },
+        {
+          "time": 240,
+          "hp": 110,
+          "level": 8,
+          "enemies": 9,
+          "kills": 258,
+          "poweredLeaps": 102
+        },
+        {
+          "time": 300,
+          "hp": 63,
+          "level": 9,
+          "enemies": 23,
+          "kills": 395,
+          "poweredLeaps": 137
+        },
+        {
+          "time": 360,
+          "hp": 110,
+          "level": 12,
+          "enemies": 20,
+          "kills": 701,
+          "poweredLeaps": 180
+        },
+        {
+          "time": 420,
+          "hp": 110,
+          "level": 14,
+          "enemies": 19,
+          "kills": 999,
+          "poweredLeaps": 226
+        },
+        {
+          "time": 480,
+          "hp": 32,
+          "level": 16,
+          "enemies": 26,
+          "kills": 1321,
+          "poweredLeaps": 276
+        }
+      ]
+    },
+    {
+      "version": "0.2",
+      "mode": "cycle",
+      "build": "dense",
+      "seed": 9481,
+      "limit": 900,
+      "outcome": "win",
+      "time": 729,
+      "hp": 153,
+      "level": 25,
+      "kills": 3916,
+      "stitchKills": 3916,
+      "bosses": 4,
+      "poweredLeaps": 562,
+      "dryLeaps": 17,
+      "firstSeed": 0.13333333333333333,
+      "firstPoweredLeap": 0.36666666666666664,
+      "firstStitchKill": 0.4333333333333333,
+      "stitchDamageShare": 0.9919,
+      "damageTotals": {
+        "bullet": 2239.8177666666284,
+        "stitch": 273389.2764555701,
+        "orbit": 0
       },
-      {
-        "time": 179,
-        "hp": 135,
-        "level": 5,
-        "enemies": 11,
-        "kills": 185
+      "upgrades": {
+        "heavy": 3,
+        "echo": 2,
+        "quick": 3,
+        "vital": 3,
+        "rapid": 3,
+        "heal": 2,
+        "width": 3,
+        "regen": 2,
+        "frost": 1,
+        "scatter": 1,
+        "pierce": 1
       },
-      {
-        "time": 239,
-        "hp": 135,
-        "level": 7,
-        "enemies": 11,
-        "kills": 259
+      "events": [
+        {
+          "time": 0,
+          "hp": 110,
+          "level": 1,
+          "enemies": 3,
+          "kills": 0,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 60,
+          "hp": 110,
+          "level": 3,
+          "enemies": 8,
+          "kills": 49,
+          "poweredLeaps": 22
+        },
+        {
+          "time": 120,
+          "hp": 110,
+          "level": 5,
+          "enemies": 11,
+          "kills": 111,
+          "poweredLeaps": 52
+        },
+        {
+          "time": 180,
+          "hp": 101,
+          "level": 6,
+          "enemies": 15,
+          "kills": 178,
+          "poweredLeaps": 84
+        },
+        {
+          "time": 240,
+          "hp": 110,
+          "level": 8,
+          "enemies": 12,
+          "kills": 255,
+          "poweredLeaps": 123
+        },
+        {
+          "time": 300,
+          "hp": 107,
+          "level": 9,
+          "enemies": 32,
+          "kills": 374,
+          "poweredLeaps": 165
+        },
+        {
+          "time": 360,
+          "hp": 127,
+          "level": 12,
+          "enemies": 24,
+          "kills": 670,
+          "poweredLeaps": 214
+        },
+        {
+          "time": 420,
+          "hp": 150,
+          "level": 14,
+          "enemies": 27,
+          "kills": 991,
+          "poweredLeaps": 272
+        },
+        {
+          "time": 480,
+          "hp": 170,
+          "level": 16,
+          "enemies": 31,
+          "kills": 1301,
+          "poweredLeaps": 327
+        },
+        {
+          "time": 540,
+          "hp": 138,
+          "level": 17,
+          "enemies": 35,
+          "kills": 1642,
+          "poweredLeaps": 382
+        },
+        {
+          "time": 600,
+          "hp": 170,
+          "level": 20,
+          "enemies": 49,
+          "kills": 2264,
+          "poweredLeaps": 431
+        },
+        {
+          "time": 660,
+          "hp": 170,
+          "level": 22,
+          "enemies": 47,
+          "kills": 3016,
+          "poweredLeaps": 488
+        },
+        {
+          "time": 720,
+          "hp": 152,
+          "level": 25,
+          "enemies": 3,
+          "kills": 3911,
+          "poweredLeaps": 551
+        }
+      ]
+    },
+    {
+      "version": "0.2",
+      "mode": "cycle",
+      "build": "spill",
+      "seed": 20261001,
+      "limit": 900,
+      "outcome": "win",
+      "time": 736,
+      "hp": 150,
+      "level": 25,
+      "kills": 3993,
+      "stitchKills": 3993,
+      "bosses": 4,
+      "poweredLeaps": 518,
+      "dryLeaps": 1,
+      "firstSeed": 0.13333333333333333,
+      "firstPoweredLeap": 0.36666666666666664,
+      "firstStitchKill": 0.4333333333333333,
+      "stitchDamageShare": 0.9696,
+      "damageTotals": {
+        "bullet": 8403.874783334462,
+        "stitch": 267937.33314260613,
+        "orbit": 0
       },
-      {
-        "time": 300,
-        "hp": 148,
-        "level": 9,
-        "enemies": 26,
-        "kills": 408
+      "upgrades": {
+        "scatter": 3,
+        "spill": 2,
+        "heal": 2,
+        "pierce": 2,
+        "frost": 2,
+        "width": 3,
+        "vital": 2,
+        "quick": 3,
+        "rapid": 2,
+        "echo": 2,
+        "regen": 1
       },
-      {
-        "time": 360,
-        "hp": 128,
-        "level": 12,
-        "enemies": 27,
-        "kills": 699
-      }
-    ]
-  }
-]
+      "events": [
+        {
+          "time": 0,
+          "hp": 110,
+          "level": 1,
+          "enemies": 3,
+          "kills": 0,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 60,
+          "hp": 110,
+          "level": 3,
+          "enemies": 5,
+          "kills": 52,
+          "poweredLeaps": 20
+        },
+        {
+          "time": 120,
+          "hp": 105,
+          "level": 5,
+          "enemies": 11,
+          "kills": 111,
+          "poweredLeaps": 46
+        },
+        {
+          "time": 180,
+          "hp": 78,
+          "level": 6,
+          "enemies": 16,
+          "kills": 177,
+          "poweredLeaps": 74
+        },
+        {
+          "time": 240,
+          "hp": 99,
+          "level": 8,
+          "enemies": 16,
+          "kills": 251,
+          "poweredLeaps": 103
+        },
+        {
+          "time": 300,
+          "hp": 110,
+          "level": 9,
+          "enemies": 29,
+          "kills": 383,
+          "poweredLeaps": 132
+        },
+        {
+          "time": 360,
+          "hp": 130,
+          "level": 12,
+          "enemies": 29,
+          "kills": 665,
+          "poweredLeaps": 166
+        },
+        {
+          "time": 420,
+          "hp": 130,
+          "level": 14,
+          "enemies": 29,
+          "kills": 1022,
+          "poweredLeaps": 213
+        },
+        {
+          "time": 480,
+          "hp": 130,
+          "level": 16,
+          "enemies": 24,
+          "kills": 1350,
+          "poweredLeaps": 265
+        },
+        {
+          "time": 540,
+          "hp": 130,
+          "level": 18,
+          "enemies": 26,
+          "kills": 1714,
+          "poweredLeaps": 317
+        },
+        {
+          "time": 600,
+          "hp": 130,
+          "level": 20,
+          "enemies": 46,
+          "kills": 2360,
+          "poweredLeaps": 378
+        },
+        {
+          "time": 660,
+          "hp": 120,
+          "level": 22,
+          "enemies": 41,
+          "kills": 3124,
+          "poweredLeaps": 438
+        },
+        {
+          "time": 720,
+          "hp": 150,
+          "level": 25,
+          "enemies": 3,
+          "kills": 3978,
+          "poweredLeaps": 501
+        }
+      ]
+    }
+  ]
+}

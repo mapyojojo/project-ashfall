@@ -1,7 +1,7 @@
 {
   "name": "project-ashfall",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "A dependency-free action roguelite about stitching fallen ash into fire.",
-  "scripts": { "start": "node server.js", "test": "node tests/smoke.cjs" }
+  "description": "Prime enemies with ash, leap through danger, detonate the stitch.",
+  "scripts": { "start": "node server.js", "test": "node tests/smoke.cjs", "test:balance": "node tests/balance.cjs", "test:browser": "node tests/browser-check.cjs" }
 }

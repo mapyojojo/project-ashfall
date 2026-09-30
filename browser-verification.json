@@ -1,23 +1,60 @@
 {
-  "browser": "Chromium headless 1243",
-  "date": "2026-09-30",
+  "version": "0.2",
+  "date": "2026-10-01",
+  "browser": "Chromium headless shell 1243",
   "passed": [
-    "HTTP startup",
-    "title and help",
-    "audio activated by player click",
-    "real keyboard movement",
-    "mouse shooting",
-    "dash",
-    "pause and resume",
-    "upgrade UI click",
-    "combat rendering",
-    "final boss",
-    "victory",
-    "death",
-    "restart",
-    "title return",
-    "1024x640 layout",
-    "direct file startup"
+    "normal build starts without test API",
+    "title/help navigation",
+    "player click activates local audio",
+    "real shots create visible ash before any kill",
+    "real SPACE crossing harvests and detonates ash",
+    "opening cycle completes within first minute without state injection",
+    "pause/resume stops game time",
+    "automatic preparation toggle",
+    "five game minutes through actual keyboard/mouse input",
+    "natural upgrade choices through number keys",
+    "natural damage is dominated by ash stitch",
+    "title/restart reset cycle statistics",
+    "existing final boss transition",
+    "victory screen",
+    "death and restart",
+    "1024x640 title/upgrade layout",
+    "compact coach and route HUD",
+    "dense existing-enemy/fuel rendering",
+    "direct file startup",
+    "zero JavaScript runtime exceptions",
+    "satellite amplifies shot-marked enemies only"
   ],
-  "runtimeErrors": 0
+  "runtimeErrors": 0,
+  "naturalInput": {
+    "goalSeconds": 300,
+    "wallSeconds": 310.226,
+    "upgradesChosen": 9,
+    "time": 300.08490000005474,
+    "hp": 74,
+    "kills": 419,
+    "level": 10,
+    "poweredLeaps": 141,
+    "damageTotals": {
+      "bullet": 824.324726599988,
+      "stitch": 20605.21135128942,
+      "orbit": 0
+    },
+    "stitchDamageShare": 0.961533244415379,
+    "onboarding": {
+      "stage": 2,
+      "firstSeed": 0.2167000000000001,
+      "firstLeap": 1.0499000000000005,
+      "firstKill": 1.1166,
+      "completeAt": 1.1166
+    }
+  },
+  "limits": "Automated real-time input and visual inspection; not a human playtest. Stress/victory/layout tests use explicit test state setup.",
+  "satelliteCheck": {
+    "before": 0,
+    "after": 2,
+    "hp": 125,
+    "maxHp": 125,
+    "method": "focused browser state test after satellite role refinement"
+  }
 }

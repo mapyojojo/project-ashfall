@@ -1,112 +1,132 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const vm = require('node:vm');
-const assert = require('node:assert/strict');
-
-function engine() {
-  const elements = new Map();
-  const element = id => {
-    if (!elements.has(id)) elements.set(id, { hidden: false, textContent: '', innerHTML: '', style: {}, dataset: {},
-      getContext: () => ({ setTransform() {} }), addEventListener() {}, querySelectorAll: () => [] });
-    return elements.get(id);
-  };
-  const storage = {};
-  const sandbox = { console, Math, Date, Set, Map, URLSearchParams, innerWidth: 1280, innerHeight: 720,
-    devicePixelRatio: 1, location: { search: '?test' }, performance: { now: () => 0 },
-    localStorage: { getItem: k => storage[k] || null, setItem: (k,v) => storage[k] = v },
-    document: { getElementById: element, addEventListener() {}, documentElement: {} },
-    addEventListener() {}, requestAnimationFrame() {} };
-  sandbox.window = sandbox;
-  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '..', 'game.js'), 'utf8'), sandbox, { filename: 'game.js' });
-  sandbox.AshfallTest.start(); sandbox.AshfallTest.seed(123456);
-  return sandbox.AshfallTest;
-}
-let passed = 0;
-function test(name, fn) { fn(); console.log('PASS', name); passed++; }
-
-test('starts a playable run with isolated test API', () => {
-  const a=engine();assert.equal(a.state,'playing');assert.equal(a.run.player.hp,110);assert.equal(a.run.player.level,1);
+const assert=require('node:assert/strict');
+const {engine}=require('./harness.cjs');
+let passed=0;
+function test(name,fn){fn();console.log('PASS',name);passed++;}
+function foe(a,type='crawler',x=140,y=0){const e=a.spawnEnemy(type,x,y);e.speed=0;return e;}
+function mark(a,e,n=3){a.seedEnemy(e,n);}
+test('normal opening is a small real encounter within leap range',()=>{
+ const a=engine({intro:true});assert.equal(a.state,'playing');assert.equal(a.run.player.hp,110);
+ assert.equal(a.run.enemies.length,3);assert.ok(a.run.enemies.every(e=>Math.hypot(e.x,e.y)<a.run.player.dashDistance));assert.equal(a.run.onboarding.stage,0);
 });
-test('aimed shooting kills, creates ash and experience', () => {
-  const a=engine(),e=a.spawnEnemy('crawler',100,0);a.run.spawnTimer=100;a.mouse.down=true;a.step(1);
-  assert.ok(e.dead);assert.ok(a.run.kills>=1);assert.ok(a.run.ashes.length>0);assert.ok(a.run.orbs.length>0||a.run.player.xp>0);
+test('shooting primes a living foe before the first kill',()=>{
+ const a=engine(),e=foe(a);a.mouse.down=true;a.step(1);
+ assert.equal(e.ash,3);assert.equal(e.dead,false);assert.ok(e.hp>=e.maxHp*.85);assert.equal(a.run.kills,0);assert.equal(a.run.player.xp,0);
+ assert.ok(a.run.onboarding.firstSeed<1);assert.equal(a.run.onboarding.stage,1);
 });
-test('dash collects ash and detonates along its full path', () => {
-  const a=engine();a.run.spawnTimer=100;a.run.ashes.push({x:90,y:0,value:3,life:20});const e=a.spawnEnemy('brute',120,0);
-  e.speed=0;a.startDash(1,0);a.step(.2);assert.equal(a.run.ashUsed,3);assert.equal(a.run.ashes.length,0);
-  assert.equal(a.run.stitches[0].damage,84);assert.ok(a.run.player.dashTimer<2.6-.2);
-  a.step(.4);assert.ok(e.hp<e.maxHp-70);
+test('shooting alone cannot kill even with fully upgraded preparation',()=>{
+ const a=engine(),e=foe(a,'brute');for(const id of ['scatter','pierce','ricochet','rapid','heavy'])for(let i=0;i<3;i++)a.apply(id);
+ for(let i=0;i<2000;i++)a.hurtEnemy(e,99999,'bullet');assert.equal(e.dead,false);assert.equal(e.hp,e.maxHp*.85);assert.equal(a.run.kills,0);assert.equal(a.run.damageTotals.bullet,e.maxHp*.15);
 });
-test('dash invulnerability prevents contact damage', () => {
-  const a=engine();a.startDash(1,0);a.hurtPlayer(90);assert.equal(a.run.player.hp,110);
+test('ordinary movement never takes enemy-bound ash',()=>{
+ const a=engine(),e=foe(a,'brute',40);mark(a,e);a.keys.add('KeyD');a.step(.15);assert.equal(e.ash,3);assert.equal(a.run.ashUsed,0);assert.equal(a.run.poweredLeaps,0);
 });
-test('fueled stitches hit late arrivals only once', () => {
-  const a=engine();a.run.spawnTimer=100;a.run.ashes.push({x:60,y:0,value:1,life:20});a.startDash(1,0);a.step(.6);
-  const e=a.spawnEnemy('brute',100,0);e.hp=e.maxHp=500;e.speed=0;a.update(.01);assert.equal(e.hp,464);a.update(.01);assert.equal(e.hp,464);
+test('an unprepared leap is an invulnerable escape, not an attack',()=>{
+ const a=engine(),e=foe(a,'brute');a.startDash(1,0);a.hurtPlayer(90);a.step(.5);assert.equal(a.run.player.hp,110);assert.equal(e.hp,e.maxHp);assert.equal(a.run.dryLeaps,1);assert.equal(a.run.damageTotals.stitch,0);
 });
-test('dash sweeps experience and health along its path', () => {
-  const a=engine();a.run.spawnTimer=100;a.run.player.hp=50;a.run.orbs.push({x:100,y:0,value:4,life:75,pull:false});a.run.pickups.push({x:140,y:0,heal:12,life:25});
-  a.startDash(1,0);a.step(.2);assert.equal(a.run.player.xp,4);assert.equal(a.run.player.hp,62);assert.equal(a.run.orbs.length,0);assert.equal(a.run.pickups.length,0);
+test('prepared leap collects, kills, grows, and completes the lesson',()=>{
+ const a=engine(),e=foe(a);mark(a,e);a.startDash(1,0);a.step(.4);
+ assert.equal(e.ash,0);assert.ok(e.dead);assert.equal(a.run.ashUsed,3);assert.equal(a.run.stitchKills,1);assert.equal(a.run.poweredLeaps,1);
+ assert.ok(a.run.player.xp>0||a.run.orbs.length>0);assert.equal(a.run.onboarding.stage,2);assert.ok(a.run.onboarding.firstKill<1);
 });
-test('stitch damage scales and contributes to its own kill statistic', () => {
-  const a=engine();a.run.spawnTimer=100;const e=a.spawnEnemy('crawler',100,0);e.speed=0;
-  a.run.ashes.push({x:60,y:0,value:2,life:20});a.startDash(1,0);a.step(.6);assert.ok(e.dead);assert.equal(a.run.stitchKills,1);
+test('leap capture requires crossing the foe, not merely a wide blast nearby',()=>{
+ const a=engine(),e=foe(a,'brute',140,80);mark(a,e);a.startDash(1,0);a.step(.4);assert.equal(e.ash,3);assert.equal(a.run.ashUsed,0);assert.equal(e.hp,e.maxHp);
 });
-test('upgrade interrupts combat and applies exactly one choice', () => {
-  const a=engine();a.addXp(20);a.update(.01);assert.equal(a.state,'upgrade');const time=a.run.time;a.update(3);assert.equal(a.run.time,time);
-  const id=a.run.cards[0].id;a.chooseUpgrade(0);assert.equal(a.state,'playing');assert.equal(a.run.player.upgrades[id],1);
-  a.chooseUpgrade(0);assert.equal(a.run.player.upgrades[id],1);
+test('route preview agrees with captured ash and target count',()=>{
+ const a=engine();for(const x of [80,170,260])mark(a,foe(a,'crawler',x),2);const prediction=a.predictLeap(1,0);assert.equal(prediction.ash,6);assert.equal(prediction.targets,3);
+ a.startDash(1,0);a.step(.2);assert.equal(a.run.lastLeap.count,prediction.ash);assert.equal(a.run.lastLeap.targets,prediction.targets);
 });
-test('multiple levels queue separate choices without losing experience', () => {
-  const a=engine();a.addXp(200);a.update(.01);const n=a.run.pending;assert.ok(n>1);
-  for(let i=0;i<n;i++)a.chooseUpgrade(0);assert.equal(a.state,'playing');assert.equal(a.run.upgradesTaken,n);
+test('moving enemies are gathered along swept motion during a leap',()=>{
+ const a=engine(),e=foe(a,'crawler',170,0);mark(a,e);a.startDash(1,0);a.update(.10);assert.equal(e.ash,0);assert.equal(a.run.leap.targets.get(e.id),3);assert.ok(e.stitchHold>0);
 });
-test('first level presents three different offensive builds', () => {
-  const a=engine();a.addXp(20);a.update(.01);assert.deepEqual(Array.from(a.run.cards,u=>u.id).sort(),['orbit','scatter','width']);
+test('a group crossing earns more power and a shorter cooldown than a single crossing',()=>{
+ const solo=engine();mark(solo,foe(solo),3);solo.startDash(1,0);solo.step(.2);
+ const group=engine();for(const x of [80,170,260])mark(group,foe(group,'crawler',x),1);group.startDash(1,0);group.step(.2);
+ assert.equal(group.run.lastLeap.count,solo.run.lastLeap.count);assert.ok(group.run.stitches[0].damage>solo.run.stitches[0].damage);assert.ok(group.run.player.dashTimer<solo.run.player.dashTimer);
 });
-test('exhausted upgrades still produce a selectable late-game card', () => {
-  const a=engine();for(const u of a.UPGRADES)if(u.id!=='ember')a.run.player.upgrades[u.id]=u.max;
-  a.run.upgradesTaken=40;a.run.pending=1;a.rollUpgrades();assert.equal(a.run.cards.length,1);assert.equal(a.run.cards[0].id,'ember');a.chooseUpgrade(0);assert.equal(a.state,'playing');
+test('hostile projectiles crossed by a leap are cleared exactly once',()=>{
+ const a=engine();mark(a,foe(a));for(const x of [80,100,120])a.run.hostile.push({x,y:0,vx:0,vy:0,life:7,damage:12,r:5});a.startDash(1,0);a.step(.2);
+ assert.equal(a.run.lastLeap.bulletsCut,3);assert.equal(a.run.hostile.length,0);assert.equal(a.run.player.hp,110);
 });
-test('every upgrade changes its intended mechanic', () => {
-  for(const u of engine().UPGRADES){const a=engine();if(u.id==='orbitPower')a.apply('orbit');const before=JSON.stringify(a.run.player);a.apply(u.id);assert.notEqual(JSON.stringify(a.run.player),before,u.id);}
-  const a=engine();a.apply('scatter');assert.equal(a.run.player.shots,3);a.apply('pierce');assert.equal(a.run.player.pierce,2);
-  a.apply('ricochet');assert.equal(a.run.player.bounce,1);a.apply('echo');assert.equal(a.run.player.stitchEcho,1);
+test('crossing several foes grants the recovery upgrade, one safe foe does not',()=>{
+ const a=engine();a.apply('heal');a.run.player.hp=50;for(const x of [90,210])mark(a,foe(a,'crawler',x),1);a.startDash(1,0);a.step(.2);assert.equal(a.run.player.hp,56);
+ const b=engine();b.apply('heal');b.run.player.hp=50;mark(b,foe(b),3);b.startDash(1,0);b.step(.2);assert.equal(b.run.player.hp,50);
 });
-test('stitch recovery, slowdown and echo activate', () => {
-  const a=engine();a.run.spawnTimer=100;a.apply('heal');a.apply('frost');a.apply('echo');a.run.player.hp=50;
-  a.run.ashes.push({x:60,y:0,value:3,life:20});const e=a.spawnEnemy('brute',110,0);e.hp=e.maxHp=500;e.speed=0;
-  a.startDash(1,0);a.step(.2);assert.equal(a.run.player.hp,54);assert.ok(e.slow>2);
-  a.step(.9);assert.ok(e.hp<380);assert.ok(a.run.stitches[0].echoed);
+test('base recovery rewards a fueled dangerous crossing without requiring an upgrade',()=>{
+ const a=engine();a.run.player.hp=50;for(const x of [90,210])mark(a,foe(a,'crawler',x),1);a.startDash(1,0);a.step(.2);assert.equal(a.run.player.hp,52);
+ const b=engine();b.run.player.hp=50;for(const x of [90,210])foe(b,'crawler',x);b.startDash(1,0);b.step(.2);assert.equal(b.run.player.hp,50);
 });
-test('splitters create three fast enemies on death', () => {
-  const a=engine(),e=a.spawnEnemy('splitter',200,0);a.hurtEnemy(e,999);assert.equal(a.run.enemies.filter(e=>e.type==='mite').length,3);
+test('ground ash is generated by overflow and ordinary movement does not collect it',()=>{
+ const a=engine(),e=foe(a,'brute',40);a.apply('spill');mark(a,e);a.step(.1);mark(a,e,1);assert.equal(a.run.ashes.length,1);
+ a.keys.add('KeyD');a.step(.17);assert.equal(a.run.ashes.length,1);assert.equal(a.run.ashUsed,0);a.startDash(1,0);a.step(.2);assert.ok(a.run.ashUsed>=1);assert.equal(a.run.ashes.length,0);
 });
-test('boss threshold spawns final encounter and handles victory once', () => {
-  const a=engine();a.run.time=719.99;a.update(.02);assert.equal(a.run.boss.type,'boss');assert.ok(a.run.finalSpawned);
-  a.hurtEnemy(a.run.boss,1e9,'stitch');assert.equal(a.state,'result');assert.equal(a.meta.wins,1);
-  a.finish(true);assert.equal(a.meta.wins,1);assert.ok(a.meta.marks>=15);
+test('ash is bounded, decays, and may be refreshed by a later hit',()=>{
+ const a=engine(),e=foe(a,'brute');mark(a,e,999);assert.equal(e.ash,3);a.step(10.2);assert.ok(e.ash<3);a.seedEnemy(e,1);assert.equal(e.ash,3);assert.equal(e.ashLife,10);
 });
-test('each three-minute guardian encounter appears', () => {
-  const a=engine();for(let wave=1;wave<=3;wave++){a.run.time=180*wave;a.update(.01);assert.equal(a.run.eliteWave,wave);assert.equal(a.run.boss.type,'elite');a.hurtEnemy(a.run.boss,1e9);}
-  assert.equal(a.run.bosses,3);
+test('bosses store more ash, supporting preparation without extra enemies',()=>{
+ const a=engine(),e=foe(a,'boss');mark(a,e,99);assert.equal(e.ash,9);a.startDash(1,0);a.step(.35);assert.ok(e.hp<e.maxHp-300);assert.equal(e.ash,0);
 });
-test('loss and restart reset transient state, preserve progression', () => {
-  const a=engine();a.run.time=95;a.hurtPlayer(1e9);assert.equal(a.state,'result');assert.ok(a.meta.marks>0);
-  const marks=a.meta.marks;a.start();assert.equal(a.run.time,0);assert.equal(a.run.kills,0);assert.equal(a.meta.marks,marks);assert.equal(a.state,'playing');
+test('kills do not supply infinite free ash for leap-only play',()=>{
+ const a=engine(),e=foe(a);mark(a,e);a.startDash(1,0);a.step(.4);assert.ok(e.dead);assert.equal(a.run.ashes.length,0);
 });
-test('pause and title transitions stop simulation', () => {
-  const a=engine();a.pause();assert.equal(a.state,'paused');a.update(1);assert.equal(a.run.time,0);a.resume();assert.equal(a.state,'playing');a.goTitle();assert.equal(a.run,null);
+test('satellites prepare foes rather than bypassing the core loop',()=>{
+ const a=engine(),e=foe(a,'brute',85);a.apply('orbit');a.update(.001);assert.equal(e.ash,0);a.seedEnemy(e,1);a.update(.1);assert.equal(e.ash,2);assert.equal(e.hp,e.maxHp);assert.equal(a.run.damageTotals.orbit,0);
 });
-test('arena bounds, normalized diagonals and dash cooldown', () => {
-  const a=engine();a.run.spawnTimer=100;a.keys.add('KeyD');a.keys.add('KeyS');a.update(.1);assert.ok(Math.abs(Math.hypot(a.run.player.x,a.run.player.y)-22.5)<.01);
-  a.run.player.x=779;a.startDash(1,0);a.step(.2);assert.ok(a.run.player.x<=760);const x=a.run.player.x;a.startDash(-1,0);assert.equal(a.run.player.x,x);
+test('satellites cannot start a leap-only fuel loop without a shot',()=>{
+ const a=engine();for(let i=0;i<3;i++)a.apply('orbit');for(const x of [80,130,190])foe(a,'brute',x);a.startDash(1,0);a.step(1);
+ assert.equal(a.run.ashUsed,0);assert.equal(a.run.poweredLeaps,0);assert.equal(a.run.kills,0);assert.ok(a.run.enemies.every(e=>e.ash===0));
 });
-test('all enemy attack patterns and long-session arrays stay finite', () => {
-  const a=engine();a.run.spawnTimer=100;for(const type of Object.keys(a.TYPES))a.spawnEnemy(type,300,100);
-  for(let i=0;i<1200;i++){a.run.player.invuln=100;a.update(1/60);}
-  assert.ok(a.run.hostile.length>0);assert.ok(a.run.enemies.every(e=>Number.isFinite(e.x)&&Number.isFinite(e.hp)));
-  assert.ok(a.run.particles.length<=650);assert.ok(a.run.hostile.length<300);
+test('burning stitch hits a late entrant once, not every frame',()=>{
+ const a=engine();mark(a,foe(a));a.startDash(1,0);a.step(.4);const e=foe(a,'brute',140);e.hp=e.maxHp=500;a.update(.01);const hp=e.hp;assert.ok(hp<500);a.update(.01);assert.equal(e.hp,hp);
+});
+test('echo detonates only a fueled stitch and deals a second hit',()=>{
+ const a=engine(),e=foe(a,'brute');e.hp=e.maxHp=1000;a.apply('echo');mark(a,e);a.startDash(1,0);a.step(.4);const hp=e.hp;a.step(.5);assert.ok(e.hp<hp);assert.ok(a.run.stitches[0].echoed);
+ const b=engine(),f=foe(b,'brute');b.apply('echo');b.startDash(1,0);b.step(1);assert.equal(f.hp,f.maxHp);
+});
+test('experience and recovery are swept along the leap path',()=>{
+ const a=engine();a.run.player.hp=50;a.run.orbs.push({x:100,y:0,value:4,life:75,pull:false});a.run.pickups.push({x:220,y:0,heal:12,life:25});a.startDash(1,0);a.step(.2);
+ assert.equal(a.run.player.xp,4);assert.equal(a.run.player.hp,62);assert.equal(a.run.orbs.length,0);assert.equal(a.run.pickups.length,0);
+});
+test('cycle recovery does not reward idling or a dry leap',()=>{
+ const a=engine();a.apply('regen');a.run.player.hp=50;a.step(1);assert.equal(a.run.player.hp,50);a.startDash(1,0);a.step(.3);assert.equal(a.run.player.hp,50);
+ a.run.player.dashTimer=0;mark(a,foe(a,'crawler',a.run.player.x+100));a.startDash(1,0);a.step(.8);assert.ok(a.run.player.hp>50);
+});
+test('damage statistics count actual loss rather than overkill',()=>{
+ const a=engine(),e=foe(a);a.hurtEnemy(e,10000,'stitch');assert.equal(a.run.damageTotals.stitch,30);
+});
+test('upgrades pause combat, then apply one selection exactly once',()=>{
+ const a=engine();a.addXp(20);a.update(.01);assert.equal(a.state,'upgrade');const time=a.run.time;a.update(3);assert.equal(a.run.time,time);const id=a.run.cards[0].id;a.chooseUpgrade(0);assert.equal(a.state,'playing');assert.equal(a.run.player.upgrades[id],1);a.chooseUpgrade(0);assert.equal(a.run.player.upgrades[id],1);
+});
+test('first choice offers three arrangements of the same ash cycle',()=>{
+ const a=engine();a.addXp(20);a.update(.01);assert.deepEqual(Array.from(a.run.cards,u=>u.id).sort(),['heavy','pierce','scatter']);
+});
+test('multiple levels retain queued choices and leftover experience',()=>{
+ const a=engine();a.addXp(200);a.update(.01);const n=a.run.pending;assert.ok(n>1);for(let i=0;i<n;i++)a.chooseUpgrade(0);assert.equal(a.state,'playing');assert.equal(a.run.upgradesTaken,n);
+});
+test('upgrades change mechanics without raising bullet damage',()=>{
+ const a=engine(),damage=a.run.player.damage;for(const u of a.UPGRADES){const before=JSON.stringify(a.run.player);a.apply(u.id);assert.notEqual(JSON.stringify(a.run.player),before,u.id);assert.equal(a.run.player.damage,damage);}
+ assert.equal(a.run.player.shots,3);assert.equal(a.run.player.pierce,2);assert.equal(a.run.player.bounce,1);assert.equal(a.run.player.ashPerHit,2);
+});
+test('all-max builds still get a selectable final upgrade',()=>{
+ const a=engine();for(const u of a.UPGRADES)if(u.id!=='ember')a.run.player.upgrades[u.id]=u.max;a.run.upgradesTaken=40;a.run.pending=1;a.rollUpgrades();assert.equal(a.run.cards.length,1);assert.equal(a.run.cards[0].id,'ember');a.chooseUpgrade(0);assert.equal(a.state,'playing');
+});
+test('splitters still produce three small enemies',()=>{
+ const a=engine(),e=foe(a,'splitter');a.hurtEnemy(e,999,'stitch');assert.equal(a.run.enemies.filter(e=>e.type==='mite').length,3);
+});
+test('all three guardians and the final boss still appear',()=>{
+ const a=engine();for(let wave=1;wave<=3;wave++){a.run.time=180*wave;a.update(.01);assert.equal(a.run.boss.type,'elite');a.hurtEnemy(a.run.boss,1e9,'stitch');}
+ a.run.time=719.99;a.update(.02);assert.equal(a.run.boss.type,'boss');a.hurtEnemy(a.run.boss,1e9,'stitch');assert.equal(a.state,'result');assert.equal(a.meta.wins,1);a.finish(true);assert.equal(a.meta.wins,1);
+});
+test('loss and restart clear run state while preserving meta progression',()=>{
+ const a=engine();a.run.time=95;a.hurtPlayer(1e9);assert.equal(a.state,'result');const marks=a.meta.marks;assert.ok(marks>0);a.start();assert.equal(a.run.time,0);assert.equal(a.run.poweredLeaps,0);assert.equal(a.run.damageTotals.stitch,0);assert.equal(a.meta.marks,marks);
+});
+test('pause and title stop simulation',()=>{
+ const a=engine();a.run.leapRequested=true;a.pause();a.update(1);assert.equal(a.run.time,0);assert.equal(a.run.leapRequested,false);a.resume();assert.equal(a.state,'playing');a.update(.01);assert.equal(a.run.leaps,0);a.goTitle();assert.equal(a.run,null);
+});
+test('diagonal normalization, walls, and cooldown remain consistent',()=>{
+ const a=engine();a.keys.add('KeyD');a.keys.add('KeyS');a.update(.1);assert.ok(Math.abs(Math.hypot(a.run.player.x,a.run.player.y)-22.5)<.01);a.keys.clear();a.run.player.x=750;a.startDash(1,0);a.step(.2);assert.equal(a.run.player.x,760);const leaps=a.run.leaps;a.startDash(-1,0);assert.equal(a.run.leaps,leaps);
+});
+test('enemy patterns and bounded effects remain finite',()=>{
+ const a=engine();for(const type of Object.keys(a.TYPES))a.spawnEnemy(type,300,100);for(let i=0;i<1200;i++){a.run.player.invuln=100;a.update(1/60);}
+ assert.ok(a.run.hostile.length>0);assert.ok(a.run.enemies.every(e=>Number.isFinite(e.x)&&Number.isFinite(e.hp)));assert.ok(a.run.particles.length<=650);assert.ok(a.run.hostile.length<300);
 });
 console.log(`\n${passed} mechanical tests passed.`);
-module.exports = { engine };
