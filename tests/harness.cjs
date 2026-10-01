@@ -2,14 +2,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 function engine({intro=false,source=null}={}) {
-  const elements=new Map();
-  const element=id=>{if(!elements.has(id))elements.set(id,{hidden:false,textContent:'',innerHTML:'',style:{},dataset:{},getContext:()=>({setTransform(){}}),addEventListener(){},querySelectorAll:()=>[]});return elements.get(id);};
+  const elements=new Map(),events={window:{},canvas:{}};
+  const element=id=>{if(!elements.has(id))elements.set(id,{hidden:false,textContent:'',innerHTML:'',style:{},dataset:{},getContext:()=>({setTransform(){}}),addEventListener(name,fn){if(id==='game')events.canvas[name]=fn;},querySelectorAll:()=>[]});return elements.get(id);};
   const storage={};
-  const sandbox={console,Math,Date,Set,Map,URLSearchParams,innerWidth:1280,innerHeight:720,devicePixelRatio:1,location:{search:'?test'},performance:{now:()=>0},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:element,addEventListener(){},documentElement:{}},addEventListener(){},requestAnimationFrame(){}};
+  const sandbox={console,Math,Date,Set,Map,URLSearchParams,innerWidth:1280,innerHeight:720,devicePixelRatio:1,location:{search:'?test'},performance:{now:()=>0},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:element,addEventListener(){},documentElement:{}},addEventListener(name,fn){events.window[name]=fn;},requestAnimationFrame(){}};
   sandbox.window=sandbox;
   vm.runInNewContext(source||fs.readFileSync(path.join(__dirname,'..','game.js'),'utf8'),sandbox,{filename:'game.js'});
   const a=sandbox.AshfallTest;a.start();a.seed(123456);
-  if(!intro){a.run.enemies=[];a.run.spawnTimer=100;}
-  return a;
+  if(!intro){a.run.enemies=[];a.run.spawnTimer=100;a.run.player.autoFire=false;}
+  a.events=events;return a;
 }
 module.exports={engine};

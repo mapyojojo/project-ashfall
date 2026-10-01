@@ -20,23 +20,23 @@
     <div id="bossHud" hidden><div class="meter-label"><span id="bossName"></span><span id="bossHp"></span></div><div class="bar boss"><i id="bossBar"></i></div></div>
     <div id="announcement"></div>
     <div class="bottom-hud">
-      <div class="dash-widget"><span class="key">SPACE</span><div><b>リープ / 灰縫い</b><div class="bar dash"><i id="dashBar"></i></div></div><span id="dashText">READY</span></div>
+      <div class="dash-widget"><span class="key">左クリック</span><div><b>灰縫い</b><div class="bar dash"><i id="dashBar"></i></div></div><span id="dashText">READY</span></div>
       <div id="buildChips"></div>
       <div class="kills"><span id="killText">0</span> 討伐</div>
     </div>
-    <div id="coach"><span class="eyebrow">THE ASH STITCH CYCLE</span><div class="cycle-steps"><span class="step prime">① 撃つ</span><i>→</i><span class="step mark">② 灰紋</span><i>→</i><span class="step leap">③ SPACE</span></div><b id="coachHint">左クリックで敵に灰紋を仕込む</b><small>リープは移動方向へ / 停止中は照準へ</small></div>
-    <div class="route-status"><span id="primeText">灰紋 0体</span><span id="routeText">灰紋のある敵を横切る</span></div>
-    <div id="hint">WASD 移動 · マウス 照準 · 左クリック 仕込み · SPACE リープで起爆 · F 自動仕込み · Esc 休止</div>
+    <div id="coach"><span class="eyebrow">THE ASH STITCH CYCLE</span><div class="cycle-steps"><span class="step prime">① 狙う</span><i>→</i><span class="step mark">② 灰紋</span><i>→</i><span class="step leap">③ 灰縫い</span></div><b id="coachHint">カーソルを敵へ：自動で灰紋を刻む</b><small>移動中もカーソル方向へ / ○ が着地点</small></div>
+    <div class="route-status"><span id="primeText">仕込み：自動</span><span id="routeText">灰紋のある敵を横切る</span></div>
+    <div id="hint">WASD 移動 · カーソル 自動仕込み・方向 · 左クリック 灰縫い · Esc 休止</div>
   </div>
   <main id="title" class="screen">
-    <div class="title-copy"><span class="eyebrow accent">v0.2 / ASH STITCH CORE</span><h1>ASH<span>FALL</span><em>PROJECT</em></h1><p class="tagline">撃って仕込め。縫って断て。</p><p class="intro">命中するたび、敵に灰紋を刻む。<br>危険な群れをリープですり抜け、<br>仕込んだ灰を、一気に起爆する。</p>
+    <div class="title-copy"><span class="eyebrow accent">v0.3 / ASH STITCH FEEL</span><h1>ASH<span>FALL</span><em>PROJECT</em></h1><p class="tagline">撃って仕込め。縫って断て。</p><p class="intro">命中するたび、敵に灰紋を刻む。<br>カーソルの先へ灰縫いで抜け、<br>軌跡を、連続して炸裂させる。</p>
     <button id="startButton" class="primary">炉へ降りる <span>→</span></button>
     <div class="title-actions"><button id="helpButton" class="text-button">操作と灰縫い</button><button id="soundButton" class="text-button">音声 ON</button><button id="fullscreenButton" class="text-button">全画面</button></div>
     <button id="relicButton" class="text-button">持ち込み：旅人の護符</button><div class="record" id="recordText">12分の戦闘 + 最終ボス / 1ラン約12〜16分</div></div>
-    <div class="title-aside"><span class="vertical">THE FURNACE REMEMBERS</span><div class="mechanic-note"><span class="eyebrow">PRIME → CROSS → DETONATE</span><p>射撃 → 敵に灰紋<br>SPACE → 通過して起爆<br><b>危険を縫うほど、大きなリターン。</b></p></div></div>
-    <footer>WASD + MOUSE <span>v0.2 / OFFLINE / NO DEPENDENCIES</span></footer>
+    <div class="title-aside"><span class="vertical">THE FURNACE REMEMBERS</span><div class="mechanic-note"><span class="eyebrow">PRIME → CROSS → DETONATE</span><p>狙う → 自動で灰を仕込む<br>左クリック → 灰縫いで連続起爆<br><b>灰紋3体をまとめると、耐久回復。</b></p></div></div>
+    <footer>WASD + MOUSE <span>v0.3 / OFFLINE / NO DEPENDENCIES</span></footer>
   </main>
-  <section id="help" class="screen overlay" hidden><div class="panel help-panel"><span class="eyebrow accent">FIELD MANUAL</span><h2>撃つのは、仕込み。</h2><div class="help-grid"><p><b>01 — 灰紋を刻む</b><br>左クリック長押しで敵に橙の灰紋を付ける。射撃では倒し切れない。通常移動でも灰は取れない。</p><p><b>02 — 危険を縫う</b><br>SPACEで移動方向へリープ。停止中は照準へ。灰紋のある敵を横切ると、仕込んだ灰を回収して起爆。途中は無敵。</p><p><b>03 — 突破を報酬に</b><br>敵群や弾を抜けると起爆威力・待機時間短縮が増す。着地点の安全を見て、次の仕込みへ戻る。</p><p><b>04 — 経路を育てる</b><br>青い残火で成長。灰の濃さ、扇・貫通・跳弾による配置、リープ距離・再起爆を組み合わせる。</p></div><p class="muted">灰紋は10秒で薄れ始める。地面の灰もSPACEだけで回収。灰なしのリープは回避用。<br>WASD / 矢印 移動 · F 自動仕込み · Esc / P 休止 · M 音声 · 1〜3 強化。途中セーブなし。</p><button id="closeHelp" class="primary">戻る</button></div></section>
+  <section id="help" class="screen overlay" hidden><div class="panel help-panel"><span class="eyebrow accent">FIELD MANUAL</span><h2>撃つのは、仕込み。</h2><div class="help-grid"><p><b>01 — 灰紋を刻む</b><br>カーソル方向へ自動射撃し、敵に橙の灰紋を付ける。射撃では倒し切れない。通常移動でも灰は取れない。</p><p><b>02 — 危険を縫う</b><br>左クリックでカーソル方向へ灰縫い。WASD入力に影響されず、○の着地点まで直進。灰紋のある敵を横切ると、仕込んだ灰を回収して起爆。途中は無敵。</p><p><b>03 — 突破を報酬に</b><br>灰紋の敵を3体以上縫うと「三重縫い」：耐久+2と追加の待機短縮。敵弾も通過して消せる。着地点の安全を見て、次の仕込みへ戻る。</p><p><b>04 — 経路を育てる</b><br>青い残火で成長。灰の濃さ、扇・貫通・跳弾による配置、灰縫い距離・再起爆を組み合わせる。</p></div><p class="muted">灰紋は10秒で薄れ始める。地面の灰も灰縫いだけで回収。灰なしの灰縫いは回避用。<br>WASD / 矢印 移動 · SPACE 灰縫い（代替） · F 仕込み休止 · Esc / P 休止 · M 音声 · 1〜3 強化。途中セーブなし。</p><button id="closeHelp" class="primary">戻る</button></div></section>
   <section id="upgrade" class="screen overlay" hidden><div class="upgrade-panel"><span class="eyebrow accent">THE FIRE CHANGES YOU</span><h2>残火を選ぶ。</h2><p id="upgradeSub" class="muted">戦闘は一時停止中。今のビルドを変える一手。</p><div id="upgradeCards"></div><p class="muted keyboard-note">クリック または 1 / 2 / 3 で選択</p></div></section>
   <section id="pause" class="screen overlay" hidden><div class="panel"><span class="eyebrow accent">A MOMENT IN THE ASH</span><h2>残火は、まだある。</h2><button id="resumeButton" class="primary">戦闘へ戻る</button><button id="pauseSound" class="secondary">音声切替 [M]</button><button id="quitButton" class="text-button">タイトルへ戻る</button></div></section>
   <section id="result" class="screen overlay" hidden><div class="panel result-panel"><span class="eyebrow accent" id="resultEyebrow">THE FIRE FADES</span><h2 id="resultTitle">灰へ還る。</h2><p id="resultCopy" class="muted"></p><div id="resultStats"></div><div id="resultBuild"></div><p class="muted" id="metaText"></p><button id="restartButton" class="primary">もう一度、炉へ <span>↻</span></button><button id="titleButton" class="text-button">タイトルへ</button></div></section>

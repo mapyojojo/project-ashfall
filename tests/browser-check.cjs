@@ -15,18 +15,21 @@ const out=path.resolve(__dirname,'..'),imageDir=path.join(out,'docs','screenshot
  try{
   await send('Runtime.enable');await send('Page.enable');await send('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
   await send('Page.navigate',{url:'http://localhost:4173/'});await wait(500);
-  assert.equal(await evaluate('typeof AshfallTest'),'undefined');assert.ok(await evaluate("document.querySelector('footer').textContent.includes('v0.2')"));await shot('title.png');passed('normal build starts without test API');
+  assert.equal(await evaluate('typeof AshfallTest'),'undefined');assert.ok(await evaluate("document.querySelector('footer').textContent.includes('v0.3')"));assert.equal(await evaluate("document.body.textContent.includes('リープ')"),false);await shot('title.png');passed('normal build starts with consistent player terminology');
   await send('Page.navigate',{url:'http://localhost:4173/?test'});await wait(400);await click('helpButton');assert.equal(await evaluate('AshfallTest.state'),'help');await click('closeHelp');passed('title/help navigation');
   await click('startButton');await wait(50);assert.equal(await evaluate('AshfallTest.audioState'),'running');passed('player click activates local audio');
   const target=await evaluate('(()=>{const a=AshfallTest,e=a.run.enemies[0];return {x:innerWidth/2+e.x-a.run.camX,y:innerHeight/2+e.y-a.run.camY};})()');
-  await send('Input.dispatchMouseEvent',{type:'mouseMoved',...target});await send('Input.dispatchMouseEvent',{type:'mousePressed',...target,button:'left',clickCount:1});await wait(650);await send('Input.dispatchMouseEvent',{type:'mouseReleased',...target,button:'left',clickCount:1});
+  await send('Input.dispatchMouseEvent',{type:'mouseMoved',...target});await wait(650);
   const prime=await evaluate('({kills:AshfallTest.run.kills,ash:AshfallTest.run.enemies[0].ash,stage:AshfallTest.run.onboarding.stage,preview:AshfallTest.predictLeap().ash})');
   assert.equal(prime.kills,0);assert.ok(prime.ash>0&&prime.preview>0);assert.equal(prime.stage,1);await shot('prepared.png');passed('real shots create visible ash before any kill');
-  await key('Space',' ');await wait(380);
-  assert.ok(await evaluate('AshfallTest.run.poweredLeaps===1&&AshfallTest.run.stitchKills>0'));assert.equal(await evaluate('AshfallTest.run.onboarding.stage'),2);await shot('first-leap.png');passed('real SPACE crossing harvests and detonates ash');
+  const expected=await evaluate('AshfallTest.predictLeap()');
+  await send('Input.dispatchKeyEvent',{type:'keyDown',code:'KeyW',key:'w'});
+  await send('Input.dispatchMouseEvent',{type:'mousePressed',...target,button:'left',clickCount:1});await send('Input.dispatchMouseEvent',{type:'mouseReleased',...target,button:'left',clickCount:1});await wait(220);
+  await send('Input.dispatchKeyEvent',{type:'keyUp',code:'KeyW',key:'w'});await wait(350);
+  assert.ok(await evaluate('AshfallTest.run.poweredLeaps===1&&AshfallTest.run.stitchKills>0'));assert.equal(await evaluate('AshfallTest.run.onboarding.stage'),2);assert.ok(await evaluate(`Math.abs(AshfallTest.run.stitches[0].bx-(${expected.bx}))<8&&Math.abs(AshfallTest.run.stitches[0].by-(${expected.by}))<8`));await shot('first-leap.png');passed('left click overrides held WASD, harvests ash and reaches preview endpoint');
   const learned=await evaluate('({...AshfallTest.run.onboarding,time:AshfallTest.run.time})');assert.ok(learned.firstKill<60);passed('opening cycle completes within first minute without state injection');
   await key('Escape','Escape');assert.equal(await evaluate('AshfallTest.state'),'paused');const pausedTime=await evaluate('AshfallTest.run.time');await wait(80);assert.equal(await evaluate('AshfallTest.run.time'),pausedTime);await click('resumeButton');passed('pause/resume stops game time');
-  await key('KeyF','f');assert.equal(await evaluate('AshfallTest.run.player.autoFire'),true);passed('automatic preparation toggle');
+  assert.equal(await evaluate('AshfallTest.run.player.autoFire'),true);await key('KeyF','f');assert.equal(await evaluate('AshfallTest.run.player.autoFire'),false);await key('KeyF','f');assert.equal(await evaluate('AshfallTest.run.player.autoFire'),true);passed('preparation defaults on and can be paused');
   // Five game minutes of real browser input. No writes to run state, HP, fuel, XP or the clock.
  const goal=Number(process.env.ASHFALL_BROWSER_SECONDS||300),wallStart=Date.now(),held=new Set(),preference=['pierce','scatter','width','quick','heal','vital','frost','echo','heavy','rapid','magnet','regen','spill','orbit','ricochet'];
   let nextLog=30,upgradeSaved=false,minuteSaved=false,upgradeCount=0;
@@ -42,11 +45,11 @@ const out=path.resolve(__dirname,'..'),imageDir=path.join(out,'docs','screenshot
    if(status.state!=='playing'){await wait(80);continue;}
    if(status.time>=goal)break;
    let desired=new Set();
-   // Stand briefly to make a chosen mouse route the actual leap direction.
-   if(!status.route){if(Math.abs(status.dx)>.1)desired.add(status.dx>0?'KeyD':'KeyA');if(Math.abs(status.dy)>.1)desired.add(status.dy>0?'KeyS':'KeyW');}
+   // Keep walking while attacking: WASD must never override the cursor route.
+   if(Math.abs(status.dx)>.1)desired.add(status.dx>0?'KeyD':'KeyA');if(Math.abs(status.dy)>.1)desired.add(status.dy>0?'KeyS':'KeyW');
    for(const code of held)if(!desired.has(code))await send('Input.dispatchKeyEvent',{type:'keyUp',code,key:code.slice(-1).toLowerCase()});
    for(const code of desired)if(!held.has(code))await send('Input.dispatchKeyEvent',{type:'keyDown',code,key:code.slice(-1).toLowerCase()});held.clear();for(const code of desired)held.add(code);
-   if(status.route){await send('Input.dispatchMouseEvent',{type:'mouseMoved',...status.route});await wait(20);await key('Space',' ');}
+   if(status.route){await send('Input.dispatchMouseEvent',{type:'mouseMoved',...status.route});await send('Input.dispatchMouseEvent',{type:'mousePressed',...status.route,button:'left',clickCount:1});await send('Input.dispatchMouseEvent',{type:'mouseReleased',...status.route,button:'left',clickCount:1});}
    else if(status.target)await send('Input.dispatchMouseEvent',{type:'mouseMoved',...status.target});
    if(!minuteSaved&&status.time>=60){await shot('gameplay.png');minuteSaved=true;}
    if(status.time>=nextLog){console.log(`BROWSER ${status.time.toFixed(0)}s / HP ${Math.ceil(status.hp)} / ${status.kills} kills / ${status.powered} powered leaps`);nextLog+=30;}
@@ -65,10 +68,11 @@ const out=path.resolve(__dirname,'..'),imageDir=path.join(out,'docs','screenshot
   await evaluate('AshfallTest.chooseUpgrade(0)');await wait(80);assert.ok(await evaluate("document.getElementById('coach').getBoundingClientRect().right<innerWidth"));passed('compact coach and route HUD');
   await send('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
   await evaluate(`(()=>{const a=AshfallTest;a.run.enemies=[];a.run.time=540;a.run.eliteWave=3;a.run.player.invuln=100;for(let i=0;i<130;i++){const e=a.spawnEnemy(['crawler','runner','shooter','brute','splitter'][i%5],Math.cos(i*2.4)*(180+i*3),Math.sin(i*2.4)*(180+i*3));a.seedEnemy(e,3);}a.run.player.ashSpill=2;for(let i=0;i<250;i++)a.run.ashes.push({x:(i%20)*20-200,y:Math.floor(i/20)*20-120,value:1,life:6,r:12,phase:i});a.drawGame();})()`);await wait(50);await shot('stress.png');passed('dense existing-enemy/fuel rendering');
-  const satellite=await evaluate(`(()=>{const a=AshfallTest;a.start();a.run.enemies=[];a.run.spawnTimer=100;a.apply('orbit');const e=a.spawnEnemy('brute',85,0);e.speed=0;a.update(.001);const before=e.ash;a.seedEnemy(e,1);e.seedCooldown=0;a.update(.1);return {before,after:e.ash,hp:e.hp,maxHp:e.maxHp};})()`);assert.equal(satellite.before,0);assert.equal(satellite.after,2);assert.equal(satellite.hp,satellite.maxHp);passed('satellite amplifies shot-marked enemies only');
+  const satellite=await evaluate(`(()=>{const a=AshfallTest;a.start();a.run.enemies=[];a.run.spawnTimer=100;a.run.player.autoFire=false;a.apply('orbit');const e=a.spawnEnemy('brute',85,0);e.speed=0;a.update(.001);const before=e.ash;a.seedEnemy(e,1);e.seedCooldown=0;a.update(.1);return {before,after:e.ash,hp:e.hp,maxHp:e.maxHp};})()`);assert.equal(satellite.before,0);assert.equal(satellite.after,2);assert.equal(satellite.hp,satellite.maxHp);passed('satellite amplifies shot-marked enemies only');
+  const phases=await require('./effect-scene.cjs')({evaluate,shot});passed('separate rendered harvest, windup, traveling front and final blast phases');
   await send('Page.navigate',{url:'file:///'+out.replaceAll('\\','/')+'/index.html?test'});await wait(400);await click('startButton');assert.equal(await evaluate('AshfallTest.state'),'playing');passed('direct file startup');
   assert.equal(errors.length,0,JSON.stringify(errors));passed('zero JavaScript runtime exceptions');
-  fs.writeFileSync(path.join(out,'browser-verification.json'),JSON.stringify({version:'0.2',date:'2026-10-01',browser:'Chromium headless shell 1243',passed:checks,runtimeErrors:errors.length,naturalInput:{goalSeconds:goal,wallSeconds:(Date.now()-wallStart)/1000,upgradesChosen:upgradeCount,...natural},limits:'Automated real-time input and visual inspection; not a human playtest. Stress/victory/layout tests use explicit test state setup.'},null,2));
+  fs.writeFileSync(path.join(out,'browser-verification.json'),JSON.stringify({version:'0.3',date:'2026-10-01',browser:'Chromium headless shell 1243',passed:checks,runtimeErrors:errors.length,phases,naturalInput:{goalSeconds:goal,wallSeconds:(Date.now()-wallStart)/1000,upgradesChosen:upgradeCount,...natural},limits:'Automated real-time input and visual inspection; not a human playtest. Effects/stress/victory/layout tests use explicit test state setup.'},null,2));
   console.log(`Browser verification: ${checks.length} checks passed, 0 runtime errors.`);
  }finally{ws.close();for(const p of pending.values())clearTimeout(p.timer);}
 })().catch(e=>{console.error(e);process.exitCode=1;});

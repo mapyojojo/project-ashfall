@@ -7,7 +7,7 @@ const preferences={
  spill:['spill','scatter','pierce','quick','heal','width','frost','rapid','vital','regen','echo','orbit','heavy','ricochet','magnet'],
  gun:['scatter','ricochet','rapid','pierce','heavy','vital','quick','width','regen','magnet','orbit']
 };
-function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,version='0.2'}) {
+function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,version='0.3'}) {
  const a=engine({intro:true,source});a.seed(seed);a.mouse.active=true;a.run.player.autoFire=mode!=='leap-only';
  const events=[];let nextPlan=0,nextSample=0;
  for(let tick=0;tick<limit*30+1000&&a.state!=='result'&&a.run.time<limit;tick++) {
@@ -18,7 +18,7 @@ function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,ve
   const r=a.run,p=r.player,t=r.time;
   let target=null,nearest=Infinity;
   for(const e of r.enemies){if(e.dead)continue;const d=Math.hypot(e.x-p.x,e.y-p.y);
-   const full=version==='0.2'&&e.ash>=p.ashCap+(e.type==='boss'||e.type==='elite'?6:0);
+   const full=e.ash>=p.ashCap+(e.type==='boss'||e.type==='elite'?6:0);
    const score=d+(full?180:0)-(e.type==='boss'?120:0);
    if(score<nearest){nearest=score;target=e;}
   }
@@ -58,17 +58,17 @@ function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,ve
 }
 const results=[];
 try {
- const source=require('node:child_process').execFileSync('git',['show','v0.1-prototype:game.js'],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();
- results.push(simulate({mode:'shoot-only',build:'gun',limit:300,source,version:'0.1'}));
-}catch{console.log('v0.1 tag unavailable; baseline comparison skipped.');}
+ const source=require('node:child_process').execFileSync('git',['show','experiment/ash-stitch-core:game.js'],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();
+ results.push(simulate({build:'weave',limit:300,source,version:'0.2'}));
+}catch{console.log('v0.2 branch unavailable; baseline comparison skipped.');}
 results.push(simulate({mode:'shoot-only',limit:300}));
 results.push(simulate({mode:'leap-only',limit:300}));
 for(const [build,seed] of [['weave',4721],['dense',9481],['spill',20261001]])results.push(simulate({build,seed}));
-const cycles=results.filter(r=>r.version==='0.2'&&r.mode==='cycle');
-assert.ok(results.filter(r=>r.version==='0.2'&&r.mode!=='cycle').every(r=>r.kills===0));
+const cycles=results.filter(r=>r.version==='0.3'&&r.mode==='cycle');
+assert.ok(results.filter(r=>r.version==='0.3'&&r.mode!=='cycle').every(r=>r.kills===0));
 assert.ok(cycles.every(r=>r.firstStitchKill!==null&&r.firstStitchKill<60));
 assert.ok(cycles.every(r=>r.stitchDamageShare>=.85));
 assert.ok(cycles.some(r=>r.time>=300&&r.kills>=150),'At least one natural five-minute cycle must remain playable.');
 assert.ok(cycles.some(r=>r.outcome==='win'),'At least one full natural run must reach victory.');
-fs.writeFileSync(path.join(root,'balance-verification.json'),JSON.stringify({version:'0.2',date:'2026-10-01',method:'deterministic accelerated simulation; normal HP/damage; exact route knowledge; no added fuel/XP/invulnerability',results},null,2));
+fs.writeFileSync(path.join(root,'balance-verification.json'),JSON.stringify({version:'0.3',date:'2026-10-01',method:'deterministic accelerated simulation; normal HP/damage; exact route knowledge; no added fuel/XP/invulnerability',results},null,2));
 console.log('Core-loop balance assertions passed. These are bots, not human playtests.');

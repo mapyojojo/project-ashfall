@@ -1,16 +1,16 @@
 {
-  "version": "0.2",
+  "version": "0.3",
   "date": "2026-10-01",
   "browser": "Chromium headless shell 1243",
   "passed": [
-    "normal build starts without test API",
+    "normal build starts with consistent player terminology",
     "title/help navigation",
     "player click activates local audio",
     "real shots create visible ash before any kill",
-    "real SPACE crossing harvests and detonates ash",
+    "left click overrides held WASD, harvests ash and reaches preview endpoint",
     "opening cycle completes within first minute without state injection",
     "pause/resume stops game time",
-    "automatic preparation toggle",
+    "preparation defaults on and can be paused",
     "five game minutes through actual keyboard/mouse input",
     "natural upgrade choices through number keys",
     "natural damage is dominated by ash stitch",
@@ -21,40 +21,72 @@
     "1024x640 title/upgrade layout",
     "compact coach and route HUD",
     "dense existing-enemy/fuel rendering",
+    "satellite amplifies shot-marked enemies only",
+    "separate rendered harvest, windup, traveling front and final blast phases",
     "direct file startup",
-    "zero JavaScript runtime exceptions",
-    "satellite amplifies shot-marked enemies only"
+    "zero JavaScript runtime exceptions"
   ],
   "runtimeErrors": 0,
-  "naturalInput": {
-    "goalSeconds": 300,
-    "wallSeconds": 310.226,
-    "upgradesChosen": 9,
-    "time": 300.08490000005474,
-    "hp": 74,
-    "kills": 419,
-    "level": 10,
-    "poweredLeaps": 141,
-    "damageTotals": {
-      "bullet": 824.324726599988,
-      "stitch": 20605.21135128942,
-      "orbit": 0
+  "phases": {
+    "collected": {
+      "time": 0.08,
+      "kills": 0,
+      "harvests": 2,
+      "ash": 6,
+      "nodes": 0,
+      "progress": 0,
+      "hp": 70
     },
-    "stitchDamageShare": 0.961533244415379,
-    "onboarding": {
-      "stage": 2,
-      "firstSeed": 0.2167000000000001,
-      "firstLeap": 1.0499000000000005,
-      "firstKill": 1.1166,
-      "completeAt": 1.1166
+    "windup": {
+      "time": 0.22,
+      "kills": 0,
+      "harvests": 3,
+      "ash": 9,
+      "nodes": 0,
+      "progress": 0,
+      "hp": 72
+    },
+    "front": {
+      "time": 0.39,
+      "kills": 1,
+      "harvests": 0,
+      "ash": 9,
+      "nodes": 5,
+      "progress": 0.48809523809523814,
+      "hp": 72
+    },
+    "finish": {
+      "time": 0.5700000000000002,
+      "kills": 3,
+      "harvests": 0,
+      "ash": 9,
+      "nodes": 11,
+      "progress": 1,
+      "hp": 72
     }
   },
-  "limits": "Automated real-time input and visual inspection; not a human playtest. Stress/victory/layout tests use explicit test state setup.",
-  "satelliteCheck": {
-    "before": 0,
-    "after": 2,
-    "hp": 125,
-    "maxHp": 125,
-    "method": "focused browser state test after satellite role refinement"
-  }
+  "naturalInput": {
+    "goalSeconds": 300,
+    "wallSeconds": 308.551,
+    "upgradesChosen": 7,
+    "time": 300.1013000000553,
+    "hp": 110,
+    "kills": 303,
+    "level": 8,
+    "poweredLeaps": 143,
+    "damageTotals": {
+      "bullet": 779.1820260333247,
+      "stitch": 15826.269325300433,
+      "orbit": 0
+    },
+    "stitchDamageShare": 0.9530767330831545,
+    "onboarding": {
+      "stage": 2,
+      "firstSeed": 0.23340000000000002,
+      "firstLeap": 1.0666000000000002,
+      "firstKill": 1.2665999999999995,
+      "completeAt": 1.2665999999999995
+    }
+  },
+  "limits": "Automated real-time input and visual inspection; not a human playtest. Effects/stress/victory/layout tests use explicit test state setup."
 }
