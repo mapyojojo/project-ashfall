@@ -29,18 +29,19 @@
     <div id="hint">WASD 移動 · カーソル 自動仕込み・方向 · 左クリック 灰縫い · Esc 休止</div>
   </div>
   <main id="title" class="screen">
-    <div class="title-copy"><span class="eyebrow accent">v0.5 / STITCH TO SURVIVE</span><h1>ASH<span>FALL</span><em>PROJECT</em></h1><p class="tagline">撃って仕込め。縫って断て。</p><p class="intro">命中するたび、敵に灰紋を刻む。<br>カーソルの先へ灰縫いで抜け、<br>軌跡を、連続して炸裂させる。</p>
+    <div class="title-copy"><span class="eyebrow accent">v0.6 / STITCH TO SURVIVE</span><h1>ASH<span>FALL</span><em>PROJECT</em></h1><p class="tagline">撃って仕込め。縫って断て。</p><p class="intro">命中するたび、敵に灰紋を刻む。<br>カーソルの先へ灰縫いで抜け、<br>軌跡を、連続して炸裂させる。</p>
     <button id="startButton" class="primary">炉へ降りる <span>→</span></button>
     <div class="title-actions"><button id="helpButton" class="text-button">操作と灰縫い</button><button id="soundButton" class="text-button">音声 ON</button><button id="fullscreenButton" class="text-button">全画面</button></div>
     <button id="relicButton" class="text-button">持ち込み：旅人の護符</button><div class="record" id="recordText">12分の戦闘 + 最終ボス / 1ラン約12〜16分</div></div>
-    <div class="title-aside"><span class="vertical">THE FURNACE REMEMBERS</span><div class="mechanic-note"><span class="eyebrow">PRIME → CROSS → DETONATE</span><p>狙う → 自動で灰を仕込む<br>左クリック → 灰縫いで連続起爆<br><b>灰紋3体をまとめると、広い消弾と回復。</b></p></div></div>
-    <footer>WASD + MOUSE <span>v0.5 / OFFLINE / NO DEPENDENCIES</span></footer>
+    <div class="title-aside"><span class="vertical">THE FURNACE REMEMBERS</span><div class="mechanic-note"><span class="eyebrow">PRIME → CROSS → DETONATE</span><p>狙う → 自動で灰を仕込む<br>左クリック → 灰縫いで連続起爆<br><b>3体で広い消弾。少数なら濃い灰を狙う。</b></p></div></div>
+    <footer>WASD + MOUSE <span>v0.6 / OFFLINE / NO DEPENDENCIES</span></footer>
   </main>
-  <section id="help" class="screen overlay" hidden><div class="panel help-panel"><span class="eyebrow accent">FIELD MANUAL</span><h2>撃つのは、仕込み。</h2><div class="help-grid"><p><b>01 — 灰紋を刻む</b><br>カーソル方向へ自動射撃し、敵に橙の灰紋を付ける。射撃では倒し切れない。通常移動でも灰は取れない。</p><p><b>02 — 危険を縫う</b><br>左クリックでカーソル方向へ灰縫い。WASD入力に影響されず、○の着地点まで直進。自機のリングが一周すると使用可能。灰紋を横切って回収し、軌跡を起爆する。</p><p><b>03 — 突破を報酬に</b><br>灰を回収すると着地に短い消弾領域。灰紋3体で「三重縫い」：広い消弾、耐久+4、待機短縮。地面の予告・範囲攻撃は残る。灰なしでは消弾領域が生まれない。</p><p><b>04 — 経路を育てる</b><br>青い残火で成長。貫通＋跳弾は枝分かれ、濃灰は伝染。二重の縫い目で逆向きに再炸裂、返し縫いで三重縫い後にもう1回。強化を組み合わせよう。</p></div><p class="muted">灰紋は10秒で薄れ始める。灰縫い中は無敵。消弾の薄い円は着地後すぐ消える。<br>WASD / 矢印 移動 · SPACE 灰縫い（代替） · F 仕込み休止 · Esc / P 休止 · M 音声 · 1〜3 強化。途中セーブなし。</p><button id="closeHelp" class="primary">戻る</button></div></section>
+  <section id="help" class="screen overlay" hidden><div class="panel help-panel"><span class="eyebrow accent">FIELD MANUAL</span><h2>撃つのは、仕込み。</h2><div class="help-grid"><p><b>01 — 灰紋を刻む</b><br>カーソル方向へ自動射撃し、敵に橙の灰紋を付ける。射撃では倒し切れない。通常移動でも灰は取れない。</p><p><b>02 — 危険を縫う</b><br>左クリックで○の着地点まで直進。自機のリングが一周すると使用可能。灰紋を横切って回収し、軌跡を起爆する。</p><p><b>03 — 成功を選ぶ</b><br>3体以上の「三重縫い」は広い消弾と待機短縮。1〜2体から6灰以上の「密縫い」は強化で高火力に。回復は「危地の息継ぎ」で追加。灰なしでは着地消弾が生まれず、地面の予告・範囲攻撃は残る。</p><p><b>04 — 灰縫いを育てる</b><br>拡散：貫通・跳弾・灰の伝播で群れへ。濃縮：濃灰・灰圧で強敵へ。連続：返し縫い・短針で何度も。青い残火で強化を選び、混ぜても育てられる。</p></div><p class="muted">灰紋は10秒で薄れ始める。灰縫い中は無敵。消弾の薄い円は着地後すぐ消える。<br>WASD / 矢印 移動 · SPACE 灰縫い（代替） · F 仕込み休止 · Esc / P 休止 · M 音声 · 1〜3 強化。途中セーブなし。</p><button id="closeHelp" class="primary">戻る</button></div></section>
   <section id="relics" class="screen overlay" hidden><div class="panel relic-panel"><span class="eyebrow accent">TAKE ONE EMBER</span><h2>炉へ持ち込むもの。</h2><p id="relicMarks" class="muted"></p><div id="relicChoices"></div><p class="muted">残火印はランの成果で増える。必要数に届くと自動解放され、選んでも消費しない。</p><button id="closeRelics" class="primary">この装備で戻る</button></div></section>
   <section id="upgrade" class="screen overlay" hidden><div class="upgrade-panel"><span class="eyebrow accent">THE FIRE CHANGES YOU</span><h2>残火を選ぶ。</h2><p id="upgradeSub" class="muted">戦闘は一時停止中。今のビルドを変える一手。</p><div id="upgradeCards"></div><p class="muted keyboard-note">クリック または 1 / 2 / 3 で選択</p></div></section>
   <section id="pause" class="screen overlay" hidden><div class="panel"><span class="eyebrow accent">A MOMENT IN THE ASH</span><h2>残火は、まだある。</h2><button id="resumeButton" class="primary">戦闘へ戻る</button><button id="pauseSound" class="secondary">音声切替 [M]</button><button id="quitButton" class="text-button">タイトルへ戻る</button></div></section>
   <section id="result" class="screen overlay" hidden><div class="panel result-panel"><span class="eyebrow accent" id="resultEyebrow">THE FIRE FADES</span><h2 id="resultTitle">灰へ還る。</h2><p id="resultCopy" class="muted"></p><div id="resultStats"></div><div id="resultBuild"></div><p class="muted" id="metaText"></p><button id="restartButton" class="primary">もう一度、炉へ <span>↻</span></button><button id="titleButton" class="text-button">タイトルへ</button></div></section>
+  <script src="upgrades.js"></script>
   <script src="game.js"></script>
 </body>
 </html>

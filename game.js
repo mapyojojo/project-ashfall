@@ -60,22 +60,22 @@
   function newPlayer() {
     return { x: 0, y: 0, r: 13, hp: 100, maxHp: 100, speed: 225, aim: 0, damage: .8,
       fireRate: .18, shotTimer: 0, shots: 1, spread: .17, pierce: 0, bounce: 0, bulletSpeed: 800,
-      ashPerHit: 1, ashCap: 3, ashDuration: 10, ashSpill: 0, seedSlow: 0,
-      dashCd: 2.6, dashDistance: 310, dashTimer: 0, dashTime: 0, dashVx: 0, dashVy: 0, dashStart: null,
+      ashPerHit: 1, ashCap: 3, ashDuration: 10,
+      dashCd: 2.6, dashDistance: 310, dashDuration: .18, dashTimer: 0, dashTime: 0, dashVx: 0, dashVy: 0, dashStart: null,
       collectWidth: 20, stitchWidth: 58, stitchPower: 1, stitchSlow: 0, stitchEcho: 0, stitchHeal: 0,
-      invuln: 0, magnet: 175, regen: 0, wardBoost:0, readyFlash:0, dashCycle:2.6, bonusStitch:null,
+      invuln: 0, magnet: 175, regen: 0, wardBoost:0, wardDuration:0, readyFlash:0, dashCycle:2.6, bonusStitch:null,
       xp: 0, level: 1, xpNeed: 14, autoFire: true, upgrades: {}, walk: 0 };
   }
   function start() {
     initAudio(); keys.clear(); mouse.down = false;
     seed = ((Date.now() ^ 0x6d2b79f5) >>> 0) || 1;
-    run = { time: 0, player: newPlayer(), enemies: [], bullets: [], hostile: [], ashes: [], orbs: [],
+    run = { time: 0, player: newPlayer(), enemies: [], bullets: [], hostile: [], orbs: [],
       stitches: [], particles: [], texts: [], hazards: [], pickups: [], kills: 0, ashUsed: 0,
       stitchKills: 0, bosses: 0, spawnTimer: .3, shake: 0, flash: 0, camX: 0, camY: 0,
       announced: '', announceTimer: 0, eliteWave: 0, finalSpawned: false, boss: null,
       nextId: 1, cards: [], pending: 0, statsTimer: 0, upgradesTaken: 0, ended: false,
       leap: null, leapRequested: false, leaps: 0, poweredLeaps: 0, dryLeaps: 0, seededHits: 0,
-      damageTotals: { bullet: 0, stitch: 0 }, lastLeap: null, leapFlash: 0, hitStop: 0, impacts: [], trails: [], harvests: [], wards:[],seedLinks:[], bulletsCleared:0, comboLeaps:0, bonusLeaps:0, maxStitchTargets:0, breather:0,
+      damageTotals: { bullet: 0, stitch: 0 }, lastLeap: null, leapFlash: 0, hitStop: 0, impacts: [], trails: [], harvests: [], wards:[],seedLinks:[], bulletsCleared:0, comboLeaps:0, denseLeaps:0, bonusLeaps:0, chainLeaps:0, shardsFired:0, maxStitchTargets:0, breather:0,
       onboarding: { stage: 0, introduced:false, disabled:false, firstSeed: null, firstLeap: null, firstKill: null, completeAt: null } };
     titleRecord();relics[meta.relic].apply(run.player);
     state = 'playing'; screen(null); updateBuild();
@@ -111,63 +111,29 @@
     $('resultCopy').textContent = win ? '仕込み、見極め、突破した。炉に小さな夜明けが戻る。' : '撃って灰を仕込み、群れを灰縫いで断つ。次は、その経路を変えてみよう。';
     $('resultCopy').textContent += ` 生存時間 ${timeText(run.time)}。`;
     $('resultStats').innerHTML = `<div><strong>${run.maxStitchTargets}<small>体</small></strong><span>最大同時灰縫い</span><small>1回で灰紋を回収した敵数</small></div><div><strong>${run.comboLeaps}<small>回</small></strong><span>三重縫い</span><small>灰紋3体以上の突破</small></div><div><strong>${run.bonusLeaps}<small>回</small></strong><span>返し縫い</span><small>実行した追加攻撃</small></div><div><strong>${run.bulletsCleared}<small>発</small></strong><span>消した敵弾</span><small>経路と着地の消弾の合計</small></div>`;
-    $('resultBuild').innerHTML = Object.entries(run.player.upgrades).map(([id,n]) => `<span class="chip">${UPGRADES.find(u=>u.id===id).name} ${n}</span>`).join('') || '<span class="chip">初期装備のみ</span>';
+    $('resultBuild').innerHTML = `<p class="build-summary">密縫い ${run.denseLeaps}回 / 連環縫い ${run.chainLeaps}回</p>`+(buildChips() || '<span class="chip">初期装備のみ</span>');
     const unlocked = relics.filter(r => !r.retired && r.need > before && r.need <= meta.marks);
     $('metaText').textContent = `残火印 +${marks} / 合計 ${meta.marks}。${unlocked.map(r => '「'+r.name+'」解放！').join(' ')}`;
     tone(win ? 440 : 160, .6, 'triangle', .1, win ? 2 : .3);
   }
-  const UPGRADES = [
-    { id:'scatter', name:'扇に蒔く灰', cat:'仕込み / 扇状配置', max:3, desc:'仕込み弾 +2。横に並ぶ敵へ灰紋を分散。広く仕込んで、群れを横切る経路を作る。', apply:p=>{p.shots+=2;p.spread+=.025;} },
-    { id:'pierce', name:'灰の串', cat:'仕込み / 直線配置', max:3, desc:'仕込み弾がさらに2体を貫通。奥の敵まで灰紋を付け、一直線の灰縫いにまとめる。', apply:p=>{p.pierce+=2;p.bulletSpeed*=1.08;} },
-    { id:'ricochet', name:'隣へ渡す灰', cat:'仕込み / 連鎖配置', max:3, desc:'別の敵へ跳弾。跳弾だけが短く軌道を補正し、動く敵へ灰を渡す。貫通と組むと横へ枝分かれ。', apply:p=>p.bounce++ },
-    { id:'rapid', name:'細い灰雨', cat:'仕込み / 仕込み速度', max:3, desc:'射撃間隔 -18%（最短0.10秒）。短い仕込みで次の灰縫いへ。灰紋の上限は変わらない。', apply:p=>p.fireRate*=.82 },
-    { id:'heavy', name:'濃灰の刻印', cat:'仕込み / 伝染する灰', max:3, desc:'1命中の灰紋 +1、上限 +2。満杯になると周囲2体へ灰紋が伝染。段階ごとに伝染先 +1。射撃間隔 +12%。', apply:p=>{p.ashPerHit++;p.ashCap+=2;p.fireRate*=1.12;} },
-    { id:'width', name:'長い縫い針', cat:'灰縫い / 経路', max:3, desc:'灰縫い距離 +40、灰紋の回収幅 +6、燃焼帯の幅 +14。深い敵群をまとめて縫う。', apply:p=>{p.dashDistance+=40;p.collectWidth+=6;p.stitchWidth+=14;} },
-    { id:'quick', name:'返し縫い', cat:'灰縫い / 追加攻撃', max:3, desc:'三重縫い後2秒間、灰を半分引き継いでもう1回縫える。追加攻撃からは連鎖しない。待機 -14%、移動速度 +4%。', apply:p=>{p.dashCd*=.86;p.speed*=1.04;} },
-    { id:'frost', name:'留める白灰', cat:'仕込み / 配置制御', max:2, desc:'命中した敵を短く減速。起爆前も足止めし、動く灰紋を狙った経路に留める。', apply:p=>{p.seedSlow+=.45;p.stitchSlow=2.2;} },
-    { id:'echo', name:'二重の縫い目', cat:'灰縫い / 逆向き起爆', max:2, desc:'0.5秒後、終点から始点へ75%の威力で再炸裂。次の段階で100%・幅も拡大。伝染と組んで群れを往復攻撃。', apply:p=>p.stitchEcho++ },
-    { id:'heal', name:'危地の息継ぎ', cat:'余韻 / 消弾と回復', max:2, desc:'三重縫いの回復量 +4、着地の消弾範囲 +25、持続 +0.15秒。次の段階でさらに拡大。攻めるほど立て直せる。', apply:p=>p.stitchHeal+=4 },
-    { id:'spill', name:'零れる灰', cat:'仕込み / 地面配置', max:2, desc:'満杯の敵へ命中すると足元に灰を落とす。灰は6秒残り、通常移動では拾えない。次の段階で落ちる間隔を短縮。', apply:p=>p.ashSpill++ },
-    { id:'vital', name:'消えない心臓', cat:'余韻 / 耐久', max:3, desc:'最大耐久 +20、耐久を30回復。突破の後、次の仕込みへ立て直す。', apply:p=>{p.maxHp+=20;p.hp=Math.min(p.maxHp,p.hp+30);} },
-    { id:'magnet', name:'残火の呼び声', cat:'余韻 / 成長回収', max:2, desc:'青い経験値の回収距離 +60、移動速度 +4%。橙の灰は引き寄せない。', apply:p=>{p.magnet+=60;p.speed*=1.04;} },
-    { id:'regen', name:'火種の余韻', cat:'余韻 / 周期回復', max:2, desc:'灰のある灰縫い後4秒間、毎秒耐久 +0.5。仕込みと起爆を続けるほど回復も続く。', apply:p=>p.regen+=.5 },
-    { id:'ember', name:'尽きない残火', cat:'余韻 / 最終強化', max:999, requires:p=>UPGRADES.filter(u=>u.id!=='ember').every(u=>(p.upgrades[u.id]||0)>=u.max), desc:'すべての強化を終えた者へ。灰縫いの威力 +8%、耐久を20回復。', apply:p=>{p.stitchPower*=1.08;p.hp=Math.min(p.maxHp,p.hp+20);} }
-  ];
-  // Cumulative effects of this upgrade alone. Other upgrades and relics still compose normally.
-  const UPGRADE_STAGES = {
-    scatter:['弾 +2 / 扇状に配置','弾 +4 / 扇の幅も拡大','弾 +6 / さらに広い扇'],
-    pierce:['2体貫通 / 弾速 +8%','4体貫通 / 弾速 +17%','6体貫通 / 弾速 +26%'],
-    ricochet:['隣の1体へ / 軌道補正','最大2体へ / 軌道補正','最大3体へ / 軌道補正'],
-    rapid:['間隔倍率 ×0.82 / 最短0.10秒','間隔倍率 ×0.67 / 最短0.10秒','間隔倍率 ×0.55 / 最短0.10秒'],
-    heavy:['灰 +1・上限 +2 / 2体へ伝染','灰 +2・上限 +4 / 3体へ伝染','灰 +3・上限 +6 / 4体へ伝染'],
-    width:['距離 +40 / 回収幅 +6・爆幅 +14','距離 +80 / 回収幅 +12・爆幅 +28','距離 +120 / 回収幅 +18・爆幅 +42'],
-    quick:['追加攻撃を解放 / 待機 −14%','追加攻撃を維持 / 待機 −26%','追加攻撃を維持 / 待機 −36%'],
-    frost:['命中時0.45秒 / 起爆時2.2秒の減速','命中時0.90秒 / 起爆時2.2秒の減速'],
-    echo:['逆向きに再炸裂 / 威力75%','再炸裂の威力100% / 幅1.35倍'],
-    heal:['回復 +4 / 消弾半径 +25・持続 +0.15秒','回復 +8 / 消弾半径 +50・持続 +0.30秒'],
-    spill:['満杯への追撃で地面に灰 / 間隔0.9秒','灰を落とす間隔0.5秒 / 持続6秒'],
-    vital:['最大耐久 +20 / 取得時30回復','最大耐久 +40 / 取得時30回復','最大耐久 +60 / 取得時30回復'],
-    magnet:['経験値回収距離 +60 / 速度 +4%','経験値回収距離 +120 / 速度 +8%'],
-    regen:['灰縫い後4秒間 / 毎秒0.5回復','灰縫い後4秒間 / 毎秒1.0回復']
-  };
+  const {UPGRADES,families,eligible,weight,synergyNote:catalogSynergy}=globalThis.AshfallUpgrades;
+  const UPGRADE_STAGES=Object.fromEntries(UPGRADES.map(u=>[u.id,u.stages]));
   function upgradeCard(u,index) {
     const current=run.player.upgrades[u.id]||0,next=current+1;
     const stages=u.max<=3?UPGRADE_STAGES[u.id].map((detail,i)=>{
-      const level=i+1,status=level<=current?'owned':level===next?'next':'locked',label=status==='owned'?'✓ 取得済み':status==='next'?'＋ 今回取得':'未取得';
+      const level=i+1,status=level<=current?'owned':level===next?'next':'locked',label=status==='owned'?'✓ 取得済み':status==='next'?'＋ 次のLv':'未取得';
       return `<span class="upgrade-stage ${status}" data-level="${level}" data-status="${status}"><span class="stage-label">Lv${level} · ${label}</span><span class="stage-detail">${detail}</span></span>`;
     }).join(''):'<span class="upgrade-stage next"><span class="stage-label">＋ 今回取得</span><span class="stage-detail">威力 ×1.08 / 取得時20回復</span></span>';
-    return `<button class="upgrade-card" data-card="${index}" data-current="${current}" data-next="${next}"><span class="category">${u.cat}</span><span class="number">0${index+1}</span><h3>${u.name}</h3><span class="rank">現在 Lv${current}${current===0?'（未取得）':''} → <b>取得後 Lv${next}</b></span><p>${u.desc}</p><span class="upgrade-stages" aria-label="各段階の効果。数値はこの強化単独の累計">${stages}</span>${synergyNote(u.id)?`<small class="synergy-note">${synergyNote(u.id)}</small>`:''}</button>`;
+    return `<button class="upgrade-card" data-card="${index}" data-current="${current}" data-next="${next}"><span class="family-tag ${u.family}">${families[u.family]}</span><span class="category">${u.cat}</span><span class="number">0${index+1}</span><h3>${u.name}</h3><span class="rank">現在 Lv${current}${current===0?'（未取得）':''} → <b>取得後 Lv${next}</b></span><p>${u.desc}</p><span class="upgrade-stages" aria-label="各段階の効果。数値はこの強化単独の累計">${stages}</span>${synergyNote(u.id)?`<small class="synergy-note">${synergyNote(u.id)}</small>`:''}</button>`;
   }
   function rollUpgrades() {
     const p = run.player;
-    const available = UPGRADES.filter(u => (p.upgrades[u.id]||0)<u.max && (!u.requires||u.requires(p)));
+    const available = UPGRADES.filter(u => (p.upgrades[u.id]||0)<u.max && eligible(u,p));
     const cards = [];
-    // All three opening choices change how the same prime/leap cycle is set up.
-    if(run.upgradesTaken===0)cards.push(...['scatter','pierce','heavy'].map(id=>available.find(u=>u.id===id)).filter(Boolean));
-    else {
-      for(const category of ['仕込み','灰縫い','余韻']){const pool=available.filter(u=>u.cat.startsWith(category));if(pool.length)cards.push(pick(pool));}
-    }
-    while(cards.length < Math.min(3, available.length)) { const u = pick(available); if(!cards.includes(u)) cards.push(u); }
+    const weightedPick=pool=>{let ticket=rng()*pool.reduce((n,u)=>n+weight(u,p),0);for(const u of pool){ticket-=weight(u,p);if(ticket<0)return u;}return pool[pool.length-1];};
+    // One clear way into each family at the beginning; later choices are weighted without replacement.
+    if(run.upgradesTaken===0)cards.push(...['pierce','heavy','short'].map(id=>available.find(u=>u.id===id)).filter(Boolean));
+    while(cards.length<Math.min(3,available.length))cards.push(weightedPick(available.filter(u=>!cards.includes(u))));
     for(let i=cards.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]];}
     run.cards = cards; state = 'upgrade'; mouse.down = false; keys.clear(); screen('upgrade');
     $('upgradeSub').textContent = `LV ${p.level} · 耐久 ${Math.ceil(p.hp)} / ${p.maxHp} · 戦闘は一時停止中。段階の数値は各強化単独の累計。`;
@@ -177,7 +143,7 @@
   }
   function chooseUpgrade(index) {
     if(state!=='upgrade' || !run.cards[index])return;
-    const p=run.player,u=run.cards[index]; u.apply(p);p.upgrades[u.id]=(p.upgrades[u.id]||0)+1;
+    const p=run.player,u=run.cards[index]; if(!eligible(u,p)||(p.upgrades[u.id]||0)>=u.max)return;u.apply(p);p.upgrades[u.id]=(p.upgrades[u.id]||0)+1;
     run.upgradesTaken++;run.pending--;state='playing';screen(null);keys.clear();
     announce(`${u.name} / ${upgradeGain(u.id)}`,3);floating(p.x,p.y-55,u.name,'#96ead8');
     updateBuild(); updateHud();
@@ -189,33 +155,25 @@
       p.xp-=p.xpNeed;p.level++;p.xpNeed=Math.round(14+Math.pow(p.level,1.45)*9);run.pending++;
     }
   }
-  function updateBuild() { $('buildChips').innerHTML=Object.entries(run.player.upgrades).map(([id,n])=>`<span class="chip">${UPGRADES.find(u=>u.id===id).name} ${n}</span>`).join(''); }
-  function upgradeGain(id) {return {scatter:'弾が扇状に広がる',pierce:'灰紋が敵列を貫く',ricochet:'跳弾が動く敵へ灰を渡す',heavy:'満杯の灰が周囲へ伝染',quick:'三重縫いで返し縫い',echo:'軌跡が逆向きに再炸裂',width:'灰縫いが遠く・広くなる',heal:'三重縫いで回復・広い消弾',spill:'満杯の灰が地面に残る',frost:'仕込みと炸裂で足止め',rapid:'仕込みの間隔が短くなる',magnet:'残火を遠くから回収',vital:'耐久と回復が増える',regen:'灰縫いの余韻で回復',ember:'灰縫いの威力が増す'}[id];}
-  function synergyNote(id) {
-    const p=run.player;
-    if(id==='ricochet'&&p.pierce)return '今の貫通弾に、横への枝が付く';
-    if(id==='pierce'&&p.bounce)return '今の跳弾と両立し、奥と横へ仕込む';
-    if(id==='heavy'&&(p.shots>1||p.pierce||p.bounce))return '今の広い仕込みから、灰紋が伝染する';
-    if(id==='quick'&&(p.shots>1||p.pierce||p.upgrades.heavy))return '灰紋を配る力を、もう1回の攻撃へ';
-    if(id==='echo'&&p.upgrades.quick)return '追加の灰縫いも、逆向きに再炸裂';
-    if(id==='heal'&&p.upgrades.quick)return '連続突破を、広い消弾と回復で守る';
-    if(id==='spill'&&p.upgrades.heavy)return '満杯への追撃で、伝染と地面の灰を両立';
-    return '';
-  }
+  function buildChips() {return Object.entries(run.player.upgrades).map(([id,n])=>{const u=UPGRADES.find(u=>u.id===id);return `<span class="chip ${u.family}"><span class="family-label">${families[u.family]}</span>${u.name} ${n}</span>`;}).join('');}
+  function updateBuild() { $('buildChips').innerHTML=buildChips(); }
+  function upgradeGain(id) {return UPGRADES.find(u=>u.id===id).gain;}
+  function synergyNote(id) {return catalogSynergy(id,run.player);}
   function updateHud() {
     const p=run.player;
     $('hpText').textContent=`${Math.ceil(p.hp)} / ${p.maxHp}`;$('hpBar').style.width=`${p.hp/p.maxHp*100}%`;
     $('xpBar').style.width=`${p.xp/p.xpNeed*100}%`;$('levelText').textContent=`LV ${p.level}`;
     $('timeText').textContent=timeText(run.time);$('phaseText').textContent=run.finalSpawned?'炉心 / 最終決戦':run.time<240?'灰の庭':run.time<480?'燃える回廊':'炉心への道';
-    $('dashBar').style.width=`${introBlocked()?0:p.bonusStitch?100:clamp(1-p.dashTimer/p.dashCycle,0,1)*100}%`;$('dashText').textContent=introBlocked()?'仕込み':p.bonusStitch?'返し縫い':p.dashTimer<=0?'READY':`${p.dashTimer.toFixed(1)}s`;
+    $('dashBar').style.width=`${introBlocked()?0:p.bonusStitch?100:clamp(1-p.dashTimer/p.dashCycle,0,1)*100}%`;$('dashText').textContent=introBlocked()?'仕込み':p.bonusStitch?(p.bonusStitch.depth===2?'連環縫い':'返し縫い'):p.dashTimer<=0?'READY':`${p.dashTimer.toFixed(1)}s`;
     $('killText').textContent=run.kills;$('announcement').style.opacity=clamp(run.announceTimer,0,1);
     const preview=predictLeap();
     $('primeText').textContent=p.autoFire?'仕込み：自動':'仕込み：休止 [F]';
-    $('routeText').textContent=p.bonusStitch?'返し縫い：あと1回 / 2秒以内':preview.targets>=3?`三重縫い：広い消弾 / 耐久 +${4+p.stitchHeal}`:preview.ash?`着地で消弾 / 灰紋 ${preview.targets}体・3体で強化`:'橙の灰紋を経路へ重ねる';$('routeText').dataset.combo=String(preview.targets>=3);
+    const dense=denseSpec(preview.targets,preview.ash),bonus=p.bonusStitch;
+    $('routeText').textContent=bonus?(bonus.depth===2?'連環縫い：最後の1回':'返し縫い：あと1回 / 2秒以内'):preview.targets>=3?'三重縫い：広い消弾':dense.success?'密縫い：濃い少数へ炸裂':preview.ash?`灰紋 ${preview.targets}体 / ${preview.ash}灰`:'橙の灰紋を経路へ重ねる';$('routeText').dataset.combo=String(preview.targets>=3);
     const lesson=run.onboarding;
     $('coach').hidden=!showStitchHelp();$('routeText').hidden=!showStitchHelp();
     $('coach').dataset.stage=String(lesson.stage);
-    $('coachHint').textContent=lesson.stage===0?(run.time<1.6?'射撃は自動 / カーソルで方向を変える':'灰紋が付くまで、狙うだけ'):lesson.stage===1?'橙の経路を左クリックで灰縫い':'灰紋3体を縫うと、消弾も回復も増える';
+    $('coachHint').textContent=lesson.stage===0?(run.time<1.6?'射撃は自動 / カーソルで方向を変える':'灰紋が付くまで、狙うだけ'):lesson.stage===1?'橙の経路を左クリックで灰縫い':'灰紋3体で広い消弾 / 少数なら6灰を狙う';
     const boss=run.boss&&!run.boss.dead?run.boss:null;$('bossHud').hidden=!boss;
     if(boss){$('bossName').textContent=boss.type==='boss'?'炉心 / THE LAST FURNACE':'灰の番人';$('bossHp').textContent=`${Math.ceil(boss.hp/boss.maxHp*100)}%`;$('bossBar').style.width=`${boss.hp/boss.maxHp*100}%`;}
   }
@@ -234,18 +192,15 @@
     if(e.dead||e.seedCooldown>0)return;
     const p=run.player,before=e.ash;
     e.ash=Math.min(ashLimit(e),e.ash+amount);e.ashLife=p.ashDuration;e.seedCooldown=.065;e.seedFlash=.12;
-    if(p.seedSlow)e.slow=Math.max(e.slow,p.seedSlow);
     if(e.ash>before){
       run.seededHits++;particle(e.x,e.y,'#cd9c68',2,35,2);
       if(run.onboarding.firstSeed===null){run.onboarding.firstSeed=run.time;run.onboarding.stage=1;floating(e.x,e.y-e.r-26,'灰紋','#ffc584');tone(480,.12,'triangle',.035,1.25);}
-    } else if(p.ashSpill&&e.spillCooldown<=0){
-      run.ashes.push({x:e.x,y:e.y,value:1,life:6,r:12,phase:random(0,TAU),hint:0});e.spillCooldown=p.ashSpill===1?.9:.5;
     }
-    const rank=p.upgrades.heavy||0;
+    const rank=p.upgrades.propagation||0;
     if(spread&&rank&&e.ash>=ashLimit(e)&&!(e.spreadCooldown>0)){
       e.spreadCooldown=.8;
       const neighbors=run.enemies.filter(o=>!o.dead&&o.id!==e.id&&dist(o,e)<145&&o.ash<ashLimit(o)).sort((a,b)=>dist(a,e)-dist(b,e)).slice(0,rank+1);
-      for(const o of neighbors){const before=o.ash;seedEnemy(o,p.ashPerHit,false);if(o.ash>before)run.seedLinks.push({ax:e.x,ay:e.y,bx:o.x,by:o.y,life:.3,kind:'spread'});}
+      for(const o of neighbors){const before=o.ash;seedEnemy(o,1,false);if(o.ash>before)run.seedLinks.push({ax:e.x,ay:e.y,bx:o.x,by:o.y,life:.3,kind:'spread'});}
     }
   }
   function predictLeap(dx,dy) {
@@ -259,12 +214,18 @@
     const length=Math.max(0,Math.min(p.dashDistance,wallX,wallY));
     const route={ax:p.x,ay:p.y,bx:p.x+ux*length,by:p.y+uy*length,ash:0,targets:0,danger:0};
     for(const e of run.enemies){if(e.dead)continue;const d=segmentDistance(e.x,e.y,route.ax,route.ay,route.bx,route.by);if(e.ash&&d<p.collectWidth+e.r){route.ash+=e.ash;route.targets++;}if(d<e.r+p.r+4)route.danger++;}
-    for(const a of run.ashes)if(segmentDistance(a.x,a.y,route.ax,route.ay,route.bx,route.by)<p.collectWidth+12)route.ash+=a.value;
     return route;
   }
   function stitchDamage(count,local=0,danger=0) {
     return count?(32+16*Math.min(count,12)+26*local)*run.player.stitchPower*(1+Math.min(.6,danger*.12)):0;
   }
+  // Only newly captured enemy marks determine success and per-target pressure.
+  function denseSpec(targets,ash,rank=run.player.upgrades.dense||0) {
+    const success=targets>=1&&targets<=2&&ash>=6;
+    return {success,multiplier:success&&rank?1+(targets===1?[0,.35,.55,.75][rank]:[0,.20,.30,.40][rank]):1};
+  }
+  function pressureMultiplier(ash,rank=run.player.upgrades.pressure||0) {return 1+rank*(ash>=12?.35:ash>=9?.25:ash>=6?.15:0);}
+  function lineDamage(s,e,scale=1) {const local=s.targets.get(e.id)||0;return stitchDamage(s.count,local,s.danger)*(s.denseMultiplier||1)*pressureMultiplier(local)*scale;}
   function gatherLeap(ax,ay,bx,by) {
     const p=run.player,l=run.leap;
     for(const e of run.enemies){
@@ -272,12 +233,11 @@
       const d=segmentDistance(e.x,e.y,ax,ay,bx,by);
       if(d<e.r+p.r+4)l.crossings.add(e.id);
       if(e.ash&&d<p.collectWidth+e.r&&!l.targets.has(e.id)){
-        l.count+=e.ash;l.targets.set(e.id,e.ash);e.ash=0;e.ashLife=0;e.stitchHold=Math.max(e.stitchHold,p.dashTime+.45);
+        l.count+=e.ash;l.freshAsh+=e.ash;l.targets.set(e.id,e.ash);e.ash=0;e.ashLife=0;e.stitchHold=Math.max(e.stitchHold,p.dashTime+.45);
         run.harvests.push({ax:e.x,ay:e.y,bx:p.x,by:p.y,life:.22});tone(620,.065,'sine',.025,1.8);
         particle(e.x,e.y,'#ffdba3',8,100,3);
       }
     }
-    run.ashes=run.ashes.filter(a=>{if(segmentDistance(a.x,a.y,ax,ay,bx,by)<p.collectWidth+12){l.count+=a.value;particle(a.x,a.y,'#ffdba3',6,80);return false;}return true;});
     for(const b of run.hostile)if(b.life>0&&segmentDistance(b.x,b.y,ax,ay,bx,by)<p.r+b.r+5){b.life=0;l.bulletsCut++;run.bulletsCleared++;particle(b.x,b.y,'#b6e6d6',3,80);}
     for(const h of run.hazards)if(h.timer>0&&segmentDistance(h.x,h.y,ax,ay,bx,by)<h.r+p.r)l.hazards.add(h);
   }
@@ -325,7 +285,7 @@
     const hp=type==='boss'?t.hp:type==='elite'?t.hp*(1+run.eliteWave*.48):t.hp*scale;
     const e={id:run.nextId++,type,x,y,hp,maxHp:hp,speed:t.speed*(type==='boss'||type==='elite'?1:1+run.time/2200),r:t.r,damage:t.damage,color:t.color,
       kx:0,ky:0,hit:0,slow:0,attack:random(.7,2),phase:random(0,TAU),dead:false,wind:0,charge:0,vx:0,vy:0,
-      ash:0,ashLife:0,seedCooldown:0,seedFlash:0,spillCooldown:0,spreadCooldown:0,stitchHold:0,wake:0};
+      ash:0,ashLife:0,seedCooldown:0,seedFlash:0,spreadCooldown:0,stitchHold:0,wake:0};
     run.enemies.push(e);if(type==='boss'||type==='elite')run.boss=e;return e;
   }
   function spawnWave(dt) {
@@ -354,10 +314,10 @@
     // Normal input always uses the cursor. Optional vectors serve deterministic simulations.
     const route=predictLeap(dx,dy);
     if(Math.hypot(route.bx-route.ax,route.by-route.ay)<1)return;
-    p.dashVx=(route.bx-route.ax)/.18;p.dashVy=(route.by-route.ay)/.18;p.dashTime=.18;
-    const carried=bonus?p.bonusStitch.fuel:0;if(bonus){p.bonusStitch=null;run.bonusLeaps++;}
+    p.dashVx=(route.bx-route.ax)/p.dashDuration;p.dashVy=(route.by-route.ay)/p.dashDuration;p.dashTime=p.dashDuration;
+    const carried=bonus?p.bonusStitch.fuel:0,depth=bonus?p.bonusStitch.depth||1:0;if(bonus){p.bonusStitch=null;if(depth===2)run.chainLeaps++;else run.bonusLeaps++;}
     p.dashTimer=p.dashCd;p.dashCycle=p.dashCd;p.dashStart={x:p.x,y:p.y};p.invuln=Math.max(p.invuln,.4);
-    run.leaps++;run.leap={count:carried,targets:new Map(),crossings:new Set(),bulletsCut:0,hazards:new Set(),route,bonus:!!bonus};
+    run.leaps++;run.leap={count:carried,freshAsh:0,bonusDepth:depth,targets:new Map(),crossings:new Set(),bulletsCut:0,hazards:new Set(),route,bonus:!!bonus};
     gatherLeap(p.x,p.y,p.x,p.y);
     tone(180,.16,'triangle',.045,3.4);
   }
@@ -365,7 +325,7 @@
     const p=run.player,a=p.dashStart;if(!a)return;p.dashStart=null;
     const leap=run.leap,count=leap.count;
     const danger=leap.crossings.size+Math.min(3,Math.floor(leap.bulletsCut/3))+Math.min(2,leap.hazards.size);
-    run.lastLeap={time:run.time,count,targets:leap.targets.size,crossings:leap.crossings.size,bulletsCut:leap.bulletsCut,danger};
+    run.lastLeap={time:run.time,count,freshAsh:leap.freshAsh,bonusDepth:leap.bonusDepth,targets:leap.targets.size,crossings:leap.crossings.size,bulletsCut:leap.bulletsCut,danger};
     run.maxStitchTargets=Math.max(run.maxStitchTargets,leap.targets.size);
     if(count){run.poweredLeaps++;if(run.onboarding.firstLeap===null)run.onboarding.firstLeap=run.time;}
     else run.dryLeaps++;
@@ -374,21 +334,28 @@
     for(const orb of run.orbs)if(segmentDistance(orb.x,orb.y,a.x,a.y,p.x,p.y)<p.stitchWidth+55){addXp(orb.value);orb.life=0;}
     run.orbs=run.orbs.filter(orb=>orb.life>0);
     if(count)p.dashTimer=Math.max(.65,p.dashTimer-Math.min(1.65,count*.075+danger*.14));
-    const combo=leap.targets.size>=3;
-    if(count&&combo){run.comboLeaps++;const recovery=4+p.stitchHeal;p.hp=Math.min(p.maxHp,p.hp+recovery);p.dashTimer=Math.max(.65,p.dashTimer-.35);floating(p.x,p.y-42,showStitchHelp()?`三重縫い · 消弾 / 耐久 +${recovery}`:'三重縫い','#87e2d3');
-      if(p.upgrades.quick&&!leap.bonus){p.bonusStitch={fuel:Math.min(9,Math.ceil(count*.5)),life:2};p.readyFlash=.4;}}
+    const combo=leap.targets.size>=3,dense=denseSpec(leap.targets.size,leap.freshAsh),fast=p.upgrades.fast||0;
+    if(fast&&leap.freshAsh)p.dashTimer=Math.max(.40,p.dashTimer-Math.min(fast===1?.55:.90,leap.freshAsh*(fast===1?.045:.075)));
+    if(combo){run.comboLeaps++;p.dashTimer=Math.max(fast?.40:.65,p.dashTimer-.35);floating(p.x,p.y-42,showStitchHelp()?'三重縫い · 広い消弾':'三重縫い','#87e2d3');}
+    if(dense.success){run.denseLeaps++;floating(p.x,p.y-42,`密縫い${dense.multiplier>1?' · 威力 +'+Math.round((dense.multiplier-1)*100)+'%':''}`,'#ffc584');}
+    Object.assign(run.lastLeap,{combo,dense:dense.success});
+    if((combo||dense.success)&&p.stitchHeal){p.hp=Math.min(p.maxHp,p.hp+p.stitchHeal);floating(p.x,p.y-64,`+${p.stitchHeal}`,'#87e2d3');}
+    if(combo&&p.upgrades.quick&&leap.bonusDepth===0){p.bonusStitch={fuel:Math.min(9,Math.ceil(count*.5)),life:2,depth:1};p.readyFlash=.4;}
+    const chain=p.upgrades.chain||0;
+    if(chain&&leap.bonusDepth===1&&leap.targets.size>=(chain===1?3:2)){
+      p.bonusStitch={fuel:Math.min(chain===1?9:12,Math.ceil(leap.freshAsh*(chain===1?.5:.65))),life:2,depth:2};p.readyFlash=.4;
+    }
     if(count)createWard(count,leap.targets.size,combo);
     p.dashCycle=p.dashTimer;
     for(const h of run.pickups)if(segmentDistance(h.x,h.y,a.x,a.y,p.x,p.y)<p.collectWidth+25){p.hp=Math.min(p.maxHp,p.hp+h.heal);h.life=0;floating(p.x,p.y-25,`+${h.heal}`,'#87e2d3');}
     run.pickups=run.pickups.filter(h=>h.life>0);
-    const line={ax:a.x,ay:a.y,bx:p.x,by:p.y,width:p.stitchWidth,count,damage:stitchDamage(count,0,danger),targets:leap.targets,danger,timer:.09,life:1.3,exploded:false,echoed:false,hitIds:new Set(),echoIds:new Set(),nodes:0,echoNodes:0,combo,progress:0,echoProgress:0};
+    const line={ax:a.x,ay:a.y,bx:p.x,by:p.y,width:p.stitchWidth,count,denseMultiplier:dense.multiplier,pointTarget:dense.success&&leap.targets.size===1?run.enemies.find(e=>leap.targets.has(e.id)):null,pointPops:0,shardShots:0,shardTargets:new Set(),damage:stitchDamage(count,0,danger)*dense.multiplier,targets:leap.targets,danger,timer:.09,life:1.3,exploded:false,echoed:false,hitIds:new Set(),echoIds:new Set(),nodes:0,echoNodes:0,combo,progress:0,echoProgress:0};
     run.stitches.push(line);
-    if(count&&p.stitchSlow)for(const e of run.enemies)if(segmentDistance(e.x,e.y,a.x,a.y,p.x,p.y)<line.width+e.r)e.slow=p.stitchSlow;
     p.invuln=Math.max(p.invuln,.22+Math.min(.18,danger*.035));run.leap=null;
   }
   function wardSpec(count,targets,combo=targets>=3) {
-    const p=run.player,radius=Math.min(280,58+Math.min(count,12)*7+Math.min(targets,5)*14+(combo?40:0)+p.wardBoost+p.stitchHeal*6.25);
-    const life=(combo?.75:.35)+Math.min(count,12)*.015+p.stitchHeal/4*.15;
+    const p=run.player,radius=Math.min(280,58+Math.min(count,12)*7+Math.min(targets,5)*14+(combo?40:0)+p.wardBoost);
+    const life=(combo?.75:.35)+Math.min(count,12)*.015+p.wardDuration;
     return {radius,life};
   }
   function createWard(count,targets,combo) {
@@ -439,7 +406,7 @@
     const p=run.player;
     for(const e of run.enemies) {
       if(e.dead)continue;e.hit=Math.max(0,e.hit-dt);e.slow=Math.max(0,e.slow-dt);
-      e.seedCooldown=Math.max(0,e.seedCooldown-dt);e.seedFlash=Math.max(0,e.seedFlash-dt);e.spillCooldown=Math.max(0,e.spillCooldown-dt);e.spreadCooldown=Math.max(0,e.spreadCooldown-dt);e.stitchHold=Math.max(0,e.stitchHold-dt);e.wake=Math.max(0,e.wake-dt);
+      e.seedCooldown=Math.max(0,e.seedCooldown-dt);e.seedFlash=Math.max(0,e.seedFlash-dt);e.spreadCooldown=Math.max(0,e.spreadCooldown-dt);e.stitchHold=Math.max(0,e.stitchHold-dt);e.wake=Math.max(0,e.wake-dt);
       if(e.ash){e.ashLife-=dt;if(e.ashLife<=0){e.ash--;e.ashLife=1.8;}}
       const dx=p.x-e.x,dy=p.y-e.y,d=Math.hypot(dx,dy)||1,nx=dx/d,ny=dy/d;
       let movement=1;
@@ -477,13 +444,15 @@
     b.guideTurn-=Math.abs(turn);b.vx=Math.cos(angle+turn)*speed;b.vy=Math.sin(angle+turn)*speed;
   }
   function updateBullets(dt,grid) {
+    const p=run.player;
     for(const b of run.bullets) {
       if(b.dead)continue;guideRicochet(b,dt);const ox=b.x,oy=b.y;b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;
       if(b.life<=0||Math.abs(b.x)>HALF+40||Math.abs(b.y)>HALF+40){b.dead=true;continue;}
       const minX=Math.floor((Math.min(ox,b.x)-60)/70),maxX=Math.floor((Math.max(ox,b.x)+60)/70),minY=Math.floor((Math.min(oy,b.y)-60)/70),maxY=Math.floor((Math.max(oy,b.y)+60)/70);
       outer:for(let gx=minX;gx<=maxX;gx++)for(let gy=minY;gy<=maxY;gy++)for(const e of grid.get(`${gx},${gy}`)||[]) {
         if(e.dead||b.hitIds.has(e.id)||segmentDistance(e.x,e.y,ox,oy,b.x,b.y)>e.r+b.r)continue;
-        b.hitIds.add(e.id);seedEnemy(e);hurtEnemy(e,b.damage,'bullet',b.vx*.005,b.vy*.005);
+        if(b.shard&&e.ash>=ashLimit(e))continue;
+        b.hitIds.add(e.id);seedEnemy(e,b.shard?1:p.ashPerHit);hurtEnemy(e,b.damage,'bullet',b.vx*.005,b.vy*.005);
         if(b.bounce>0){let target=null,near=360;const speed=Math.hypot(b.vx,b.vy);for(const o of run.enemies){const d=dist(o,e),forward=Math.abs((o.x-e.x)*b.vy/speed-(o.y-e.y)*b.vx/speed)<30;const score=d+(b.pierce>0&&forward?100:0);if(!o.dead&&!b.hitIds.has(o.id)&&d<260&&score<near){near=score;target=o;}}
           if(target){const angle=Math.atan2(target.y-e.y,target.x-e.x);run.seedLinks.push({ax:e.x,ay:e.y,bx:target.x,by:target.y,life:.2,kind:'fork'});
             if(b.pierce>0&&run.bullets.length<350){run.bullets.push({x:e.x,y:e.y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,r:7,life:Math.min(.8,b.life),damage:b.damage,pierce:0,bounce:b.bounce-1,hitIds:new Set(b.hitIds),dead:false,fork:true,guideTarget:target,guideTime:.38,guideTurn:.7});b.bounce--;}
@@ -498,11 +467,20 @@
     for(const b of run.hostile){if(b.life<=0)continue;const ox=b.x,oy=b.y;b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;const ward=run.wards.find(w=>w.life>0&&segmentDistance(w.x,w.y,ox,oy,b.x,b.y)<w.r+b.r);if(ward){absorbBullet(ward,b);continue;}if(segmentDistance(run.player.x,run.player.y,ox,oy,b.x,b.y)<b.r+run.player.r){hurtPlayer(b.damage);b.life=0;}}
     run.hostile=run.hostile.filter(b=>b.life>0&&Math.abs(b.x)<HALF+60&&Math.abs(b.y)<HALF+60);
   }
+  function scatterShards(s,x,y) {
+    const rank=run.player.upgrades.shards||0;if(!rank)return;
+    const perPoint=rank===1?2:3,range=rank===1?180:220;
+    const room=Math.max(0,Math.min(perPoint,(rank===1?6:9)-s.shardShots,36-run.bullets.filter(b=>b.shard&&!b.dead).length,350-run.bullets.length));
+    const origin={x,y},pool=run.enemies.filter(e=>!e.dead&&e.ash<ashLimit(e)&&!s.shardTargets.has(e.id)&&dist(e,origin)<=range).sort((a,b)=>dist(a,origin)-dist(b,origin)).slice(0,room);
+    for(const e of pool){const angle=Math.atan2(e.y-y,e.x-x),speed=540;s.shardTargets.add(e.id);s.shardShots++;run.shardsFired++;
+      run.bullets.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,r:4,life:(range+40)/speed,damage:.05,pierce:0,bounce:0,hitIds:new Set(),dead:false,shard:true,fork:true,guideTarget:e,guideTime:.25,guideTurn:.5});}
+  }
   function stitchImpact(s,index,echo=false) {
     const t=echo?1-index/10:index/10,x=s.ax+(s.bx-s.ax)*t,y=s.ay+(s.by-s.ay)*t;
     run.impacts.push({x,y,life:.32,max:.32,combo:s.combo,echo});
     particle(x,y,echo?'#a7e2d4':'#ffbb69',echo?5:9,echo?120:240,echo?3:5);
     particle(x,y,'#fff4d3',4,110,2);
+    if(!echo&&[0,5,10].includes(index))scatterShards(s,x,y);
     if(index===0){
       run.shake=Math.max(run.shake,s.combo?10:6);run.leapFlash=.06;
       blastSound(s.combo,echo);
@@ -542,12 +520,20 @@
         const hit=(ids,scale)=>{
           if(ids.has(e.id))return;ids.add(e.id);
           const first=s.hitIds.size===1&&!s.echoed;
-          hurtEnemy(e,stitchDamage(s.count,s.targets.get(e.id)||0,s.danger)*scale,'stitch',dx/length*65,dy/length*65);
+          hurtEnemy(e,lineDamage(s,e,scale),'stitch',dx/length*65,dy/length*65);
           particle(e.x,e.y,'#fff4d5',9,190,4);if(p.stitchSlow)e.slow=p.stitchSlow;
           if(first){run.hitStop=Math.max(run.hitStop,s.combo?.065:.045);tone(45,.16,'sine',.1,.55);}
         };
         if(distance<s.width+e.r&&fraction<=s.progress+.035)hit(s.hitIds,1);
         if(!e.dead&&s.echoed&&1-fraction<=s.echoProgress+.035)hit(s.echoIds,p.stitchEcho===1?.75:1);
+      }
+    }
+    for(const s of run.stitches){const rank=p.upgrades.point||0,e=s.pointTarget;
+      if(!rank||!e||e.dead||!s.exploded)continue;
+      const pops=rank===1?1:2;
+      while(s.pointPops<pops&&s.timer<=-(.42+s.pointPops*.22)&&!e.dead){s.pointPops++;
+        hurtEnemy(e,lineDamage(s,e,rank===1?.45:.60),'stitch');if(p.stitchSlow)e.slow=p.stitchSlow;
+        run.impacts.push({x:e.x,y:e.y,life:.32,max:.32,point:true});particle(e.x,e.y,'#ffe4c2',14,220,5);blastSound(false,false);run.shake=Math.max(run.shake,8);floating(e.x,e.y-e.r-18,'一点穿ち','#ffc584');
       }
     }
     run.stitches=run.stitches.filter(s=>s.life>0);
@@ -572,7 +558,6 @@
     if(p.dashTime<=0&&p.autoFire&&p.shotTimer<=0)shoot();
     spawnWave(dt);const grid=updateEnemies(dt);if(state!=='playing')return;
     updateBullets(dt,grid);if(state!=='playing')return;updateStitches(dt);if(state!=='playing')return;
-    for(const ash of run.ashes){ash.life-=dt;ash.hint=Math.max(0,(ash.hint||0)-dt);if(showStitchHelp()&&dist(ash,p)<26&&!ash.hint&&p.dashTime<=0){ash.hint=3;floating(ash.x,ash.y-24,'灰縫いで回収','#ffc584');}}run.ashes=run.ashes.filter(a=>a.life>0);if(run.ashes.length>300)run.ashes.splice(0,run.ashes.length-300);
     for(const o of run.orbs){o.life-=dt;const d=dist(o,p);if(d<p.magnet)o.pull=true;if(o.pull){const s=Math.min(d,520*dt);o.x+=(p.x-o.x)/(d||1)*s;o.y+=(p.y-o.y)/(d||1)*s;}if(d<20){addXp(o.value);o.life=0;tone(720,.025,'sine',.009,1.2);}}
     run.orbs=run.orbs.filter(o=>o.life>0);
     for(const h of run.pickups){h.life-=dt;const d=dist(h,p);if(d<p.magnet*.65){const s=Math.min(d,340*dt);h.x+=(p.x-h.x)/(d||1)*s;h.y+=(p.y-h.y)/(d||1)*s;}if(d<28){p.hp=Math.min(p.maxHp,p.hp+h.heal);h.life=0;floating(p.x,p.y-25,`+${h.heal}`,'#87e2d3');tone(500,.12,'triangle',.04,1.4);}}
@@ -645,6 +630,7 @@
   function drawLeapGuide() {
     if(introBlocked())return;
     const p=run.player,r=p.dashTime>0?run.leap.route:predictLeap(),ready=p.dashTimer<=0||p.dashTime>0||!!p.bonusStitch,fuel=r.ash+(p.bonusStitch?.fuel||0);
+    const dense=denseSpec(r.targets,r.ash);
     const col=r.targets>=3?'#8df1dc':fuel?'#ffc47e':'#9cbdb7',angle=Math.atan2(r.by-r.ay,r.bx-r.ax),length=Math.hypot(r.bx-r.ax,r.by-r.ay);
     ctx.save();ctx.globalAlpha=ready?.85:.32;
     line(r.ax,r.ay,r.bx,r.by,col+'10',p.collectWidth*2);
@@ -654,7 +640,8 @@
     circle(r.bx,r.by,p.r+7,col+'18',col,2);circle(r.bx,r.by,4,col);
     if(fuel&&ready&&p.dashTime<=0){ctx.setLineDash([3,8]);circle(r.bx,r.by,wardSpec(fuel,r.targets).radius,null,r.targets>=3?'#93eed444':'#9ee5dc22',1);ctx.setLineDash([]);}
     for(const e of run.enemies)if(e.ash&&!e.dead&&segmentDistance(e.x,e.y,r.ax,r.ay,r.bx,r.by)<p.collectWidth+e.r){circle(e.x,e.y,e.r+12,null,col,2);line(e.x,e.y-e.r,e.x,e.y-e.r-6,col,2);}
-    if(p.dashTime<=0&&showStitchHelp()){ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle=col;ctx.fillText(ready?(fuel?(r.targets>=3?'三重縫い · 広い消弾':p.bonusStitch?'返し縫い · 左クリック':'灰縫い · 着地で消弾'):'着地点'):'灰縫い · 準備中',r.bx,r.by-27);}
+    if(p.dashTime<=0&&showStitchHelp()){ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle=col;ctx.fillText(ready?(fuel?(r.targets>=3?'三重縫い · 広い消弾':p.bonusStitch?(p.bonusStitch.depth===2?'連環縫い · 最後の1回':'返し縫い · 左クリック'):dense.success?'密縫い · 集中炸裂':'灰縫い · 着地で消弾'):'着地点'):'灰縫い · 準備中',r.bx,r.by-27);}
+    if(!showStitchHelp()&&p.dashTime<=0&&(dense.success||r.targets>=3||p.bonusStitch)){ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillStyle=col;ctx.fillText(p.bonusStitch?(p.bonusStitch.depth===2?'連環縫い':'返し縫い'):r.targets>=3?'三重縫い':'密縫い',r.bx,r.by-27);}
     ctx.restore();
     if(showStitchHelp()&&run.onboarding.firstSeed===null&&run.time<12){const e=run.enemies.find(e=>!e.dead);if(e){circle(e.x,e.y,e.r+12,null,'#a9c0bb66',1);ctx.fillStyle='#a9c0bb';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('カーソルを重ねて仕込む',e.x,e.y-e.r-22);}}
   }
@@ -687,7 +674,6 @@
     drawLeapGuide();
     for(const w of run.wards){ctx.save();ctx.globalAlpha=Math.min(1,w.life/.22);circle(w.x,w.y,w.r,'#77eed409','#93eed455',w.combo?2:1);circle(w.x,w.y,w.r*(1-.12*w.life/w.max),null,'#b9f9dd44',2);ctx.restore();}
     for(const q of run.seedLinks){ctx.save();ctx.globalAlpha=q.life/.3;line(q.ax,q.ay,q.bx,q.by,q.kind==='spread'?'#ffba7c':'#94dfce',q.kind==='spread'?2.5:1.5);circle(q.bx,q.by,6,null,q.kind==='spread'?'#ffd69b':'#94dfce',1);ctx.restore();}
-    for(const a of run.ashes){if(!visible(a))continue;const alpha=Math.min(1,a.life/3);ctx.globalAlpha=alpha;circle(a.x,a.y,a.r+8,'#ff965218');for(let i=0;i<3;i++){const angle=a.phase+i/3*TAU;polygon(a.x+Math.cos(angle)*5,a.y+Math.sin(angle)*5,4,3,angle,'#ae7158');}circle(a.x,a.y,2+Math.sin(ambient*4+a.phase)*.5,'#ffc58c');ctx.globalAlpha=1;}
     drawStitches();
     for(const h of run.hazards){circle(h.x,h.y,h.r,'#ff5b5218','#fc796880',2);if(h.timer>0){circle(h.x,h.y,h.r*(1-h.timer/1.15),null,'#ff9e86',2);line(h.x-12,h.y,h.x+12,h.y,'#ff8e76',2);line(h.x,h.y-12,h.x,h.y+12,'#ff8e76',2);}else circle(h.x,h.y,h.r*clamp(h.life/.45,0,1),'#ff986333');}
     for(const o of run.orbs){if(!visible(o))continue;polygon(o.x,o.y,o.value>5?7:4,4,Math.PI/4,'#8ac9c5');}
@@ -746,7 +732,7 @@
   // Explicit test mode exposes mechanics for deterministic verification, never used in normal play.
   if(new URLSearchParams(location.search).has('test'))window.AshfallTest={
     start,update,spawnEnemy,hurtEnemy,hurtPlayer,startDash,endDash,seedEnemy,predictLeap,stitchDamage,addXp,chooseUpgrade,rollUpgrades,finish,goTitle,pause,resume,
-    segmentDistance,UPGRADES,TYPES,keys,mouse,drawGame,updateHud,wardSpec,assistedAngle,showRelics,selectRelic,showStitchHelp,upgradeCard,
+    segmentDistance,UPGRADES,TYPES,keys,mouse,drawGame,updateHud,wardSpec,denseSpec,pressureMultiplier,lineDamage,weight,eligible,scatterShards,assistedAngle,showRelics,selectRelic,showStitchHelp,upgradeCard,
     get run(){return run;},get state(){return state;},get meta(){return meta;},get audioState(){return audio?.state;},seed(v){seed=v||1;},
     step(seconds){for(let t=0;t<seconds;t+=1/60)update(Math.min(1/60,seconds-t));},
     apply(id){const u=UPGRADES.find(u=>u.id===id);if(!u)throw new Error(id);u.apply(run.player);run.player.upgrades[id]=(run.player.upgrades[id]||0)+1;updateBuild();updateHud();}

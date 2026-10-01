@@ -7,6 +7,7 @@ function engine({intro=false,source=null,savedMeta=null}={}) {
   const storage=savedMeta?{'ashfall.v1':JSON.stringify(savedMeta)}:{};
   const sandbox={console,Math,Date,Set,Map,URLSearchParams,innerWidth:1280,innerHeight:720,devicePixelRatio:1,location:{search:'?test'},performance:{now:()=>0},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:element,addEventListener(){},documentElement:{}},addEventListener(name,fn){events.window[name]=fn;},requestAnimationFrame(){}};
   sandbox.window=sandbox;
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'..','upgrades.js'),'utf8'),sandbox,{filename:'upgrades.js'});
   vm.runInNewContext(source||fs.readFileSync(path.join(__dirname,'..','game.js'),'utf8'),sandbox,{filename:'game.js'});
   const a=sandbox.AshfallTest;a.start();a.seed(123456);
   if(!intro){a.run.enemies=[];a.run.spawnTimer=100;a.run.player.autoFire=false;a.run.onboarding.disabled=true;}

@@ -1,8 +1,9 @@
 {
-  "version": "0.5",
+  "version": "0.6",
   "date": "2026-10-01",
   "browser": "Edg/154.0.4258.48",
-  "sourceSHA256": "f70c06b4d5c48cabda1c9e59c4988a8ff6f068436bf4c35b02e586a0f77743d6",
+  "upgradesSHA256": "2758b96d032b3522d7abd8fb46433e5502bbc2806fa4a5a1d3746e4f5acc91e1",
+  "sourceSHA256": "4944bd9fbd4580fbb5e68ee6ac599f855a17a55418b6b4c99fa01fa24010355e",
   "passed": [
     "normal build starts with consistent player terminology",
     "title/help navigation",
@@ -24,10 +25,11 @@
     "1024x640 relic selection panel and Escape navigation",
     "1024x640 title/upgrade layout",
     "compact coach and route HUD",
-    "dense existing-enemy/fuel rendering",
+    "dense existing-enemy/shard rendering",
     "all selectable card ranks, real acquisition, staged explanations, moving ricochet and action-derived result records",
     "separate rendered harvest, windup, traveling front and final blast phases",
     "rendered landing protection, bonus stitch, reverse echo, branch and contagion",
+    "v0.6 dense, propagation, bounded shards, short routes and capped chain scenes",
     "landing wards preserve existing and newly created boss ground warnings and damage",
     "truthful intro readiness and compact cards with live synergy hints",
     "direct file startup with truthful introduction availability",
@@ -35,8 +37,8 @@
   ],
   "runtimeErrors": 0,
   "clarity": {
-    "ranksTested": 36,
-    "actualChoice": "heal",
+    "ranksTested": 55,
+    "actualChoice": "heavy",
     "beginner": [
       "灰縫い · 着地で消弾"
     ],
@@ -113,7 +115,7 @@
       "ash": 9,
       "nodes": 0,
       "progress": 0,
-      "hp": 74
+      "hp": 70
     },
     "front": {
       "time": 0.39,
@@ -122,7 +124,7 @@
       "ash": 9,
       "nodes": 5,
       "progress": 0.48809523809523814,
-      "hp": 74
+      "hp": 70
     },
     "finish": {
       "time": 0.5700000000000002,
@@ -131,7 +133,7 @@
       "ash": 9,
       "nodes": 11,
       "progress": 1,
-      "hp": 74
+      "hp": 70
     }
   },
   "flow": {
@@ -148,9 +150,10 @@
       "cleared": 2,
       "bonus": {
         "fuel": 5,
-        "life": 1.9833333333333334
+        "life": 1.9833333333333334,
+        "depth": 1
       },
-      "hp": 68,
+      "hp": 64,
       "hazards": [
         {
           "hit": false,
@@ -174,15 +177,88 @@
       ],
       "marks": [
         5,
-        2,
-        2,
+        1,
+        1,
         0
       ]
     }
   },
+  "builds": {
+    "densePreview": {
+      "route": {
+        "ax": 0,
+        "ay": 0,
+        "bx": 310,
+        "by": 0,
+        "ash": 9,
+        "targets": 1,
+        "danger": 1
+      },
+      "success": {
+        "success": true,
+        "multiplier": 1.35
+      },
+      "bossAsh": 9
+    },
+    "dense": {
+      "last": {
+        "time": 0.18333333333333332,
+        "count": 9,
+        "freshAsh": 9,
+        "bonusDepth": 0,
+        "targets": 1,
+        "crossings": 1,
+        "bulletsCut": 0,
+        "danger": 1,
+        "combo": false,
+        "dense": true
+      },
+      "damage": 1123.605,
+      "pops": 1,
+      "slow": 1.3833333333333337
+    },
+    "spread": {
+      "shots": 6,
+      "inFlight": 0,
+      "combo": 1,
+      "bonus": {
+        "fuel": 5,
+        "life": 1.6833333333333345,
+        "depth": 1
+      },
+      "sideAsh": 2
+    },
+    "token": {
+      "fuel": 4,
+      "life": 2,
+      "depth": 2,
+      "route": {
+        "ax": 0,
+        "ay": 0,
+        "bx": 248,
+        "by": 0,
+        "ash": 0,
+        "targets": 0,
+        "danger": 3
+      },
+      "hud": "連環縫い"
+    },
+    "chain": {
+      "leaps": 3,
+      "returns": 1,
+      "chains": 1,
+      "bonus": null,
+      "distance": 248
+    },
+    "tags": [
+      "拡散",
+      "濃縮",
+      "連続"
+    ]
+  },
   "groundAttacks": {
     "landing": {
-      "hp": 110,
+      "hp": 100,
       "wardActive": true,
       "cleared": 2,
       "bullets": 1,
@@ -230,7 +306,7 @@
       ]
     },
     "warning": {
-      "hp": 110,
+      "hp": 100,
       "wardActive": true,
       "cleared": 2,
       "bullets": 1,
@@ -278,7 +354,7 @@
       ]
     },
     "impact": {
-      "hp": 86,
+      "hp": 76,
       "wardActive": true,
       "cleared": 2,
       "bullets": 1,
@@ -360,41 +436,44 @@
   },
   "naturalInput": {
     "goalSeconds": 420,
-    "wallSeconds": 434.74,
+    "wallSeconds": 437.009,
     "upgradesChosen": 12,
-    "time": 420.02740000024005,
-    "hp": 130,
-    "kills": 855,
+    "time": 420.08240000008226,
+    "hp": 73,
+    "kills": 853,
     "level": 13,
     "bosses": 2,
-    "poweredLeaps": 205,
-    "comboLeaps": 10,
-    "bonusLeaps": 6,
-    "maxStitchTargets": 5,
-    "bulletsCleared": 104,
+    "poweredLeaps": 203,
+    "denseLeaps": 38,
+    "chainLeaps": 0,
+    "shardsFired": 0,
+    "comboLeaps": 23,
+    "bonusLeaps": 19,
+    "maxStitchTargets": 4,
+    "bulletsCleared": 120,
     "upgrades": {
       "pierce": 2,
-      "scatter": 2,
-      "echo": 2,
       "ricochet": 1,
-      "quick": 2,
+      "propagation": 3,
+      "dense": 1,
+      "width": 2,
+      "quick": 1,
       "vital": 1,
-      "heavy": 1,
-      "width": 1
+      "scatter": 1
     },
     "damageTotals": {
-      "bullet": 4202.176453667213,
-      "stitch": 46558.63774311633
+      "bullet": 2031.4474051999327,
+      "stitch": 48681.25314113545
     },
-    "stitchDamageShare": 0.9172161337409461,
+    "stitchDamageShare": 0.9599420385166861,
     "onboarding": {
       "stage": 2,
       "introduced": true,
       "disabled": false,
-      "firstSeed": 1.6018999999999997,
-      "firstLeap": 2.823299999999995,
-      "firstKill": 3.0247999999999937,
-      "completeAt": 3.0247999999999937
+      "firstSeed": 1.6162999999999987,
+      "firstLeap": 2.9827999999999966,
+      "firstKill": 3.182899999999996,
+      "completeAt": 3.182899999999996
     }
   },
   "limits": "Automated real-time input and visual inspection; not a human playtest. Relic/effects/stress/victory/layout tests use explicit test state setup."
