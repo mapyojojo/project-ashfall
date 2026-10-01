@@ -1,30 +1,35 @@
 {
-  "version": "0.3",
+  "version": "0.4",
   "date": "2026-10-01",
   "browser": "Chromium headless shell 1243",
   "passed": [
     "normal build starts with consistent player terminology",
     "title/help navigation",
+    "four relic choices show locked costs, selection, persistence and actual loadout",
     "player click activates local audio",
+    "enemy-free automatic shots precede the safe encounter; reflex click cannot waste the first stitch",
     "real shots create visible ash before any kill",
     "left click overrides held WASD, harvests ash and reaches preview endpoint",
     "opening cycle completes within first minute without state injection",
     "pause/resume stops game time",
     "preparation defaults on and can be paused",
-    "five game minutes through actual keyboard/mouse input",
+    "420 game seconds through actual keyboard/mouse input",
     "natural upgrade choices through number keys",
     "natural damage is dominated by ash stitch",
     "title/restart reset cycle statistics",
     "existing final boss transition",
     "victory screen",
     "death and restart",
+    "1024x640 relic selection panel and Escape navigation",
     "1024x640 title/upgrade layout",
     "compact coach and route HUD",
     "dense existing-enemy/fuel rendering",
     "satellite amplifies shot-marked enemies only",
     "separate rendered harvest, windup, traveling front and final blast phases",
+    "rendered landing protection, bonus stitch, reverse echo, branch and contagion",
     "direct file startup",
-    "zero JavaScript runtime exceptions"
+    "zero JavaScript runtime exceptions",
+    "truthful intro readiness and compact cards with live synergy hints"
   ],
   "runtimeErrors": 0,
   "phases": {
@@ -44,16 +49,16 @@
       "ash": 9,
       "nodes": 0,
       "progress": 0,
-      "hp": 72
+      "hp": 74
     },
     "front": {
       "time": 0.39,
-      "kills": 1,
+      "kills": 2,
       "harvests": 0,
       "ash": 9,
       "nodes": 5,
       "progress": 0.48809523809523814,
-      "hp": 72
+      "hp": 74
     },
     "finish": {
       "time": 0.5700000000000002,
@@ -62,31 +67,92 @@
       "ash": 9,
       "nodes": 11,
       "progress": 1,
-      "hp": 72
+      "hp": 74
+    }
+  },
+  "flow": {
+    "landing": {
+      "ward": {
+        "x": 310,
+        "y": 0,
+        "r": 228,
+        "life": 1.0183333333333333,
+        "max": 1.035,
+        "combo": true,
+        "cleared": 2
+      },
+      "cleared": 2,
+      "bonus": {
+        "fuel": 5,
+        "life": 1.9833333333333334
+      },
+      "hp": 68,
+      "hazards": [
+        true
+      ]
+    },
+    "returning": {
+      "bonusLeaps": 1,
+      "powered": 2,
+      "bonus": null,
+      "count": 5
+    },
+    "propagation": {
+      "forks": 1,
+      "links": [
+        "fork",
+        "spread",
+        "spread"
+      ],
+      "marks": [
+        5,
+        2,
+        2,
+        0
+      ]
     }
   },
   "naturalInput": {
-    "goalSeconds": 300,
-    "wallSeconds": 308.551,
-    "upgradesChosen": 7,
-    "time": 300.1013000000553,
-    "hp": 110,
-    "kills": 303,
-    "level": 8,
-    "poweredLeaps": 143,
+    "goalSeconds": 420,
+    "wallSeconds": 433.8,
+    "upgradesChosen": 12,
+    "time": 420.11310000008234,
+    "hp": 130,
+    "kills": 864,
+    "level": 13,
+    "bosses": 2,
+    "poweredLeaps": 245,
+    "comboLeaps": 16,
+    "bonusLeaps": 16,
+    "bulletsCleared": 122,
+    "upgrades": {
+      "pierce": 3,
+      "quick": 3,
+      "heal": 2,
+      "scatter": 2,
+      "width": 1,
+      "vital": 1
+    },
     "damageTotals": {
-      "bullet": 779.1820260333247,
-      "stitch": 15826.269325300433,
+      "bullet": 2595.655232366726,
+      "stitch": 48803.30813152439,
       "orbit": 0
     },
-    "stitchDamageShare": 0.9530767330831545,
+    "stitchDamageShare": 0.9494998524777597,
     "onboarding": {
       "stage": 2,
-      "firstSeed": 0.23340000000000002,
-      "firstLeap": 1.0666000000000002,
-      "firstKill": 1.2665999999999995,
-      "completeAt": 1.2665999999999995
+      "introduced": true,
+      "disabled": false,
+      "firstSeed": 1.6165999999999991,
+      "firstLeap": 2.9831999999999965,
+      "firstKill": 3.183199999999996,
+      "completeAt": 3.183199999999996
     }
   },
-  "limits": "Automated real-time input and visual inspection; not a human playtest. Effects/stress/victory/layout tests use explicit test state setup."
+  "limits": "Automated real-time input and visual inspection; not a human playtest. Relic/effects/stress/victory/layout tests use explicit test state setup.",
+  "finalUiCheck": {
+    "sourceSHA256": "36fcdb5a8e856b6f7c29711b94873dc0add83ad1f28dd939f84b491fb6efa436",
+    "runtimeErrors": 0,
+    "method": "Fresh final source reload; actual intro click, compact synergy layout, effect and flow scenes, direct-file launch after small display refinements. Natural seven-minute combat above was preserved."
+  }
 }

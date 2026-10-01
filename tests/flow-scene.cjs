@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict');
+// State setup here isolates visuals and earned effects; natural input is tested separately.
+module.exports=async function flowScene({evaluate,shot}){
+ const init=`const a=AshfallTest;a.start();a.seed(20261004);a.run.onboarding.disabled=true;a.run.enemies=[];a.run.spawnTimer=100;a.run.player.autoFire=false;a.mouse.active=false;a.run.player.aim=0;`;
+ const freeze=async expression=>evaluate(`(()=>{const a=AshfallTest;if(a.state==='paused')a.resume();${expression};a.pause();document.getElementById('pause').hidden=true;a.updateHud();a.drawGame();})()`);
+ await evaluate(`(()=>{${init}a.apply('quick');a.apply('echo');a.apply('heal');a.run.player.hp=60;for(const x of [80,170,260]){const e=a.spawnEnemy('brute',x,0);e.hp=e.maxHp=2000;e.speed=0;e.wake=1000;a.seedEnemy(e,3);}for(const [x,y] of [[400,70],[360,-100],[550,200]])a.run.hostile.push({x,y,vx:0,vy:0,r:5,damage:10,life:7});a.run.hazards.push({x:350,y:80,r:45,timer:1,life:2,damage:24,hit:false});a.startDash(1,0);a.pause();})()`);
+ await freeze('a.step(.2)');const landing=await evaluate('({ward:AshfallTest.run.wards[0],cleared:AshfallTest.run.bulletsCleared,bonus:AshfallTest.run.player.bonusStitch,hp:AshfallTest.run.player.hp,hazards:AshfallTest.run.hazards.map(h=>h.cancelled)})');
+ assert.equal(landing.cleared,2);assert.ok(landing.ward.combo&&landing.bonus.fuel===5);assert.equal(landing.hp,68);assert.equal(landing.hazards[0],true);await shot('flow-landing.png');
+ await freeze('a.step(.67)');assert.ok(await evaluate('AshfallTest.run.stitches[0].echoed'));await shot('flow-reverse-echo.png');
+ await freeze('a.startDash(-1,0);a.step(.36)');const returning=await evaluate('({bonusLeaps:AshfallTest.run.bonusLeaps,powered:AshfallTest.run.poweredLeaps,bonus:AshfallTest.run.player.bonusStitch,count:AshfallTest.run.stitches[1].count})');assert.equal(returning.bonusLeaps,1);assert.equal(returning.count,5);assert.equal(returning.bonus,null);await shot('flow-return.png');
+ await evaluate(`(()=>{${init}a.apply('pierce');a.apply('ricochet');a.apply('heavy');for(const [x,y] of [[140,0],[260,0],[170,95],[250,-85]]){const e=a.spawnEnemy('brute',x,y);e.speed=0;e.wake=1000;}a.run.player.autoFire=true;a.step(.14);const e=a.run.enemies[0];e.seedCooldown=0;a.seedEnemy(e,5);a.pause();document.getElementById('pause').hidden=true;a.updateHud();a.drawGame();})()`);
+ const propagation=await evaluate('({forks:AshfallTest.run.bullets.filter(b=>b.fork).length,links:AshfallTest.run.seedLinks.map(l=>l.kind),marks:AshfallTest.run.enemies.map(e=>e.ash)})');assert.ok(propagation.forks>0&&propagation.links.includes('fork')&&propagation.links.includes('spread'));await shot('flow-synergy.png');
+ await freeze('a.run.player.autoFire=false;a.run.enemies=[];a.run.bullets=[];a.run.seedLinks=[];a.run.texts=[];a.run.player.dashTimer=1;a.run.player.dashCycle=2;a.run.player.bonusStitch=null');await shot('cooldown-half.png');
+ await freeze('a.step(1.01)');assert.ok(await evaluate('AshfallTest.run.player.readyFlash>0'));await shot('cooldown-ready.png');
+ return {landing,returning,propagation};
+};

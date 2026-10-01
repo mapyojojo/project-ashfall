@@ -9,7 +9,7 @@ function engine({intro=false,source=null}={}) {
   sandbox.window=sandbox;
   vm.runInNewContext(source||fs.readFileSync(path.join(__dirname,'..','game.js'),'utf8'),sandbox,{filename:'game.js'});
   const a=sandbox.AshfallTest;a.start();a.seed(123456);
-  if(!intro){a.run.enemies=[];a.run.spawnTimer=100;a.run.player.autoFire=false;}
-  a.events=events;return a;
+  if(!intro){a.run.enemies=[];a.run.spawnTimer=100;a.run.player.autoFire=false;a.run.onboarding.disabled=true;}
+  a.events=events;a.elements=elements;return a;
 }
 module.exports={engine};
