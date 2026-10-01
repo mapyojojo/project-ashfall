@@ -338,7 +338,8 @@
     if(fast&&leap.freshAsh)p.dashTimer=Math.max(.40,p.dashTimer-Math.min(fast===1?.55:.90,leap.freshAsh*(fast===1?.045:.075)));
     if(combo){run.comboLeaps++;p.dashTimer=Math.max(fast?.40:.65,p.dashTimer-.35);floating(p.x,p.y-42,showStitchHelp()?'三重縫い · 広い消弾':'三重縫い','#87e2d3');}
     if(dense.success){run.denseLeaps++;floating(p.x,p.y-42,`密縫い${dense.multiplier>1?' · 威力 +'+Math.round((dense.multiplier-1)*100)+'%':''}`,'#ffc584');}
-    Object.assign(run.lastLeap,{combo,dense:dense.success});
+    const feedback=combo?'triple':dense.success?'dense':'normal';
+    Object.assign(run.lastLeap,{combo,dense:dense.success,feedback});
     if((combo||dense.success)&&p.stitchHeal){p.hp=Math.min(p.maxHp,p.hp+p.stitchHeal);floating(p.x,p.y-64,`+${p.stitchHeal}`,'#87e2d3');}
     if(combo&&p.upgrades.quick&&leap.bonusDepth===0){p.bonusStitch={fuel:Math.min(9,Math.ceil(count*.5)),life:2,depth:1};p.readyFlash=.4;}
     const chain=p.upgrades.chain||0;
@@ -350,6 +351,8 @@
     for(const h of run.pickups)if(segmentDistance(h.x,h.y,a.x,a.y,p.x,p.y)<p.collectWidth+25){p.hp=Math.min(p.maxHp,p.hp+h.heal);h.life=0;floating(p.x,p.y-25,`+${h.heal}`,'#87e2d3');}
     run.pickups=run.pickups.filter(h=>h.life>0);
     const line={ax:a.x,ay:a.y,bx:p.x,by:p.y,width:p.stitchWidth,count,denseMultiplier:dense.multiplier,pointTarget:dense.success&&leap.targets.size===1?run.enemies.find(e=>leap.targets.has(e.id)):null,pointPops:0,shardShots:0,shardTargets:new Set(),damage:stitchDamage(count,0,danger)*dense.multiplier,targets:leap.targets,danger,timer:.09,life:1.3,exploded:false,echoed:false,hitIds:new Set(),echoIds:new Set(),nodes:0,echoNodes:0,combo,progress:0,echoProgress:0};
+    line.feedback=feedback;
+    line.feedbackMultiplier=dense.multiplier*Math.max(1,...Array.from(leap.targets.values(),ash=>pressureMultiplier(ash)));
     run.stitches.push(line);
     p.invuln=Math.max(p.invuln,.22+Math.min(.18,danger*.035));run.leap=null;
   }
@@ -368,6 +371,8 @@
   }
   function absorbBullet(w,b) {
     if(b.life<=0)return;b.life=0;w.cleared++;run.bulletsCleared++;particle(b.x,b.y,'#9ee5dc',2,60,2);
+    // Procedural light only: never consume combat RNG or crowd the particle pool.
+    if(w.combo&&run.impacts.filter(q=>q.clear).length<24)run.impacts.push({x:b.x,y:b.y,life:.22,max:.22,feedback:'triple',clear:true});
   }
   function updateWards(dt) {
     // Only moving projectiles belong to this protection; ground telegraphs keep their timers.
@@ -475,26 +480,38 @@
     for(const e of pool){const angle=Math.atan2(e.y-y,e.x-x),speed=540;s.shardTargets.add(e.id);s.shardShots++;run.shardsFired++;
       run.bullets.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,r:4,life:(range+40)/speed,damage:.05,pierce:0,bounce:0,hitIds:new Set(),dead:false,shard:true,fork:true,guideTarget:e,guideTime:.25,guideTurn:.5});}
   }
+  function feedbackSpec(kind,multiplier=1) {
+    const strength=kind==='dense'?clamp((multiplier-1)/2,0,1):0;
+    return {kind,strength,color:kind==='triple'?'#93eed4':kind==='dense'?'#ffb473':'#ffd194',
+      hitStop:kind==='dense'?.070+strength*.018:kind==='triple'?.065:.045,
+      shake:kind==='dense'?7+strength:kind==='triple'?10:6,
+      radius:30+strength*8,sparks:8+Math.round(strength*4),
+      bass:kind==='dense'?58-strength*6:kind==='triple'?180:72,
+      slide:kind==='triple'?1.8:kind==='dense'?.32:.38,
+      noise:kind==='dense'?.10+strength*.02:kind==='triple'?.075:.13};
+  }
   function stitchImpact(s,index,echo=false) {
     const t=echo?1-index/10:index/10,x=s.ax+(s.bx-s.ax)*t,y=s.ay+(s.by-s.ay)*t;
-    run.impacts.push({x,y,life:.32,max:.32,combo:s.combo,echo});
-    particle(x,y,echo?'#a7e2d4':'#ffbb69',echo?5:9,echo?120:240,echo?3:5);
-    particle(x,y,'#fff4d3',4,110,2);
+    const feedback=s.feedback||'normal';
+    run.impacts.push({x,y,life:.32,max:.32,combo:s.combo,feedback,echo,index,angle:Math.atan2(s.by-s.ay,s.bx-s.ax),strength:feedbackSpec(feedback,s.feedbackMultiplier).strength});
+    particle(x,y,echo?'#a7e2d4':feedback==='triple'?'#8ee9da':feedback==='dense'?'#a56c4466':'#ffbb69',echo?5:9,echo?120:feedback==='dense'?100:240,echo?3:feedback==='dense'?3:5);
+    particle(x,y,feedback==='triple'?'#dffff4':'#fff4d3',4,110,2);
     if(!echo&&[0,5,10].includes(index))scatterShards(s,x,y);
     if(index===0){
-      run.shake=Math.max(run.shake,s.combo?10:6);run.leapFlash=.06;
-      blastSound(s.combo,echo);
-    }else if(index%3===0)tone(90+index*9,.09,'triangle',.025,.35);
+      run.shake=Math.max(run.shake,feedbackSpec(feedback,s.feedbackMultiplier).shake);run.leapFlash=feedback==='normal'?.06:0;
+      blastSound(feedback,echo,s.feedbackMultiplier);
+    }else if(index%3===0)tone(feedback==='triple'?280+index*12:90+index*9,.09,'triangle',feedback==='dense'?.012:.025,feedback==='triple'?1.4:.35);
   }
-  function blastSound(combo,echo) {
-    tone(echo?100:combo?55:72,.32,'sine',echo?.08:.14,.38);
-    tone(140,.17,'triangle',echo?.035:.07,.3);
+  function blastSound(kind='normal',echo=false,multiplier=1) {
+    const f=feedbackSpec(kind,multiplier);
+    tone(echo?100:f.bass,kind==='dense'?.26:.32,'sine',echo?.08:kind==='dense'?.13+f.strength*.025:kind==='triple'?.065:.14,echo?.38:f.slide);
+    tone(kind==='triple'?420:kind==='dense'?185:140,kind==='dense'?.10:.17,'triangle',echo?.035:kind==='triple'?.045:.07,kind==='triple'?1.65:.3);
     if(!soundOn||!audio||audio.state!=='running')return;
     const length=Math.floor(audio.sampleRate*.22),buffer=audio.createBuffer(1,length,audio.sampleRate),data=buffer.getChannelData(0);
     // Sound uses a separate random source, so audio settings never alter gameplay.
     for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,3);
     const noise=audio.createBufferSource(),filter=audio.createBiquadFilter(),gain=audio.createGain();
-    noise.buffer=buffer;filter.type='lowpass';filter.frequency.value=combo?900:700;gain.gain.value=echo?.06:.13;
+    noise.buffer=buffer;filter.type=kind==='triple'?'bandpass':'lowpass';filter.frequency.value=kind==='triple'?1500:kind==='dense'?480:700;gain.gain.value=echo?.06:f.noise;
     noise.connect(filter);filter.connect(gain);gain.connect(audio.destination);noise.start();
   }
   function updateStitches(dt) {
@@ -521,8 +538,10 @@
           if(ids.has(e.id))return;ids.add(e.id);
           const first=s.hitIds.size===1&&!s.echoed;
           hurtEnemy(e,lineDamage(s,e,scale),'stitch',dx/length*65,dy/length*65);
-          particle(e.x,e.y,'#fff4d5',9,190,4);if(p.stitchSlow)e.slow=p.stitchSlow;
-          if(first){run.hitStop=Math.max(run.hitStop,s.combo?.065:.045);tone(45,.16,'sine',.1,.55);}
+          const focus=s.feedback==='dense'&&ids===s.hitIds&&s.targets.has(e.id),f=feedbackSpec(s.feedback,s.denseMultiplier*pressureMultiplier(s.targets.get(e.id)||0));
+          particle(e.x,e.y,'#fff4d5',9,focus?110:190,4);if(p.stitchSlow)e.slow=p.stitchSlow;
+          if(focus)run.impacts.push({x:e.x,y:e.y,life:.32,max:.32,feedback:'dense',focus:true,strength:f.strength});
+          if(first){run.hitStop=Math.max(run.hitStop,f.hitStop);tone(s.feedback==='triple'?220:45,.16,'sine',s.feedback==='triple'?.04:.1,s.feedback==='triple'?1.6:.55);}
         };
         if(distance<s.width+e.r&&fraction<=s.progress+.035)hit(s.hitIds,1);
         if(!e.dead&&s.echoed&&1-fraction<=s.echoProgress+.035)hit(s.echoIds,p.stitchEcho===1?.75:1);
@@ -533,7 +552,7 @@
       const pops=rank===1?1:2;
       while(s.pointPops<pops&&s.timer<=-(.42+s.pointPops*.22)&&!e.dead){s.pointPops++;
         hurtEnemy(e,lineDamage(s,e,rank===1?.45:.60),'stitch');if(p.stitchSlow)e.slow=p.stitchSlow;
-        run.impacts.push({x:e.x,y:e.y,life:.32,max:.32,point:true});particle(e.x,e.y,'#ffe4c2',14,220,5);blastSound(false,false);run.shake=Math.max(run.shake,8);floating(e.x,e.y-e.r-18,'一点穿ち','#ffc584');
+        run.impacts.push({x:e.x,y:e.y,life:.32,max:.32,point:true,feedback:'point'});particle(e.x,e.y,'#ffe4c2',14,220,5);blastSound('normal');run.shake=Math.max(run.shake,8);floating(e.x,e.y-e.r-18,'一点穿ち','#ffc584');
       }
     }
     run.stitches=run.stitches.filter(s=>s.life>0);
@@ -552,7 +571,13 @@
     if(mouse.active)p.aim=Math.atan2(mouse.y-H/2+run.camY-p.y,mouse.x-W/2+run.camX-p.x);
     updateIntroduction();updateWards(dt);
     if(run.leapRequested){run.leapRequested=false;startDash();}
-    if(p.dashTime>0){const ax=p.x,ay=p.y,t=Math.min(dt,p.dashTime);p.x+=p.dashVx*t;p.y+=p.dashVy*t;run.trails.push({x:p.x,y:p.y,aim:p.aim,life:.22});p.dashTime=Math.max(0,p.dashTime-t);particle(p.x,p.y,run.leap.count?'#ffd09a':'#aac6b5',2,40,4);p.x=clamp(p.x,-HALF+20,HALF-20);p.y=clamp(p.y,-HALF+20,HALF-20);gatherLeap(ax,ay,p.x,p.y);if(p.dashTime<1e-8){p.dashTime=0;p.x=run.leap.route.bx;p.y=run.leap.route.by;endDash();}}
+    if(p.dashTime>0){
+      const ax=p.x,ay=p.y,t=Math.min(dt,p.dashTime),route=run.leap.route,feedback=route.targets>=3?'triple':denseSpec(route.targets,route.ash).success?'dense':'normal';
+      p.x+=p.dashVx*t;p.y+=p.dashVy*t;run.trails.push({x:p.x,y:p.y,aim:p.aim,life:.22,feedback});p.dashTime=Math.max(0,p.dashTime-t);
+      particle(p.x,p.y,feedback==='triple'?'#93eed4':run.leap.count?'#ffd09a':'#aac6b5',2,40,4);
+      p.x=clamp(p.x,-HALF+20,HALF-20);p.y=clamp(p.y,-HALF+20,HALF-20);gatherLeap(ax,ay,p.x,p.y);
+      if(p.dashTime<1e-8){p.dashTime=0;p.x=run.leap.route.bx;p.y=run.leap.route.by;endDash();}
+    }
     else if(dx||dy){const len=Math.hypot(dx,dy);p.x+=dx/len*p.speed*dt;p.y+=dy/len*p.speed*dt;p.walk+=dt*12;}
     p.x=clamp(p.x,-HALF+20,HALF-20);p.y=clamp(p.y,-HALF+20,HALF-20);
     if(p.dashTime<=0&&p.autoFire&&p.shotTimer<=0)shoot();
@@ -631,7 +656,7 @@
     if(introBlocked())return;
     const p=run.player,r=p.dashTime>0?run.leap.route:predictLeap(),ready=p.dashTimer<=0||p.dashTime>0||!!p.bonusStitch,fuel=r.ash+(p.bonusStitch?.fuel||0);
     const dense=denseSpec(r.targets,r.ash);
-    const col=r.targets>=3?'#8df1dc':fuel?'#ffc47e':'#9cbdb7',angle=Math.atan2(r.by-r.ay,r.bx-r.ax),length=Math.hypot(r.bx-r.ax,r.by-r.ay);
+    const col=r.targets>=3?'#8df1dc':dense.success?'#ffb473':fuel?'#ffc47e':'#9cbdb7',angle=Math.atan2(r.by-r.ay,r.bx-r.ax),length=Math.hypot(r.bx-r.ax,r.by-r.ay);
     ctx.save();ctx.globalAlpha=ready?.85:.32;
     line(r.ax,r.ay,r.bx,r.by,col+'10',p.collectWidth*2);
     ctx.setLineDash([9,7]);line(r.ax,r.ay,r.bx,r.by,col,ready?2:1);ctx.setLineDash([]);
@@ -648,20 +673,54 @@
   function drawStitches() {
     ctx.save();ctx.lineCap='round';
     for(const s of run.stitches){
-      const alpha=clamp(s.life*2,0,1),col=s.combo?'#93eed4':'#ffd194';ctx.globalAlpha=alpha;
+      const alpha=clamp(s.life*2,0,1),col=feedbackSpec(s.feedback).color;ctx.globalAlpha=alpha;
       line(s.ax,s.ay,s.bx,s.by,s.count?col+'19':'#89a39644',s.count?s.width*2:2);
       if(!s.count)continue;
       // Unlit fuse glows tightly before a white hot front walks from origin to destination.
-      line(s.ax,s.ay,s.bx,s.by,'#ffbd7866',10);line(s.ax,s.ay,s.bx,s.by,'#ffe7ba',s.exploded?1.5:3.5);
+      line(s.ax,s.ay,s.bx,s.by,s.feedback==='normal'?'#ffbd7866':col+'66',10);line(s.ax,s.ay,s.bx,s.by,s.feedback==='triple'?'#dbfff2':'#ffe7ba',s.exploded?1.5:3.5);
       const bx=s.ax+(s.bx-s.ax)*s.progress,by=s.ay+(s.by-s.ay)*s.progress;
-      if(s.exploded){line(s.ax,s.ay,bx,by,col+'44',24);line(s.ax,s.ay,bx,by,col,4);}
+      if(s.exploded){line(s.ax,s.ay,bx,by,col+'44',s.feedback==='dense'?12:24);line(s.ax,s.ay,bx,by,col,4);}
       if(s.echoed){const ex=s.bx+(s.ax-s.bx)*s.echoProgress,ey=s.by+(s.ay-s.by)*s.echoProgress;line(s.bx,s.by,ex,ey,'#a6f9e233',run.player.stitchEcho>=2?s.width*2.7:26);line(s.bx,s.by,ex,ey,'#bfffe6',5);}
       if(!s.exploded){circle(s.ax,s.ay,9+Math.sin(ambient*45)*3,col+'55',col,2);circle(s.bx,s.by,18,null,col+'99',2);}
     }
-    for(const q of run.trails){ctx.globalAlpha=q.life/.22*.4;polygon(q.x,q.y,16,3,q.aim+Math.PI,'#c8eadc');}
+    for(const q of run.trails){ctx.globalAlpha=q.life/.22*.4;polygon(q.x,q.y,16,3,q.aim+Math.PI,q.feedback==='dense'?'#ffd194':q.feedback==='triple'?'#93eed4':'#c8eadc');}
     for(const q of run.harvests){ctx.globalAlpha=q.life/.22;const t=1-q.life/.22,x=q.ax+(q.bx-q.ax)*t,y=q.ay+(q.by-q.ay)*t;line(q.ax,q.ay,x,y,'#ffcc8855',2);circle(x,y,4,'#fff0c2');}
+    ctx.restore();drawStitchImpacts();
+  }
+  function drawStitchImpacts(foreground=false) {
+    ctx.save();
     for(const q of run.impacts){
+      if(!!(q.focus||q.point)!==foreground)continue;
       const t=1-q.life/q.max,col=q.echo||q.combo?'#9eeddb':'#ffbf73';ctx.globalAlpha=(1-t)*(1-t);
+      if(q.clear){
+        circle(q.x,q.y,4+t*18,null,'#bdfff0',1.5);
+        line(q.x-5-t*8,q.y,q.x-2,q.y,'#93eed4',2);line(q.x+2,q.y,q.x+5+t*8,q.y,'#93eed4',2);continue;
+      }
+      if(q.point){
+        // A delayed, outward puncture remains distinct from the main inward compression.
+        polygon(q.x,q.y,9+t*27,4,Math.PI/4,null,'#ffe4c2');
+        line(q.x,q.y-24-t*14,q.x,q.y+24+t*14,'#fff4df',2);
+        circle(q.x,q.y,6+t*12,'#ffb47344');continue;
+      }
+      if(!q.echo&&q.feedback==='dense'){
+        if(!q.focus){circle(q.x,q.y,6*(1-t),'#ffc48066');continue;}
+        const f=feedbackSpec('dense',1+(q.strength||0)*2),r=f.radius*(1-t)+8;
+        ctx.save();ctx.translate(q.x+Math.sin(t*57)*(1-t)*2.5,q.y+Math.cos(t*63)*(1-t)*1.5);
+        circle(0,0,r,'#ff9c501a','#ffb473',2.5);circle(0,0,r*.65,null,'#ffe9c7',1.5);
+        // Fixed spokes avoid any interaction with combat RNG or the shared particle cap.
+        for(let i=0;i<f.sparks;i++){const a=i/f.sparks*TAU+.25,outer=r+12*(1-t),inner=r*.55;
+          line(Math.cos(a)*outer,Math.sin(a)*outer,Math.cos(a)*inner,Math.sin(a)*inner,'#ffcf97',1.8);}
+        if(t<.32){ctx.globalAlpha=(1-t/.32)*.9;circle(0,0,9*(1-t/.32),'#fff8ec');line(-25*(1-t),0,25*(1-t),0,'#fff3dd',3);}
+        ctx.restore();continue;
+      }
+      if(!q.echo&&q.feedback==='triple'){
+        ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.angle);
+        if(q.index%5===0){ctx.beginPath();ctx.ellipse(0,0,24+t*34,14+t*66,0,0,TAU);ctx.strokeStyle='#9eeddb';ctx.lineWidth=2.5;ctx.stroke();
+          line(0,-12-t*58,0,-20-t*66,'#d4fff3',2);line(0,12+t*58,0,20+t*66,'#d4fff3',2);}
+        circle(0,0,9+t*16,'#93eed426');
+        if(t<.3){ctx.globalAlpha=(1-t/.3)*.7;line(-18,0,18,0,'#e6fff6',2);}
+        ctx.restore();continue;
+      }
       circle(q.x,q.y,12+t*58,col+'15',col,2.5);circle(q.x,q.y,8+t*22,'#ffe1a555');
       if(t<.35){ctx.globalAlpha=(1-t/.35)*.85;circle(q.x,q.y,16*(1-t/.35),'#fff8de');line(q.x-26,q.y,q.x+26,q.y,'#fff0c8',2);line(q.x,q.y-24,q.x,q.y+24,'#fff0c8',2);}
     }
@@ -672,7 +731,9 @@
     drawFloor(cx,cy);ctx.save();ctx.translate(W/2-cx,H/2-cy);
     const visible=o=>Math.abs(o.x-cx)<W/2+100&&Math.abs(o.y-cy)<H/2+100;
     drawLeapGuide();
-    for(const w of run.wards){ctx.save();ctx.globalAlpha=Math.min(1,w.life/.22);circle(w.x,w.y,w.r,'#77eed409','#93eed455',w.combo?2:1);circle(w.x,w.y,w.r*(1-.12*w.life/w.max),null,'#b9f9dd44',2);ctx.restore();}
+    for(const w of run.wards){ctx.save();ctx.globalAlpha=Math.min(1,w.life/.22);circle(w.x,w.y,w.r,w.combo?'#77eed410':'#77eed409',w.combo?'#93eed488':'#93eed455',w.combo?2.5:1);circle(w.x,w.y,w.r*(1-.12*w.life/w.max),null,'#b9f9dd44',2);
+      if(w.combo){const birth=clamp((w.max-w.life)/.28,0,1);ctx.globalAlpha=(1-birth)*.65;circle(w.x,w.y,w.r*birth,null,'#c6fff0',3);}
+      ctx.restore();}
     for(const q of run.seedLinks){ctx.save();ctx.globalAlpha=q.life/.3;line(q.ax,q.ay,q.bx,q.by,q.kind==='spread'?'#ffba7c':'#94dfce',q.kind==='spread'?2.5:1.5);circle(q.bx,q.by,6,null,q.kind==='spread'?'#ffd69b':'#94dfce',1);ctx.restore();}
     drawStitches();
     for(const h of run.hazards){circle(h.x,h.y,h.r,'#ff5b5218','#fc796880',2);if(h.timer>0){circle(h.x,h.y,h.r*(1-h.timer/1.15),null,'#ff9e86',2);line(h.x-12,h.y,h.x+12,h.y,'#ff8e76',2);line(h.x,h.y-12,h.x,h.y+12,'#ff8e76',2);}else circle(h.x,h.y,h.r*clamp(h.life/.45,0,1),'#ff986333');}
@@ -681,6 +742,7 @@
     for(const e of run.enemies)if(visible(e))drawEnemy(e);
     for(const b of run.bullets){line(b.x-b.vx*.009,b.y-b.vy*.009,b.x,b.y,b.fork?'#94dfce':'#8caaa7',b.fork?2:1.5);circle(b.x,b.y,b.fork?2.5:1.5,b.fork?'#c4f8df':'#bdd0c6');}
     for(const b of run.hostile){circle(b.x,b.y,b.r+3,'#ff71822a');circle(b.x,b.y,b.r,'#e98694');circle(b.x,b.y,2,'#ffe6d7');}
+    drawStitchImpacts(true);
     drawPlayer(run.player);
     for(const q of run.particles){ctx.globalAlpha=clamp(q.life/q.max,0,1);circle(q.x,q.y,q.size,q.color);}ctx.globalAlpha=1;
     ctx.textAlign='center';ctx.font='bold 13px sans-serif';for(const t of run.texts){ctx.globalAlpha=clamp(t.life*2,0,1);ctx.fillStyle=t.color;ctx.fillText(t.text,t.x,t.y);}ctx.globalAlpha=1;
@@ -732,7 +794,7 @@
   // Explicit test mode exposes mechanics for deterministic verification, never used in normal play.
   if(new URLSearchParams(location.search).has('test'))window.AshfallTest={
     start,update,spawnEnemy,hurtEnemy,hurtPlayer,startDash,endDash,seedEnemy,predictLeap,stitchDamage,addXp,chooseUpgrade,rollUpgrades,finish,goTitle,pause,resume,
-    segmentDistance,UPGRADES,TYPES,keys,mouse,drawGame,updateHud,wardSpec,denseSpec,pressureMultiplier,lineDamage,weight,eligible,scatterShards,assistedAngle,showRelics,selectRelic,showStitchHelp,upgradeCard,
+    segmentDistance,UPGRADES,TYPES,keys,mouse,drawGame,updateHud,wardSpec,denseSpec,pressureMultiplier,lineDamage,feedbackSpec,blastSound,weight,eligible,scatterShards,assistedAngle,showRelics,selectRelic,showStitchHelp,upgradeCard,
     get run(){return run;},get state(){return state;},get meta(){return meta;},get audioState(){return audio?.state;},seed(v){seed=v||1;},
     step(seconds){for(let t=0;t<seconds;t+=1/60)update(Math.min(1/60,seconds-t));},
     apply(id){const u=UPGRADES.find(u=>u.id===id);if(!u)throw new Error(id);u.apply(run.player);run.player.upgrades[id]=(run.player.upgrades[id]||0)+1;updateBuild();updateHud();}

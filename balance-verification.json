@@ -4,7 +4,7 @@
   "eligibleAttackUpgrades": 19,
   "method": "deterministic accelerated simulation; current main v0.5 baseline; normal HP/damage and XP; exact route knowledge; dense bot waits for 6 ash on strong targets; no added fuel/XP/invulnerability; different strategies are not a controlled difficulty or fun comparison",
   "upgradesSHA256": "2758b96d032b3522d7abd8fb46433e5502bbc2806fa4a5a1d3746e4f5acc91e1",
-  "sourceSHA256": "4944bd9fbd4580fbb5e68ee6ac599f855a17a55418b6b4c99fa01fa24010355e",
+  "sourceSHA256": "6adeb101026e809856644758668fa82a56062c483fafedee0ab3219af20f73f1",
   "results": [
     {
       "version": "main baseline",

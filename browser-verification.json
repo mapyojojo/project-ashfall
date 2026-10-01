@@ -3,7 +3,7 @@
   "date": "2026-10-01",
   "browser": "Edg/154.0.4258.48",
   "upgradesSHA256": "2758b96d032b3522d7abd8fb46433e5502bbc2806fa4a5a1d3746e4f5acc91e1",
-  "sourceSHA256": "4944bd9fbd4580fbb5e68ee6ac599f855a17a55418b6b4c99fa01fa24010355e",
+  "sourceSHA256": "6adeb101026e809856644758668fa82a56062c483fafedee0ab3219af20f73f1",
   "passed": [
     "normal build starts with consistent player terminology",
     "title/help navigation",
@@ -211,7 +211,8 @@
         "bulletsCut": 0,
         "danger": 1,
         "combo": false,
-        "dense": true
+        "dense": true,
+        "feedback": "dense"
       },
       "damage": 1123.605,
       "pops": 1,
@@ -436,44 +437,43 @@
   },
   "naturalInput": {
     "goalSeconds": 420,
-    "wallSeconds": 437.009,
+    "wallSeconds": 438.326,
     "upgradesChosen": 12,
-    "time": 420.08240000008226,
-    "hp": 73,
-    "kills": 853,
+    "time": 420.13320000008264,
+    "hp": 63.187577499995186,
+    "kills": 830,
     "level": 13,
     "bosses": 2,
-    "poweredLeaps": 203,
-    "denseLeaps": 38,
+    "poweredLeaps": 212,
+    "denseLeaps": 46,
     "chainLeaps": 0,
     "shardsFired": 0,
-    "comboLeaps": 23,
-    "bonusLeaps": 19,
+    "comboLeaps": 17,
+    "bonusLeaps": 13,
     "maxStitchTargets": 4,
-    "bulletsCleared": 120,
+    "bulletsCleared": 110,
     "upgrades": {
-      "pierce": 2,
-      "ricochet": 1,
-      "propagation": 3,
-      "dense": 1,
-      "width": 2,
+      "pierce": 3,
       "quick": 1,
-      "vital": 1,
-      "scatter": 1
+      "ricochet": 2,
+      "frost": 2,
+      "scatter": 2,
+      "echo": 1,
+      "width": 1
     },
     "damageTotals": {
-      "bullet": 2031.4474051999327,
-      "stitch": 48681.25314113545
+      "bullet": 4780.078273800632,
+      "stitch": 46044.850760535286
     },
-    "stitchDamageShare": 0.9599420385166861,
+    "stitchDamageShare": 0.9059501239918831,
     "onboarding": {
       "stage": 2,
       "introduced": true,
       "disabled": false,
-      "firstSeed": 1.6162999999999987,
-      "firstLeap": 2.9827999999999966,
-      "firstKill": 3.182899999999996,
-      "completeAt": 3.182899999999996
+      "firstSeed": 1.6165999999999987,
+      "firstLeap": 2.933199999999997,
+      "firstKill": 3.1331999999999973,
+      "completeAt": 3.1331999999999973
     }
   },
   "limits": "Automated real-time input and visual inspection; not a human playtest. Relic/effects/stress/victory/layout tests use explicit test state setup."
