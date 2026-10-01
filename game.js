@@ -367,14 +367,14 @@
     for(const b of run.hostile)if(b.life>0&&dist(w,b)<radius+b.r)absorbBullet(w,b);
     run.hostile=run.hostile.filter(b=>b.life>0);
     for(const e of run.enemies)if(!e.dead&&dist(w,e)<radius+e.r){const d=dist(w,e)||1;e.kx+=(e.x-w.x)/d*80;e.ky+=(e.y-w.y)/d*80;e.slow=Math.max(e.slow,.6);if(e.type!=='boss'&&e.type!=='elite'){e.stitchHold=Math.max(e.stitchHold,.25);e.charge=0;}}
-    if(combo)for(const h of run.hazards)if(!h.hit&&dist(w,h)<radius){h.hit=true;h.cancelled=true;h.life=.25;particle(h.x,h.y,'#9de6d6',8,100,3);}
     tone(combo?380:300,.16,'sine',.025,1.6);
   }
   function absorbBullet(w,b) {
     if(b.life<=0)return;b.life=0;w.cleared++;run.bulletsCleared++;particle(b.x,b.y,'#9ee5dc',2,60,2);
   }
   function updateWards(dt) {
-    for(const w of run.wards){w.life-=dt;if(w.life<=0)continue;for(const b of run.hostile)if(b.life>0&&dist(w,b)<w.r+b.r)absorbBullet(w,b);if(w.combo)for(const h of run.hazards)if(!h.hit&&dist(w,h)<w.r){h.hit=true;h.cancelled=true;h.life=.25;}}
+    // Only moving projectiles belong to this protection; ground telegraphs keep their timers.
+    for(const w of run.wards){w.life-=dt;if(w.life<=0)continue;for(const b of run.hostile)if(b.life>0&&dist(w,b)<w.r+b.r)absorbBullet(w,b);}
     run.wards=run.wards.filter(w=>w.life>0);
   }
   function assistedAngle(angle) {
@@ -651,7 +651,7 @@
     for(const q of run.seedLinks){ctx.save();ctx.globalAlpha=q.life/.3;line(q.ax,q.ay,q.bx,q.by,q.kind==='spread'?'#ffba7c':'#94dfce',q.kind==='spread'?2.5:1.5);circle(q.bx,q.by,6,null,q.kind==='spread'?'#ffd69b':'#94dfce',1);ctx.restore();}
     for(const a of run.ashes){if(!visible(a))continue;const alpha=Math.min(1,a.life/3);ctx.globalAlpha=alpha;circle(a.x,a.y,a.r+8,'#ff965218');for(let i=0;i<3;i++){const angle=a.phase+i/3*TAU;polygon(a.x+Math.cos(angle)*5,a.y+Math.sin(angle)*5,4,3,angle,'#ae7158');}circle(a.x,a.y,2+Math.sin(ambient*4+a.phase)*.5,'#ffc58c');ctx.globalAlpha=1;}
     drawStitches();
-    for(const h of run.hazards){if(h.cancelled){circle(h.x,h.y,h.r,null,'#93eed466',1);continue;}circle(h.x,h.y,h.r,'#ff5b5218','#fc796880',2);if(h.timer>0){circle(h.x,h.y,h.r*(1-h.timer/1.15),null,'#ff9e86',2);line(h.x-12,h.y,h.x+12,h.y,'#ff8e76',2);line(h.x,h.y-12,h.x,h.y+12,'#ff8e76',2);}else circle(h.x,h.y,h.r*clamp(h.life/.45,0,1),'#ff986333');}
+    for(const h of run.hazards){circle(h.x,h.y,h.r,'#ff5b5218','#fc796880',2);if(h.timer>0){circle(h.x,h.y,h.r*(1-h.timer/1.15),null,'#ff9e86',2);line(h.x-12,h.y,h.x+12,h.y,'#ff8e76',2);line(h.x,h.y-12,h.x,h.y+12,'#ff8e76',2);}else circle(h.x,h.y,h.r*clamp(h.life/.45,0,1),'#ff986333');}
     for(const o of run.orbs){if(!visible(o))continue;polygon(o.x,o.y,o.value>5?7:4,4,Math.PI/4,'#8ac9c5');}
     for(const h of run.pickups){if(!visible(h))continue;circle(h.x,h.y,12,'#264c44','#84e2b4',1);line(h.x-5,h.y,h.x+5,h.y,'#b5f7d3',3);line(h.x,h.y-5,h.x,h.y+5,'#b5f7d3',3);}
     for(const e of run.enemies)if(visible(e))drawEnemy(e);

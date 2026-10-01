@@ -1,0 +1,232 @@
+{
+  "version": "0.4",
+  "change": "Landing wards clear flying projectiles only; ground attacks keep warning, lifetime and damage.",
+  "date": "2026-10-01T07:33:12.765Z",
+  "sourceSHA256": "88c98afeddf04dae6c70b0fe48fd209313972bdd71a6d5b31ed847014ebbce9e",
+  "runtimeErrors": 0,
+  "groundAttacks": {
+    "landing": {
+      "hp": 110,
+      "wardActive": true,
+      "cleared": 2,
+      "bullets": 1,
+      "hazards": [
+        {
+          "x": 310,
+          "y": 0,
+          "timer": 0.9490000000000003,
+          "life": 1.399000000000001,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 359.44271909999156,
+          "y": 152.16904260722455,
+          "timer": 0.9490000000000003,
+          "life": 1.399000000000001,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 180.55728090000844,
+          "y": 94.04564036679572,
+          "timer": 0.9490000000000003,
+          "life": 1.399000000000001,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 180.55728090000838,
+          "y": -94.04564036679568,
+          "timer": 0.9490000000000003,
+          "life": 1.399000000000001,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 359.44271909999156,
+          "y": -152.16904260722458,
+          "timer": 0.9490000000000003,
+          "life": 1.399000000000001,
+          "hit": false,
+          "damage": 24
+        }
+      ]
+    },
+    "warning": {
+      "hp": 110,
+      "wardActive": true,
+      "cleared": 2,
+      "bullets": 1,
+      "hazards": [
+        {
+          "x": 310,
+          "y": 0,
+          "timer": 0.4489999999999989,
+          "life": 0.8990000000000018,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 359.44271909999156,
+          "y": 152.16904260722455,
+          "timer": 0.4489999999999989,
+          "life": 0.8990000000000018,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 180.55728090000844,
+          "y": 94.04564036679572,
+          "timer": 0.4489999999999989,
+          "life": 0.8990000000000018,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 180.55728090000838,
+          "y": -94.04564036679568,
+          "timer": 0.4489999999999989,
+          "life": 0.8990000000000018,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 359.44271909999156,
+          "y": -152.16904260722458,
+          "timer": 0.4489999999999989,
+          "life": 0.8990000000000018,
+          "hit": false,
+          "damage": 24
+        }
+      ]
+    },
+    "impact": {
+      "hp": 86,
+      "wardActive": true,
+      "cleared": 2,
+      "bullets": 1,
+      "hazards": [
+        {
+          "x": 310,
+          "y": 0,
+          "timer": -0.05100000000000106,
+          "life": 0.3990000000000006,
+          "hit": true,
+          "damage": 24
+        },
+        {
+          "x": 359.44271909999156,
+          "y": 152.16904260722455,
+          "timer": -0.05100000000000106,
+          "life": 0.3990000000000006,
+          "hit": true,
+          "damage": 24
+        },
+        {
+          "x": 180.55728090000844,
+          "y": 94.04564036679572,
+          "timer": -0.05100000000000106,
+          "life": 0.3990000000000006,
+          "hit": true,
+          "damage": 24
+        },
+        {
+          "x": 180.55728090000838,
+          "y": -94.04564036679568,
+          "timer": -0.05100000000000106,
+          "life": 0.3990000000000006,
+          "hit": true,
+          "damage": 24
+        },
+        {
+          "x": 359.44271909999156,
+          "y": -152.16904260722458,
+          "timer": -0.05100000000000106,
+          "life": 0.3990000000000006,
+          "hit": true,
+          "damage": 24
+        }
+      ]
+    },
+    "added": {
+      "hp": 110,
+      "wardActive": true,
+      "cleared": 0,
+      "bullets": 0,
+      "hazards": [
+        {
+          "x": 310,
+          "y": 0,
+          "timer": 0.25,
+          "life": 0.7999999999999994,
+          "hit": false,
+          "damage": 16
+        }
+      ]
+    },
+    "addedImpact": {
+      "hp": 94,
+      "wardActive": true,
+      "cleared": 0,
+      "bullets": 0,
+      "hazards": [
+        {
+          "x": 310,
+          "y": 0,
+          "timer": -0.009999999999999988,
+          "life": 0.5399999999999986,
+          "hit": true,
+          "damage": 16
+        }
+      ]
+    }
+  },
+  "flow": {
+    "landing": {
+      "ward": {
+        "x": 310,
+        "y": 0,
+        "r": 228,
+        "life": 1.0183333333333333,
+        "max": 1.035,
+        "combo": true,
+        "cleared": 2
+      },
+      "cleared": 2,
+      "bonus": {
+        "fuel": 5,
+        "life": 1.9833333333333334
+      },
+      "hp": 68,
+      "hazards": [
+        {
+          "hit": false,
+          "timer": 0.7999999999999994,
+          "life": 1.8000000000000007
+        }
+      ]
+    },
+    "returning": {
+      "bonusLeaps": 1,
+      "powered": 2,
+      "bonus": null,
+      "count": 5
+    },
+    "propagation": {
+      "forks": 1,
+      "links": [
+        "fork",
+        "spread",
+        "spread"
+      ],
+      "marks": [
+        5,
+        2,
+        2,
+        0
+      ]
+    }
+  },
+  "limits": "Short, explicitly set up browser scenes. No new seven-minute natural-input run."
+}

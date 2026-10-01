@@ -197,10 +197,29 @@ test('landing ward clears nearby bullets, intercepts fast incoming bullets, then
  a.run.hostile.push(bullet(500,0,-25000));a.update(.01);assert.equal(a.run.bulletsCleared,2);assert.equal(a.run.player.hp,110);
  a.step(.6);assert.equal(a.run.wards.length,0);a.run.player.invuln=0;a.run.hostile.push(bullet(a.run.player.x,a.run.player.y));a.update(.001);assert.equal(a.run.player.hp,105);
 });
-test('three marked foes neutralize landing hazards; single and dry stitches do not',()=>{
+test('ground telegraphs survive triple, single and dry stitches without shortening their warning',()=>{
  function scenario(n){const a=engine();for(const x of [80,170,260].slice(0,n))mark(a,foe(a,'crawler',x),1);const h={x:340,y:80,r:55,timer:1,life:2,hit:false,damage:24};a.run.hazards.push(h);a.startDash(1,0);a.step(.2);return {a,h};}
- const triple=scenario(3);assert.equal(triple.h.cancelled,true);assert.equal(triple.a.run.player.hp,110);
- assert.equal(scenario(1).h.hit,false);assert.equal(scenario(0).h.hit,false);
+ for(const n of [0,1,3]){const {a,h}=scenario(n);assert.equal(a.run.hazards.length,1);assert.equal(h.hit,false);assert.ok(Math.abs(h.timer-.8)<.001&&Math.abs(h.life-1.8)<.001);a.step(.3);assert.equal(h.hit,false);assert.ok(Math.abs(h.timer-.5)<.001);}
+});
+test('a new ground warning inside an active ward still detonates and damages after dash invulnerability',()=>{
+ const a=engine();for(const x of [80,170,260])mark(a,foe(a,'crawler',x),3);a.startDash(1,0);a.step(.2);
+ const h={x:a.run.player.x,y:a.run.player.y,r:82,timer:.45,life:1,hit:false,damage:24};a.run.hazards.push(h);a.step(.46);
+ assert.ok(a.run.wards.length>0);assert.equal(h.hit,true);assert.equal(a.run.player.hp,98);const hp=a.run.player.hp;a.step(.1);assert.equal(a.run.player.hp,hp);
+});
+test('actual guardian and furnace area attacks remain intact inside an upgraded triple ward',()=>{
+ for(const type of ['elite','boss']){
+  const a=engine();a.apply('heal');a.apply('heal');a.run.player.x=310;const boss=foe(a,type,-500,400);boss.phase=1;boss.attack=0;a.update(.001);
+  const warnings=Array.from(a.run.hazards);assert.equal(warnings.length,type==='elite'?3:5);a.run.player.x=0;
+  for(const x of [80,170,260])mark(a,foe(a,'crawler',x),3);a.startDash(1,0);a.step(.2);
+  assert.ok(warnings.every(h=>!h.hit&&h.timer>.9));assert.equal(a.run.hazards.length,warnings.length);
+  a.step(1);assert.ok(a.run.wards.length>0);assert.ok(warnings.every(h=>h.hit));assert.equal(a.run.player.hp,type==='elite'?102:98);
+ }
+});
+test('guardian and furnace flying rings are still cleared by the landing ward',()=>{
+ for(const type of ['elite','boss']){
+  const a=engine();const boss=foe(a,type,400,100);boss.phase=0;boss.attack=0;a.update(.001);assert.equal(a.run.hostile.length,type==='elite'?12:16);
+  for(const x of [80,170,260])mark(a,foe(a,'crawler',x),3);a.startDash(1,0);a.step(.2);assert.equal(a.run.hostile.length,0);assert.ok(a.run.bulletsCleared>0);
+ }
 });
 test('a recovery upgrade extends both landing safety and earned healing',()=>{
  const a=engine();const base=a.wardSpec(9,3);a.apply('heal');const rank1=a.wardSpec(9,3);a.apply('heal');const rank2=a.wardSpec(9,3);
