@@ -69,12 +69,10 @@ test('bosses store more ash, supporting preparation without extra enemies',()=>{
 test('kills do not supply infinite free ash for leap-only play',()=>{
  const a=engine(),e=foe(a);mark(a,e);a.startDash(1,0);a.step(.4);assert.ok(e.dead);assert.equal(a.run.ashes.length,0);
 });
-test('satellites prepare foes rather than bypassing the core loop',()=>{
- const a=engine(),e=foe(a,'brute',85);a.apply('orbit');a.update(.001);assert.equal(e.ash,0);a.seedEnemy(e,1);a.update(.1);assert.equal(e.ash,2);assert.equal(e.hp,e.maxHp);assert.equal(a.run.damageTotals.orbit,0);
-});
-test('satellites cannot start a leap-only fuel loop without a shot',()=>{
- const a=engine();for(let i=0;i<3;i++)a.apply('orbit');for(const x of [80,130,190])foe(a,'brute',x);a.startDash(1,0);a.step(1);
- assert.equal(a.run.ashUsed,0);assert.equal(a.run.poweredLeaps,0);assert.equal(a.run.kills,0);assert.ok(a.run.enemies.every(e=>e.ash===0));
+test('retired satellites are absent from choices; saved gear indices keep their identity',()=>{
+ const a=engine({savedMeta:{marks:30,relic:2,wins:2,runs:5}});assert.equal(a.meta.relic,0);assert.equal(a.meta.marks,30);assert.equal(a.meta.wins,2);assert.equal(a.run.player.hp,110);
+ assert.ok(a.UPGRADES.every(u=>u.id!=='orbit'));a.selectRelic(2);assert.equal(a.meta.relic,0);a.showRelics();assert.ok(!a.elements.get('relicChoices').innerHTML.includes('衛星'));
+ const b=engine({savedMeta:{marks:30,relic:3}});assert.equal(b.meta.relic,3);assert.equal(b.run.player.shots,2);assert.equal(b.run.player.fireRate,.18*1.12);
 });
 test('burning stitch hits a late entrant once, not every frame',()=>{
  const a=engine();mark(a,foe(a));a.startDash(1,0);a.step(.4);const e=foe(a,'brute',140);e.hp=e.maxHp=500;a.update(.01);const hp=e.hp;assert.ok(hp<500);a.update(.01);assert.equal(e.hp,hp);
@@ -241,7 +239,7 @@ test('full dense ash spreads to nearby foes, with bounded non-recursive contagio
  const a=engine();a.apply('heavy');const source=foe(a,'brute',140),b=foe(a,'brute',160,40),c=foe(a,'brute',170,-40),far=foe(a,'brute',400,0);
  mark(a,source,4);assert.equal(b.ash,0);source.seedCooldown=0;mark(a,source,1);assert.equal(b.ash,2);assert.equal(c.ash,2);assert.equal(far.ash,0);assert.equal(a.run.seedLinks.length,2);
  source.seedCooldown=0;mark(a,source,1);assert.equal(b.ash,2);assert.equal(a.run.seedLinks.length,2);
- const unseeded=engine();unseeded.apply('heavy');unseeded.apply('orbit');const e=foe(unseeded,'brute',85);unseeded.step(1);assert.equal(e.ash,0);
+ const unseeded=engine();unseeded.apply('heavy');const e=foe(unseeded,'brute',85);unseeded.step(1);assert.equal(e.ash,0);
 });
 test('dense contagion and ground overflow coexist on the same full foe',()=>{
  const a=engine();a.apply('heavy');a.apply('spill');const e=foe(a,'brute'),b=foe(a,'brute',170,40);mark(a,e,5);e.seedCooldown=0;mark(a,e,1);
@@ -256,7 +254,7 @@ test('ricochet without piercing still redirects to a second foe',()=>{
  const a=engine();a.apply('ricochet');const first=foe(a),side=foe(a,'brute',170,100);a.run.player.autoFire=true;a.update(.18);a.run.player.autoFire=false;a.step(.3);assert.ok(first.ash>0&&side.ash>0);
 });
 test('extreme preparation combinations stay bounded and never replace the main attack',()=>{
- const a=engine();for(const id of ['scatter','pierce','ricochet','rapid','heavy','spill','orbit'])for(let i=0;i<3;i++)a.apply(id);
+ const a=engine();for(const id of ['scatter','pierce','ricochet','rapid','heavy','spill'])for(let i=0;i<3;i++)a.apply(id);
  for(let i=0;i<60;i++){const e=foe(a,'brute',50+(i%12)*45,(Math.floor(i/12)-2)*25);e.wake=1000;}a.run.player.autoFire=true;a.step(5);
  assert.equal(a.run.kills,0);assert.ok(a.run.bullets.length<450);assert.ok(a.run.seedLinks.length<=200);assert.ok(a.run.particles.length<=650);assert.ok(a.run.enemies.every(e=>e.ash<=a.run.player.ashCap));
 });
@@ -292,3 +290,4 @@ test('restart resets wards, branches and earned bonus attacks',()=>{
  const a=engine();a.apply('quick');for(const x of [80,170,260])mark(a,foe(a,'crawler',x));a.startDash(1,0);a.step(.2);assert.ok(a.run.wards.length&&a.run.player.bonusStitch);a.start();assert.equal(a.run.wards.length,0);assert.equal(a.run.seedLinks.length,0);assert.equal(a.run.player.bonusStitch,null);assert.equal(a.run.bulletsCleared,0);
 });
 console.log(`\n${passed} mechanical tests passed.`);
+require('./clarity.cjs');

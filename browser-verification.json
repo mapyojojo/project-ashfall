@@ -1,11 +1,12 @@
 {
-  "version": "0.4",
+  "version": "0.5",
   "date": "2026-10-01",
-  "browser": "Chromium headless shell 1243",
+  "browser": "Edg/154.0.4258.48",
+  "sourceSHA256": "f70c06b4d5c48cabda1c9e59c4988a8ff6f068436bf4c35b02e586a0f77743d6",
   "passed": [
     "normal build starts with consistent player terminology",
     "title/help navigation",
-    "four relic choices show locked costs, selection, persistence and actual loadout",
+    "three relic choices show locked costs, selection, persistence and actual loadout",
     "player click activates local audio",
     "enemy-free automatic shots precede the safe encounter; reflex click cannot waste the first stitch",
     "real shots create visible ash before any kill",
@@ -24,14 +25,77 @@
     "1024x640 title/upgrade layout",
     "compact coach and route HUD",
     "dense existing-enemy/fuel rendering",
-    "satellite amplifies shot-marked enemies only",
+    "all selectable card ranks, real acquisition, staged explanations, moving ricochet and action-derived result records",
     "separate rendered harvest, windup, traveling front and final blast phases",
     "rendered landing protection, bonus stitch, reverse echo, branch and contagion",
-    "direct file startup",
-    "zero JavaScript runtime exceptions",
-    "truthful intro readiness and compact cards with live synergy hints"
+    "landing wards preserve existing and newly created boss ground warnings and damage",
+    "truthful intro readiness and compact cards with live synergy hints",
+    "direct file startup with truthful introduction availability",
+    "zero JavaScript runtime exceptions"
   ],
   "runtimeErrors": 0,
+  "clarity": {
+    "ranksTested": 36,
+    "actualChoice": "heal",
+    "beginner": [
+      "灰縫い · 着地で消弾"
+    ],
+    "learned": {
+      "powered": 3,
+      "help": false,
+      "coach": true,
+      "route": true
+    },
+    "experienced": [],
+    "moving": [
+      {
+        "piercing": false,
+        "guided": false,
+        "sideAsh": 0,
+        "columnAsh": 0,
+        "kills": 0
+      },
+      {
+        "piercing": false,
+        "guided": true,
+        "sideAsh": 1,
+        "columnAsh": 0,
+        "kills": 0
+      },
+      {
+        "piercing": true,
+        "guided": false,
+        "sideAsh": 0,
+        "columnAsh": 1,
+        "kills": 0
+      },
+      {
+        "piercing": true,
+        "guided": true,
+        "sideAsh": 1,
+        "columnAsh": 1,
+        "kills": 0
+      }
+    ],
+    "result": {
+      "max": 3,
+      "triples": 1,
+      "returns": 1,
+      "cleared": 3,
+      "values": [
+        3,
+        1,
+        1,
+        3
+      ],
+      "labels": [
+        "最大同時灰縫い",
+        "三重縫い",
+        "返し縫い",
+        "消した敵弾"
+      ]
+    }
+  },
   "phases": {
     "collected": {
       "time": 0.08,
@@ -88,7 +152,11 @@
       },
       "hp": 68,
       "hazards": [
-        true
+        {
+          "hit": false,
+          "timer": 0.7999999999999994,
+          "life": 1.8000000000000007
+        }
       ]
     },
     "returning": {
@@ -112,47 +180,222 @@
       ]
     }
   },
+  "groundAttacks": {
+    "landing": {
+      "hp": 110,
+      "wardActive": true,
+      "cleared": 2,
+      "bullets": 1,
+      "hazards": [
+        {
+          "x": 310,
+          "y": 0,
+          "timer": 0.9490000000000003,
+          "life": 1.399000000000001,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 359.44271909999156,
+          "y": 152.16904260722455,
+          "timer": 0.9490000000000003,
+          "life": 1.399000000000001,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 180.55728090000844,
+          "y": 94.04564036679572,
+          "timer": 0.9490000000000003,
+          "life": 1.399000000000001,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 180.55728090000838,
+          "y": -94.04564036679568,
+          "timer": 0.9490000000000003,
+          "life": 1.399000000000001,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 359.44271909999156,
+          "y": -152.16904260722458,
+          "timer": 0.9490000000000003,
+          "life": 1.399000000000001,
+          "hit": false,
+          "damage": 24
+        }
+      ]
+    },
+    "warning": {
+      "hp": 110,
+      "wardActive": true,
+      "cleared": 2,
+      "bullets": 1,
+      "hazards": [
+        {
+          "x": 310,
+          "y": 0,
+          "timer": 0.4489999999999989,
+          "life": 0.8990000000000018,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 359.44271909999156,
+          "y": 152.16904260722455,
+          "timer": 0.4489999999999989,
+          "life": 0.8990000000000018,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 180.55728090000844,
+          "y": 94.04564036679572,
+          "timer": 0.4489999999999989,
+          "life": 0.8990000000000018,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 180.55728090000838,
+          "y": -94.04564036679568,
+          "timer": 0.4489999999999989,
+          "life": 0.8990000000000018,
+          "hit": false,
+          "damage": 24
+        },
+        {
+          "x": 359.44271909999156,
+          "y": -152.16904260722458,
+          "timer": 0.4489999999999989,
+          "life": 0.8990000000000018,
+          "hit": false,
+          "damage": 24
+        }
+      ]
+    },
+    "impact": {
+      "hp": 86,
+      "wardActive": true,
+      "cleared": 2,
+      "bullets": 1,
+      "hazards": [
+        {
+          "x": 310,
+          "y": 0,
+          "timer": -0.05100000000000106,
+          "life": 0.3990000000000006,
+          "hit": true,
+          "damage": 24
+        },
+        {
+          "x": 359.44271909999156,
+          "y": 152.16904260722455,
+          "timer": -0.05100000000000106,
+          "life": 0.3990000000000006,
+          "hit": true,
+          "damage": 24
+        },
+        {
+          "x": 180.55728090000844,
+          "y": 94.04564036679572,
+          "timer": -0.05100000000000106,
+          "life": 0.3990000000000006,
+          "hit": true,
+          "damage": 24
+        },
+        {
+          "x": 180.55728090000838,
+          "y": -94.04564036679568,
+          "timer": -0.05100000000000106,
+          "life": 0.3990000000000006,
+          "hit": true,
+          "damage": 24
+        },
+        {
+          "x": 359.44271909999156,
+          "y": -152.16904260722458,
+          "timer": -0.05100000000000106,
+          "life": 0.3990000000000006,
+          "hit": true,
+          "damage": 24
+        }
+      ]
+    },
+    "added": {
+      "hp": 110,
+      "wardActive": true,
+      "cleared": 0,
+      "bullets": 0,
+      "hazards": [
+        {
+          "x": 310,
+          "y": 0,
+          "timer": 0.25,
+          "life": 0.7999999999999994,
+          "hit": false,
+          "damage": 16
+        }
+      ]
+    },
+    "addedImpact": {
+      "hp": 94,
+      "wardActive": true,
+      "cleared": 0,
+      "bullets": 0,
+      "hazards": [
+        {
+          "x": 310,
+          "y": 0,
+          "timer": -0.009999999999999988,
+          "life": 0.5399999999999986,
+          "hit": true,
+          "damage": 16
+        }
+      ]
+    }
+  },
   "naturalInput": {
     "goalSeconds": 420,
-    "wallSeconds": 433.8,
+    "wallSeconds": 434.74,
     "upgradesChosen": 12,
-    "time": 420.11310000008234,
+    "time": 420.02740000024005,
     "hp": 130,
-    "kills": 864,
+    "kills": 855,
     "level": 13,
     "bosses": 2,
-    "poweredLeaps": 245,
-    "comboLeaps": 16,
-    "bonusLeaps": 16,
-    "bulletsCleared": 122,
+    "poweredLeaps": 205,
+    "comboLeaps": 10,
+    "bonusLeaps": 6,
+    "maxStitchTargets": 5,
+    "bulletsCleared": 104,
     "upgrades": {
-      "pierce": 3,
-      "quick": 3,
-      "heal": 2,
+      "pierce": 2,
       "scatter": 2,
-      "width": 1,
-      "vital": 1
+      "echo": 2,
+      "ricochet": 1,
+      "quick": 2,
+      "vital": 1,
+      "heavy": 1,
+      "width": 1
     },
     "damageTotals": {
-      "bullet": 2595.655232366726,
-      "stitch": 48803.30813152439,
-      "orbit": 0
+      "bullet": 4202.176453667213,
+      "stitch": 46558.63774311633
     },
-    "stitchDamageShare": 0.9494998524777597,
+    "stitchDamageShare": 0.9172161337409461,
     "onboarding": {
       "stage": 2,
       "introduced": true,
       "disabled": false,
-      "firstSeed": 1.6165999999999991,
-      "firstLeap": 2.9831999999999965,
-      "firstKill": 3.183199999999996,
-      "completeAt": 3.183199999999996
+      "firstSeed": 1.6018999999999997,
+      "firstLeap": 2.823299999999995,
+      "firstKill": 3.0247999999999937,
+      "completeAt": 3.0247999999999937
     }
   },
-  "limits": "Automated real-time input and visual inspection; not a human playtest. Relic/effects/stress/victory/layout tests use explicit test state setup.",
-  "finalUiCheck": {
-    "sourceSHA256": "36fcdb5a8e856b6f7c29711b94873dc0add83ad1f28dd939f84b491fb6efa436",
-    "runtimeErrors": 0,
-    "method": "Fresh final source reload; actual intro click, compact synergy layout, effect and flow scenes, direct-file launch after small display refinements. Natural seven-minute combat above was preserved."
-  }
+  "limits": "Automated real-time input and visual inspection; not a human playtest. Relic/effects/stress/victory/layout tests use explicit test state setup."
 }
