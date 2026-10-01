@@ -1,9 +1,72 @@
 {
   "version": "0.5",
-  "change": "Landing wards clear flying projectiles only; ground attacks keep warning, lifetime and damage.",
-  "date": "2026-10-01T09:48:28.767Z",
+  "change": "v0.5 UX, bounded ricochet, removed satellites, and preserved ground attacks.",
+  "date": "2026-10-01T09:49:47.847Z",
   "sourceSHA256": "f70c06b4d5c48cabda1c9e59c4988a8ff6f068436bf4c35b02e586a0f77743d6",
+  "browser": "Edg/154.0.4258.48",
   "runtimeErrors": 0,
+  "clarity": {
+    "ranksTested": 36,
+    "actualChoice": "heal",
+    "beginner": [
+      "灰縫い · 着地で消弾"
+    ],
+    "learned": {
+      "powered": 3,
+      "help": false,
+      "coach": true,
+      "route": true
+    },
+    "experienced": [],
+    "moving": [
+      {
+        "piercing": false,
+        "guided": false,
+        "sideAsh": 0,
+        "columnAsh": 0,
+        "kills": 0
+      },
+      {
+        "piercing": false,
+        "guided": true,
+        "sideAsh": 1,
+        "columnAsh": 0,
+        "kills": 0
+      },
+      {
+        "piercing": true,
+        "guided": false,
+        "sideAsh": 0,
+        "columnAsh": 1,
+        "kills": 0
+      },
+      {
+        "piercing": true,
+        "guided": true,
+        "sideAsh": 1,
+        "columnAsh": 1,
+        "kills": 0
+      }
+    ],
+    "result": {
+      "max": 3,
+      "triples": 1,
+      "returns": 1,
+      "cleared": 3,
+      "values": [
+        3,
+        1,
+        1,
+        3
+      ],
+      "labels": [
+        "最大同時灰縫い",
+        "三重縫い",
+        "返し縫い",
+        "消した敵弾"
+      ]
+    }
+  },
   "groundAttacks": {
     "landing": {
       "hp": 110,
@@ -228,5 +291,5 @@
       ]
     }
   },
-  "limits": "Short, explicitly set up browser scenes. No new seven-minute natural-input run."
+  "limits": "Isolated browser scenes with actual mouse acquisition and visual screenshots; see browser-verification.json for natural input."
 }
