@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ashfall — 灰縫い演出の比較</title>
+<style>
+body{margin:24px;background:#111c21;color:#e3ece4;font:16px/1.6 system-ui,sans-serif}h1{font-size:23px;margin:0 0 8px}p{color:#b6c4bb;margin:8px 0}button,select{background:#243b3d;color:#e3ece4;border:1px solid #738f88;padding:8px 12px;font:inherit}label{display:inline-flex;gap:10px;align-items:center;margin:8px 18px 8px 0}input{width:250px}.panels{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap}.panel{width:440px}h2{font-size:17px;margin:0 0 6px}.frame{width:440px;height:300px;overflow:hidden;border:1px solid #5b726b}iframe{border:0;width:880px;height:600px;transform:scale(.5);transform-origin:0 0}output{font-variant-numeric:tabular-nums}small{display:block;color:#adbeb3;margin-top:8px}.triple h2{color:#93eed4}.dense h2{color:#ffb473}
+</style>
+<h1>灰縫いのフィードバック比較</h1>
+<p>同じ敵・位置・経路を使用。左は3灰、中央は3体×2灰、右は1体×6灰。敵は生存させて演出を観察します。</p>
+<label>時点 <input id="time" type="range" min="0" max="1300" step="10" value="380"><output id="stamp"></output></label>
+<label>密縫い <select id="power"><option value="base">強化なし</option><option value="boost">密縫いLv3＋灰圧Lv3</option><option value="point">一点穿ちLv2（基礎密縫い）</option></select></label>
+<label>状態 <select id="scenario"><option value="feedback">演出比較</option><option value="main">本撃後に敵が入る</option><option value="echo">再炸裂後に敵が入る</option></select></label>
+<button id="play" disabled>順番に再生（音声あり）</button>
+<div id="moments" aria-label="連鎖爆発の比較時点"><button data-time="280">爆発開始 · 280ms</button> <button data-time="410">爆発中盤 · 410ms</button> <button data-time="520">終了直前 · 520ms</button></div>
+<div class="panels">
+ <section class="panel"><h2>通常灰縫い · 標準の連鎖爆発</h2><div class="frame"><iframe title="通常灰縫い" src="../index.html?test"></iframe></div></section>
+ <section class="panel triple"><h2>三重縫い · 広域・制圧</h2><div class="frame"><iframe title="三重縫い" src="../index.html?test"></iframe></div></section>
+ <section class="panel dense"><h2>密縫い · 高密度・高圧</h2><div class="frame"><iframe title="密縫い" src="../index.html?test"></iframe></div></section>
+</div>
+<small>0ms：予告 / 180ms：着地・予熱 / 430ms：炸裂 / 710・940ms：一点穿ち。本撃後の敵は620ms、再炸裂後の敵は1100msで経路へ入ります。敵HPは各20000。時点はゲーム内時間。</small>
+<script>
+(() => {
+ const frames=[...document.querySelectorAll('iframe')],time=document.getElementById('time'),power=document.getElementById('power'),scenario=document.getElementById('scenario'),play=document.getElementById('play');
+ let generation=0,ready=0;
+ function setup(index){
+  const f=frames[index],a=f.contentWindow.AshfallTest;a.start();a.seed(600601);a.run.onboarding.disabled=true;
+  a.run.enemies=[];a.run.spawnTimer=1000;a.run.player.autoFire=false;a.mouse.active=false;a.run.player.aim=0;
+  a.apply('heavy');a.apply('heavy');
+  if(scenario.value==='echo'){a.apply('echo');a.apply('echo');}
+  if(index===2&&power.value==='boost')for(const id of ['dense','dense','dense','pressure','pressure','pressure'])a.apply(id);
+  if(index===2&&power.value==='point'){a.apply('point');a.apply('point');}
+  const marks=index===1?[2,2,2]:index===2?[0,6,0]:[0,3,0];
+  [80,170,260].forEach((x,i)=>{const e=a.spawnEnemy('brute',x,0);e.speed=0;e.wake=1000;e.hp=e.maxHp=20000;if(marks[i])a.seedEnemy(e,marks[i]);});
+  if(scenario.value!=='feedback'){const e=a.spawnEnemy('runner',220,190);e.testLate=true;e.speed=0;e.wake=1000;e.hp=e.maxHp=20000;}
+  a.run.camX=155;a.run.camY=0;
+  return a;
+ }
+ function freeze(a,index){
+  a.pause();const doc=frames[index].contentDocument;doc.getElementById('pause').hidden=true;
+  for(const id of ['hud','coach','announcement','bossHud'])doc.getElementById(id).hidden=true;
+  a.run.texts=[];a.run.camX=155;a.run.camY=0;a.run.shake=0;a.drawGame();
+  let status=frames[index].parentElement.parentElement.querySelector('.late-state');
+  if(!status){status=document.createElement('small');status.className='late-state';frames[index].parentElement.parentElement.append(status);}
+  const e=a.run.enemies.find(e=>e.testLate);
+  status.textContent=e?`遅れて入る敵：HP ${Math.round(e.hp)} / 20000 · ${e.y>100?'経路外で待機':'経路へ進入済み'}`:'';
+ }
+ function render(){
+  if(ready!==3)return;++generation;
+  const seconds=Number(time.value)/1000;document.getElementById('stamp').value=`${time.value}ms`;
+  frames.forEach((_,i)=>{const a=setup(i);if(seconds){a.startDash(1,0);
+    const enter=scenario.value==='echo'?1.10:.62;
+    if(scenario.value!=='feedback'&&seconds>=enter){a.step(enter);const e=a.run.enemies.find(e=>e.testLate);e.y=0;a.step(seconds-enter);}else a.step(seconds);
+   }freeze(a,i);});
+ }
+ frames.forEach(f=>f.addEventListener('load',()=>{if(++ready===3){play.disabled=false;render();}}));
+ time.oninput=render;power.onchange=render;scenario.onchange=()=>{time.value=scenario.value==='echo'?1250:scenario.value==='main'?850:430;render();};
+ const moments=[...document.querySelectorAll('#moments button')];
+ moments.forEach(button=>button.onclick=()=>{scenario.value='feedback';time.value=button.dataset.time;render();});
+ play.onclick=async()=>{
+  if(ready!==3||play.disabled)return;
+  const token=++generation;time.disabled=power.disabled=scenario.disabled=play.disabled=true;
+  moments.forEach(button=>button.disabled=true);
+  // Initialize all contexts within this user gesture, then isolate the three sounds.
+  frames.forEach((_,i)=>freeze(setup(i),i));
+  for(let i=0;i<3&&token===generation;i++){
+   const a=setup(i);a.startDash(1,0);
+   const late=a.run.enemies.find(e=>e.testLate);
+   const entry=late?setInterval(()=>{if(a.run.time>=(scenario.value==='echo'?1.1:.62)){late.y=0;clearInterval(entry);}},10):null;
+   await new Promise(resolve=>setTimeout(resolve,1700));freeze(a,i);
+   if(entry)clearInterval(entry);
+  }
+  time.disabled=power.disabled=scenario.disabled=play.disabled=false;
+  moments.forEach(button=>button.disabled=false);
+ };
+ window.FeedbackComparison={render,get ready(){return ready;},get scenes(){return frames.map(f=>f.contentWindow.AshfallTest);}};
+})();
+</script>
+</html>

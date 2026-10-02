@@ -1,13 +1,14 @@
 {
-  "version": "0.5",
-  "change": "v0.5 UX, bounded ricochet, removed satellites, and preserved ground attacks.",
-  "date": "2026-10-01T09:49:47.847Z",
-  "sourceSHA256": "f70c06b4d5c48cabda1c9e59c4988a8ff6f068436bf4c35b02e586a0f77743d6",
+  "version": "0.6.3",
+  "change": "v0.6 staged family cards, bounded ricochet, dense blasts, shards, capped chain, preserved ground attacks and direct file startup.",
+  "date": "2026-10-02T07:22:08.442Z",
+  "upgradesSHA256": "2758b96d032b3522d7abd8fb46433e5502bbc2806fa4a5a1d3746e4f5acc91e1",
+  "sourceSHA256": "39adee04aad53e13c3b4be3f387859c28deb754e9b8969e0eefdace00e5a48ed",
   "browser": "Edg/154.0.4258.48",
   "runtimeErrors": 0,
   "clarity": {
-    "ranksTested": 36,
-    "actualChoice": "heal",
+    "ranksTested": 55,
+    "actualChoice": "heavy",
     "beginner": [
       "灰縫い · 着地で消弾"
     ],
@@ -67,9 +68,83 @@
       ]
     }
   },
+  "builds": {
+    "densePreview": {
+      "route": {
+        "ax": 0,
+        "ay": 0,
+        "bx": 310,
+        "by": 0,
+        "ash": 9,
+        "targets": 1,
+        "danger": 1
+      },
+      "success": {
+        "success": true,
+        "multiplier": 1.35
+      },
+      "bossAsh": 9
+    },
+    "dense": {
+      "last": {
+        "time": 0.18333333333333332,
+        "count": 9,
+        "freshAsh": 9,
+        "bonusDepth": 0,
+        "targets": 1,
+        "crossings": 1,
+        "bulletsCut": 0,
+        "danger": 1,
+        "combo": false,
+        "dense": true,
+        "feedback": "dense"
+      },
+      "damage": 1123.605,
+      "pops": 1,
+      "slow": 1.3833333333333337
+    },
+    "spread": {
+      "shots": 6,
+      "inFlight": 0,
+      "combo": 1,
+      "bonus": {
+        "fuel": 5,
+        "life": 1.6833333333333345,
+        "depth": 1
+      },
+      "sideAsh": 2
+    },
+    "token": {
+      "fuel": 4,
+      "life": 2,
+      "depth": 2,
+      "route": {
+        "ax": 0,
+        "ay": 0,
+        "bx": 248,
+        "by": 0,
+        "ash": 0,
+        "targets": 0,
+        "danger": 3
+      },
+      "hud": "連環縫い"
+    },
+    "chain": {
+      "leaps": 3,
+      "returns": 1,
+      "chains": 1,
+      "bonus": null,
+      "distance": 248
+    },
+    "tags": [
+      "拡散",
+      "濃縮",
+      "連続"
+    ]
+  },
   "groundAttacks": {
     "landing": {
-      "hp": 110,
+      "hp": 100,
       "wardActive": true,
       "cleared": 2,
       "bullets": 1,
@@ -117,7 +192,7 @@
       ]
     },
     "warning": {
-      "hp": 110,
+      "hp": 100,
       "wardActive": true,
       "cleared": 2,
       "bullets": 1,
@@ -165,7 +240,7 @@
       ]
     },
     "impact": {
-      "hp": 86,
+      "hp": 76,
       "wardActive": true,
       "cleared": 2,
       "bullets": 1,
@@ -259,9 +334,10 @@
       "cleared": 2,
       "bonus": {
         "fuel": 5,
-        "life": 1.9833333333333334
+        "life": 1.9833333333333334,
+        "depth": 1
       },
-      "hp": 68,
+      "hp": 64,
       "hazards": [
         {
           "hit": false,
@@ -285,8 +361,8 @@
       ],
       "marks": [
         5,
-        2,
-        2,
+        1,
+        1,
         0
       ]
     }

@@ -2,12 +2,12 @@ const {engine}=require('./harness.cjs');
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..');
 const preferences={
- weave:['pierce','scatter','ricochet','width','quick','heal','frost','vital','rapid','echo','magnet','heavy','regen','spill'],
- dense:['heavy','echo','rapid','quick','heal','vital','frost','width','regen','scatter','pierce','ricochet','spill','magnet'],
- spill:['spill','scatter','pierce','quick','heal','width','frost','rapid','vital','regen','echo','heavy','ricochet','magnet'],
+ weave:['pierce','ricochet','propagation','quick','scatter','shards','ward','width','heal','chain','vital','echo','fast','regen','heavy','frost','rapid','magnet','dense','pressure','point'],
+ dense:['heavy','dense','pressure','point','rapid','echo','frost','heal','fast','quick','vital','regen','magnet','propagation','pierce','ricochet','scatter','width','ward','shards','chain'],
+ flow:['short','fast','quick','chain','regen','propagation','ricochet','pierce','shards','heal','ward','heavy','dense','pressure','vital','echo','point','rapid','magnet','scatter'],
  gun:['scatter','ricochet','rapid','pierce','heavy','vital','quick','width','regen','magnet']
 };
-function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,version='0.5'}) {
+function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,version='0.6.3'}) {
  const a=engine({intro:true,source});a.seed(seed);a.mouse.active=true;a.run.player.autoFire=mode!=='leap-only';
  const events=[];let nextPlan=0,nextSample=0;
  for(let tick=0;tick<limit*30+1000&&a.state!=='result'&&a.run.time<limit;tick++) {
@@ -34,9 +34,12 @@ function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,ve
    if(mode==='cycle')for(let j=0;j<24;j++){
      const angle=j/24*Math.PI*2,ux=Math.cos(angle),uy=Math.sin(angle),route=a.predictLeap(ux,uy);
      const fuel=route.ash+(p.bonusStitch?.fuel||0);if(!fuel)continue;
+     const dense=a.denseSpec?.(route.targets,route.ash)||{success:false,multiplier:1};
      let value=fuel*5+route.targets*35;
+     if(a.denseSpec&&build==='dense'&&dense.success)value+=120;
+     if(a.denseSpec&&build==='dense'&&!dense.success&&route.targets<3&&route.ash<6&&r.enemies.some(e=>e.type==='boss'||e.type==='elite'))continue;
      for(const e of r.enemies){if(e.dead)continue;
-      if(a.segmentDistance(e.x,e.y,p.x,p.y,route.bx,route.by)<p.stitchWidth+e.r)value+=Math.min(e.hp,a.stitchDamage(fuel,e.ash||0,route.danger))*(e.type==='boss'?1.5:1);
+      if(a.segmentDistance(e.x,e.y,p.x,p.y,route.bx,route.by)<p.stitchWidth+e.r)value+=Math.min(e.hp,a.stitchDamage(fuel,e.ash||0,route.danger)*dense.multiplier*(a.pressureMultiplier?.(e.ash||0)||1))*(e.type==='boss'?1.5:1);
       if(Math.hypot(e.x-route.bx,e.y-route.by)<e.r+28)value-=e.damage*12;
      }
      for(const h of r.hazards)if(Math.hypot(h.x-route.bx,h.y-route.by)<h.r+20&&h.timer<.6)value-=300;
@@ -49,28 +52,35 @@ function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,ve
   a.update(1/30);
   if(t>=nextSample){events.push({time:Math.floor(t),hp:Math.ceil(p.hp),level:p.level,enemies:r.enemies.length,kills:r.kills,poweredLeaps:r.poweredLeaps||0});nextSample+=60;}
  }
- const r=a.run,total=r.damageTotals?Object.values(r.damageTotals).reduce((a,b)=>a+b,0):null;
+ const r=a.run,p=r.player,total=r.damageTotals?Object.values(r.damageTotals).reduce((a,b)=>a+b,0):null;
  const result={version,mode,build,seed,limit,outcome:a.state==='result'?(r.player.hp>0?'win':'loss'):'time-limit',time:Math.floor(r.time),hp:Math.round(r.player.hp),level:r.player.level,kills:r.kills,stitchKills:r.stitchKills,bosses:r.bosses,
   poweredLeaps:r.poweredLeaps||0,dryLeaps:r.dryLeaps||0,firstSeed:r.onboarding?.firstSeed??null,firstPoweredLeap:r.onboarding?.firstLeap??null,firstStitchKill:r.onboarding?.firstKill??null,
-  comboLeaps:r.comboLeaps||0,bonusLeaps:r.bonusLeaps||0,maxStitchTargets:r.maxStitchTargets||0,bulletsCleared:r.bulletsCleared||0,stitchDamageShare:total?Number((r.damageTotals.stitch/total).toFixed(4)):null,damageTotals:r.damageTotals||null,upgrades:r.player.upgrades,events};
+  upgradesTaken:r.upgradesTaken,denseLeaps:r.denseLeaps||0,chainLeaps:r.chainLeaps||0,shardsFired:r.shardsFired||0,comboLeaps:r.comboLeaps||0,bonusLeaps:r.bonusLeaps||0,maxStitchTargets:r.maxStitchTargets||0,bulletsCleared:r.bulletsCleared||0,stitchDamageShare:total?Number((r.damageTotals.stitch/total).toFixed(4)):null,damageTotals:r.damageTotals||null,upgrades:r.player.upgrades,remaining:a.UPGRADES.filter(u=>u.id!=='ember'&&a.eligible(u,p)&&(p.upgrades[u.id]||0)<u.max).map(u=>({id:u.id,level:p.upgrades[u.id]||0,max:u.max})),unownedAttack:a.UPGRADES.filter(u=>u.id!=='ember'&&u.family!=='common'&&a.eligible(u,p)&&!p.upgrades[u.id]).map(u=>u.id),families:Object.fromEntries(['spread','dense','flow','common'].map(f=>[f,a.UPGRADES.filter(u=>u.family===f).reduce((n,u)=>n+(p.upgrades[u.id]||0),0)])),events};
  console.log(`${version} ${mode}/${build} seed ${seed}: ${result.outcome} ${result.time}s / ${result.kills} kills / stitch ${result.stitchDamageShare??'n/a'} / ${result.poweredLeaps} powered leaps`);
  return result;
 }
 const results=[];
-try {
- const source=require('node:child_process').execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show','main:game.js'],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();
- for(const [build,seed] of [['weave',4721],['dense',9481],['spill',20261001]])results.push(simulate({build,seed,source,version:'main baseline'}));
-}catch{console.log('Local main baseline unavailable; comparison skipped.');}
+let source=null;
+try{source=require('node:child_process').execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show','028ca08:game.js'],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();}catch{console.log('Local v0.6.2 baseline unavailable; comparison skipped.');}
+if(source)for(const [build,seed] of [['weave',4721],['dense',9481],['flow',20261001],['weave',8606],['dense',6606],['flow',4606]])results.push(simulate({build,seed,source,version:'0.6.2 baseline'}));
 results.push(simulate({mode:'shoot-only',limit:300}));
 results.push(simulate({mode:'leap-only',limit:300}));
-for(const [build,seed] of [['weave',4721],['dense',9481],['spill',20261001]])results.push(simulate({build,seed}));
-const cycles=results.filter(r=>r.version==='0.5'&&r.mode==='cycle');
-assert.ok(results.filter(r=>r.version==='0.5'&&r.mode!=='cycle').every(r=>r.kills===0));
+for(const [build,seed] of [['weave',4721],['dense',9481],['flow',20261001],['weave',8606],['dense',6606],['flow',4606]])results.push(simulate({build,seed}));
+const cycles=results.filter(r=>r.version==='0.6.3'&&r.mode==='cycle');
+assert.ok(results.filter(r=>r.version==='0.6.3'&&r.mode!=='cycle').every(r=>r.kills===0));
+const parity=[];
+if(source)for(const r of cycles){const before=results.find(q=>q.version==='0.6.2 baseline'&&q.seed===r.seed&&q.build===r.build),normalize=q=>JSON.parse(JSON.stringify({...q,version:undefined}));assert.deepEqual(normalize(r),normalize(before),`v0.6.2 combat results and samples: ${r.build}/${r.seed}`);parity.push({build:r.build,seed:r.seed,matched:true});}
 assert.ok(cycles.every(r=>r.firstStitchKill!==null&&r.firstStitchKill<60));
 assert.ok(cycles.every(r=>r.stitchDamageShare>=.85));
 assert.ok(cycles.some(r=>r.time>=300&&r.kills>=150),'At least one natural five-minute cycle must remain playable.');
 assert.ok(cycles.some(r=>r.outcome==='win'),'At least one full natural run must reach victory.');
 assert.ok(cycles.some(r=>r.comboLeaps>10&&r.bulletsCleared>0));
 assert.ok(cycles.some(r=>r.bonusLeaps>10));
-fs.writeFileSync(path.join(root,'balance-verification.json'),JSON.stringify({version:'0.5',date:'2026-10-01',method:'deterministic accelerated simulation; local main baseline; normal HP/damage; exact route knowledge; no added fuel/XP/invulnerability; v0.5 bulletsCleared includes path and landing (main counts landing only)',sourceSHA256:require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'game.js'))).digest('hex'),results},null,2));
+const eligibleAttack=engine().UPGRADES.filter(u=>u.id!=='ember'&&u.family!=='common').length;
+assert.ok(cycles.every(r=>r.unownedAttack.length>0),'Every run must leave an unowned attack upgrade.');
+assert.ok(cycles.every(r=>r.remaining.length>=5),'Late runs must still have several meaningful stages to want.');
+assert.ok(cycles.find(r=>r.build==='dense').denseLeaps>10,'Concentration must earn actual dense successes.');
+assert.ok(cycles.find(r=>r.build==='flow').poweredLeaps>100,'Continuous route must keep cycling.');
+assert.ok(new Set(cycles.map(r=>JSON.stringify(Object.keys(r.upgrades).sort()))).size>=3,'Strategies must result in different builds.');
+fs.writeFileSync(path.join(root,'balance-verification.json'),JSON.stringify({version:'0.6.3',date:new Date().toISOString(),baseline:'028ca08',eligibleAttackUpgrades:eligibleAttack,parity,method:'deterministic accelerated simulation; matched v0.6.2/v0.6.3 planners and 6 seeds; all combat results, upgrades, damage totals and minute samples asserted identical; normal HP/damage/XP; exact route knowledge; no injected fuel/XP/invulnerability or balancing changes; not human playtests',upgradesSHA256:require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'upgrades.js'))).digest('hex'),sourceSHA256:require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'game.js'))).digest('hex'),results},null,2));
 console.log('Core-loop balance assertions passed. These are bots, not human playtests.');

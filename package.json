@@ -1,7 +1,13 @@
 {
   "name": "project-ashfall",
-  "version": "0.5.0",
+  "version": "0.6.3",
   "private": true,
   "description": "Prime enemies with ash, leap through danger, detonate the stitch.",
-  "scripts": { "start": "node server.js", "test": "node tests/smoke.cjs", "test:balance": "node tests/balance.cjs", "test:browser": "node tests/browser-check.cjs" }
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tests/smoke.cjs && node tests/builds.cjs && node tests/feedback.cjs && node tests/stitch-timing.cjs && node tests/chain-parity.cjs",
+    "test:balance": "node tests/balance.cjs",
+    "test:browser": "node tests/browser-check.cjs",
+    "test:feedback": "node tests/feedback-browser.cjs"
+  }
 }

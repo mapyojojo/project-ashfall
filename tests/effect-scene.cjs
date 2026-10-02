@@ -7,7 +7,7 @@ module.exports=async function effectScene({evaluate,shot}){
   return evaluate('(()=>{const a=AshfallTest,s=a.run.stitches[0];return {time:a.run.time,kills:a.run.kills,harvests:a.run.harvests.length,ash:a.run.leap?.count??s?.count,nodes:s?.nodes??0,progress:s?.progress??0,hp:a.run.player.hp};})()');
  };
  const collected=await freeze(.08);assert.ok(collected.harvests>0&&collected.ash>0);await shot('stitch-collect.png');
- const windup=await freeze(.14);assert.equal(windup.nodes,0);assert.equal(windup.kills,0);assert.equal(windup.hp,74);await shot('stitch-windup.png');
+ const windup=await freeze(.14);assert.equal(windup.nodes,0);assert.equal(windup.kills,0);assert.equal(windup.hp,70);await shot('stitch-windup.png');
  const front=await freeze(.17);assert.ok(front.nodes>0&&front.nodes<11);assert.ok(front.kills>0&&front.kills<3);await shot('stitch-front.png');
  const finish=await freeze(.18);assert.equal(finish.nodes,11);assert.equal(finish.kills,3);await shot('stitch-finish.png');
  return {collected,windup,front,finish};
