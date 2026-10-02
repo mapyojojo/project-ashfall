@@ -12,10 +12,11 @@ body{margin:24px;background:#111c21;color:#e3ece4;font:16px/1.6 system-ui,sans-s
 <label>密縫い <select id="power"><option value="base">強化なし</option><option value="boost">密縫いLv3＋灰圧Lv3</option><option value="point">一点穿ちLv2（基礎密縫い）</option></select></label>
 <label>状態 <select id="scenario"><option value="feedback">演出比較</option><option value="main">本撃後に敵が入る</option><option value="echo">再炸裂後に敵が入る</option></select></label>
 <button id="play" disabled>順番に再生（音声あり）</button>
+<div id="moments" aria-label="連鎖爆発の比較時点"><button data-time="280">爆発開始 · 280ms</button> <button data-time="410">爆発中盤 · 410ms</button> <button data-time="520">終了直前 · 520ms</button></div>
 <div class="panels">
- <section class="panel"><h2>通常灰縫い</h2><div class="frame"><iframe title="通常灰縫い" src="../index.html?test"></iframe></div></section>
- <section class="panel triple"><h2>三重縫い</h2><div class="frame"><iframe title="三重縫い" src="../index.html?test"></iframe></div></section>
- <section class="panel dense"><h2>密縫い</h2><div class="frame"><iframe title="密縫い" src="../index.html?test"></iframe></div></section>
+ <section class="panel"><h2>通常灰縫い · 標準の連鎖爆発</h2><div class="frame"><iframe title="通常灰縫い" src="../index.html?test"></iframe></div></section>
+ <section class="panel triple"><h2>三重縫い · 広域・制圧</h2><div class="frame"><iframe title="三重縫い" src="../index.html?test"></iframe></div></section>
+ <section class="panel dense"><h2>密縫い · 高密度・高圧</h2><div class="frame"><iframe title="密縫い" src="../index.html?test"></iframe></div></section>
 </div>
 <small>0ms：予告 / 180ms：着地・予熱 / 430ms：炸裂 / 710・940ms：一点穿ち。本撃後の敵は620ms、再炸裂後の敵は1100msで経路へ入ります。敵HPは各20000。時点はゲーム内時間。</small>
 <script>
@@ -54,9 +55,12 @@ body{margin:24px;background:#111c21;color:#e3ece4;font:16px/1.6 system-ui,sans-s
  }
  frames.forEach(f=>f.addEventListener('load',()=>{if(++ready===3){play.disabled=false;render();}}));
  time.oninput=render;power.onchange=render;scenario.onchange=()=>{time.value=scenario.value==='echo'?1250:scenario.value==='main'?850:430;render();};
+ const moments=[...document.querySelectorAll('#moments button')];
+ moments.forEach(button=>button.onclick=()=>{scenario.value='feedback';time.value=button.dataset.time;render();});
  play.onclick=async()=>{
   if(ready!==3||play.disabled)return;
   const token=++generation;time.disabled=power.disabled=scenario.disabled=play.disabled=true;
+  moments.forEach(button=>button.disabled=true);
   // Initialize all contexts within this user gesture, then isolate the three sounds.
   frames.forEach((_,i)=>freeze(setup(i),i));
   for(let i=0;i<3&&token===generation;i++){
@@ -67,6 +71,7 @@ body{margin:24px;background:#111c21;color:#e3ece4;font:16px/1.6 system-ui,sans-s
    if(entry)clearInterval(entry);
   }
   time.disabled=power.disabled=scenario.disabled=play.disabled=false;
+  moments.forEach(button=>button.disabled=false);
  };
  window.FeedbackComparison={render,get ready(){return ready;},get scenes(){return frames.map(f=>f.contentWindow.AshfallTest);}};
 })();

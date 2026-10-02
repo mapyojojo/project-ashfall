@@ -1,11 +1,136 @@
 {
-  "version": "0.6.2",
-  "date": "2026-10-02T05:25:09.843Z",
-  "baseline": "dae2977",
-  "sourceSHA256": "fe66f74052f5d78ca3544172fb71a6ee85d114d62f69b1d4c53d712cb3a1db2c",
+  "version": "0.6.3",
+  "date": "2026-10-02T07:22:17.976Z",
+  "baseline": "028ca08",
+  "sourceSHA256": "39adee04aad53e13c3b4be3f387859c28deb754e9b8969e0eefdace00e5a48ed",
   "upgradesSHA256": "2758b96d032b3522d7abd8fb46433e5502bbc2806fa4a5a1d3746e4f5acc91e1",
   "browser": "Edg/154.0.4258.48",
   "runtimeErrors": 0,
+  "phases": [
+    {
+      "ms": 280,
+      "normal": {
+        "kind": "normal",
+        "nodes": 1,
+        "progress": 0.0833333333333334,
+        "indices": [
+          0
+        ]
+      },
+      "triple": {
+        "kind": "triple",
+        "nodes": 1,
+        "progress": 0.0833333333333334,
+        "indices": [
+          0
+        ]
+      },
+      "dense": {
+        "kind": "dense",
+        "nodes": 1,
+        "progress": 0.0833333333333334,
+        "indices": [
+          0
+        ]
+      }
+    },
+    {
+      "ms": 410,
+      "normal": {
+        "kind": "normal",
+        "nodes": 6,
+        "progress": 0.5476190476190476,
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "triple": {
+        "kind": "triple",
+        "nodes": 6,
+        "progress": 0.5476190476190476,
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "dense": {
+        "kind": "dense",
+        "nodes": 6,
+        "progress": 0.5476190476190476,
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "ms": 520,
+      "normal": {
+        "kind": "normal",
+        "nodes": 10,
+        "progress": 0.9404761904761905,
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "triple": {
+        "kind": "triple",
+        "nodes": 10,
+        "progress": 0.9404761904761905,
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "dense": {
+        "kind": "dense",
+        "nodes": 10,
+        "progress": 0.9404761904761905,
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      }
+    }
+  ],
   "main": [
     {
       "kind": "normal",
@@ -1566,17 +1691,84 @@
         }
       ],
       "oscillators": [
-        "sine",
-        "triangle"
+        {
+          "type": "sine",
+          "automation": [
+            {
+              "method": "setValueAtTime",
+              "value": 72,
+              "time": 5.390666666666666
+            },
+            {
+              "method": "exponentialRampToValueAtTime",
+              "value": 27.36,
+              "time": 5.710666666666667
+            }
+          ]
+        },
+        {
+          "type": "triangle",
+          "automation": [
+            {
+              "method": "setValueAtTime",
+              "value": 140,
+              "time": 5.390666666666666
+            },
+            {
+              "method": "exponentialRampToValueAtTime",
+              "value": 42,
+              "time": 5.560666666666666
+            }
+          ]
+        }
       ],
       "shapers": [],
       "buffers": [
         0.22
       ],
-      "gains": [
-        1,
-        1,
-        0.12999999523162842
+      "envelopes": [
+        [
+          {
+            "method": "setValueAtTime",
+            "value": 0.14,
+            "time": 5.390666666666666
+          },
+          {
+            "method": "exponentialRampToValueAtTime",
+            "value": 0.0001,
+            "time": 5.710666666666667
+          }
+        ],
+        [
+          {
+            "method": "setValueAtTime",
+            "value": 0.07,
+            "time": 5.390666666666666
+          },
+          {
+            "method": "exponentialRampToValueAtTime",
+            "value": 0.0001,
+            "time": 5.560666666666666
+          }
+        ],
+        []
+      ],
+      "chain": [
+        {
+          "type": "triangle",
+          "automation": [
+            {
+              "method": "setValueAtTime",
+              "value": 117,
+              "time": 5.390666666666666
+            },
+            {
+              "method": "exponentialRampToValueAtTime",
+              "value": 40.949999999999996,
+              "time": 5.480666666666666
+            }
+          ]
+        }
       ]
     },
     {
@@ -1602,17 +1794,153 @@
         }
       ],
       "oscillators": [
-        "sine",
-        "triangle"
+        {
+          "type": "sine",
+          "automation": [
+            {
+              "method": "setValueAtTime",
+              "value": 72,
+              "time": 5.370666666666667
+            },
+            {
+              "method": "exponentialRampToValueAtTime",
+              "value": 27.36,
+              "time": 5.620666666666667
+            }
+          ]
+        },
+        {
+          "type": "triangle",
+          "automation": [
+            {
+              "method": "setValueAtTime",
+              "value": 140,
+              "time": 5.370666666666667
+            },
+            {
+              "method": "exponentialRampToValueAtTime",
+              "value": 42,
+              "time": 5.490666666666667
+            }
+          ]
+        },
+        {
+          "type": "sine",
+          "automation": [
+            {
+              "method": "setValueAtTime",
+              "value": 180,
+              "time": 5.370666666666667
+            },
+            {
+              "method": "exponentialRampToValueAtTime",
+              "value": 324,
+              "time": 5.690666666666667
+            }
+          ]
+        },
+        {
+          "type": "triangle",
+          "automation": [
+            {
+              "method": "setValueAtTime",
+              "value": 420,
+              "time": 5.370666666666667
+            },
+            {
+              "method": "exponentialRampToValueAtTime",
+              "value": 693,
+              "time": 5.540666666666667
+            }
+          ]
+        }
       ],
       "shapers": [],
       "buffers": [
         0.22
       ],
-      "gains": [
-        1,
-        1,
-        0.07500000298023224
+      "envelopes": [
+        [
+          {
+            "method": "setValueAtTime",
+            "value": 0.07,
+            "time": 5.370666666666667
+          },
+          {
+            "method": "exponentialRampToValueAtTime",
+            "value": 0.0001,
+            "time": 5.620666666666667
+          }
+        ],
+        [
+          {
+            "method": "setValueAtTime",
+            "value": 0.035,
+            "time": 5.370666666666667
+          },
+          {
+            "method": "exponentialRampToValueAtTime",
+            "value": 0.0001,
+            "time": 5.490666666666667
+          }
+        ],
+        [
+          {
+            "method": "setValueAtTime",
+            "value": 0.035,
+            "time": 5.370666666666667
+          },
+          {
+            "method": "exponentialRampToValueAtTime",
+            "value": 0.0001,
+            "time": 5.690666666666667
+          }
+        ],
+        [
+          {
+            "method": "setValueAtTime",
+            "value": 0.025,
+            "time": 5.370666666666667
+          },
+          {
+            "method": "exponentialRampToValueAtTime",
+            "value": 0.0001,
+            "time": 5.540666666666667
+          }
+        ],
+        []
+      ],
+      "chain": [
+        {
+          "type": "triangle",
+          "automation": [
+            {
+              "method": "setValueAtTime",
+              "value": 117,
+              "time": 5.370666666666667
+            },
+            {
+              "method": "exponentialRampToValueAtTime",
+              "value": 40.949999999999996,
+              "time": 5.460666666666667
+            }
+          ]
+        },
+        {
+          "type": "triangle",
+          "automation": [
+            {
+              "method": "setValueAtTime",
+              "value": 316,
+              "time": 5.370666666666667
+            },
+            {
+              "method": "exponentialRampToValueAtTime",
+              "value": 442.4,
+              "time": 5.460666666666667
+            }
+          ]
+        }
       ]
     },
     {
@@ -1638,7 +1966,51 @@
         }
       ],
       "oscillators": [
-        "triangle"
+        {
+          "type": "sine",
+          "automation": [
+            {
+              "method": "setValueAtTime",
+              "value": 72,
+              "time": 5.36
+            },
+            {
+              "method": "exponentialRampToValueAtTime",
+              "value": 27.36,
+              "time": 5.5
+            }
+          ]
+        },
+        {
+          "type": "triangle",
+          "automation": [
+            {
+              "method": "setValueAtTime",
+              "value": 140,
+              "time": 5.36
+            },
+            {
+              "method": "exponentialRampToValueAtTime",
+              "value": 42,
+              "time": 5.430000000000001
+            }
+          ]
+        },
+        {
+          "type": "triangle",
+          "automation": [
+            {
+              "method": "setValueAtTime",
+              "value": 100,
+              "time": 5.36
+            },
+            {
+              "method": "exponentialRampToValueAtTime",
+              "value": 42,
+              "time": 5.425000000000001
+            }
+          ]
+        }
       ],
       "shapers": [
         {
@@ -1649,11 +2021,84 @@
       "buffers": [
         0.045
       ],
-      "gains": [
-        1,
-        1
+      "envelopes": [
+        [
+          {
+            "method": "setValueAtTime",
+            "value": 0.045,
+            "time": 5.36
+          },
+          {
+            "method": "exponentialRampToValueAtTime",
+            "value": 0.0001,
+            "time": 5.5
+          }
+        ],
+        [
+          {
+            "method": "setValueAtTime",
+            "value": 0.025,
+            "time": 5.36
+          },
+          {
+            "method": "exponentialRampToValueAtTime",
+            "value": 0.0001,
+            "time": 5.430000000000001
+          }
+        ],
+        [
+          {
+            "method": "setValueAtTime",
+            "value": 0,
+            "time": 5.36
+          },
+          {
+            "method": "linearRampToValueAtTime",
+            "value": 0.14,
+            "time": 5.362
+          },
+          {
+            "method": "setValueAtTime",
+            "value": 0.11200000000000002,
+            "time": 5.368
+          },
+          {
+            "method": "exponentialRampToValueAtTime",
+            "value": 0.0001,
+            "time": 5.48
+          }
+        ],
+        [
+          {
+            "method": "setValueAtTime",
+            "value": 0.07,
+            "time": 5.36
+          },
+          {
+            "method": "exponentialRampToValueAtTime",
+            "value": 0.0001,
+            "time": 5.405
+          }
+        ]
+      ],
+      "chain": [
+        {
+          "type": "triangle",
+          "automation": [
+            {
+              "method": "setValueAtTime",
+              "value": 91.26,
+              "time": 5.36
+            },
+            {
+              "method": "exponentialRampToValueAtTime",
+              "value": 31.941,
+              "time": 5.42
+            }
+          ]
+        }
       ]
     }
   ],
-  "limits": "Actual browser canvas snapshots and live Web Audio graph verified. Perceived clarity and gameplay impact require human playtests; front-only damage intentionally changes combat outcomes."
+  "limits": "Actual browser canvas snapshots and live Web Audio graph verified. Exact v0.6.2 combat/RNG parity is tested separately; perceived impact, hierarchy and screen clutter require human playtests."
 }

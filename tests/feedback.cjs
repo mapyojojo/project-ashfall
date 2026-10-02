@@ -60,13 +60,13 @@ test('triple dissolve light is capped separately and cannot clear ground attacks
  a.step(.25);assert.ok(!a.run.impacts.some(q=>q.clear));
 });
 
-// Audit protected numerical values against v0.6.1; hit timing intentionally differs.
+// Audit protected numerical values against v0.6.2; feedback changes must preserve combat timing.
 // A source archive can run the mechanics above without a local Git history.
-const root=path.resolve(__dirname,'..'),baseline='dae2977';
+const root=path.resolve(__dirname,'..'),baseline='028ca08';
 let source;
 try{source=require('node:child_process').execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:game.js`],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();}catch{}
 if(source){
- test('enemy definitions, success thresholds, damage multipliers and ward values match v0.6.1',()=>{
+ test('enemy definitions, success thresholds, damage multipliers and ward values match v0.6.2',()=>{
   const before=engine({source}),after=engine();assert.equal(JSON.stringify(after.TYPES),JSON.stringify(before.TYPES));
   for(let rank=0;rank<=3;rank++){
    if(rank)for(const a of [before,after]){a.apply('dense');a.apply('pressure');}
@@ -78,7 +78,7 @@ if(source){
    }
   }
  });
- test('triple, dense, healing and return rewards at landing match v0.6.1',()=>{
+ test('triple, dense, healing and return rewards at landing match v0.6.2',()=>{
   for(const marks of [[3,0,0],[2,2,2],[6,0,0],[3,3,0]]){
    const setup={marks,upgrades:['quick','chain','heal','ward','dense','pressure']};
    const before=scene({...setup,source}),after=scene(setup);

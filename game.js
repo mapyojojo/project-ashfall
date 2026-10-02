@@ -493,20 +493,27 @@
   function stitchImpact(s,index,echo=false) {
     const t=echo?1-index/10:index/10,x=s.ax+(s.bx-s.ax)*t,y=s.ay+(s.by-s.ay)*t;
     const feedback=s.feedback||'normal';
-    run.impacts.push({x,y,life:.32,max:.32,combo:s.combo,feedback,echo,index,angle:Math.atan2(s.by-s.ay,s.bx-s.ax),strength:feedbackSpec(feedback,s.feedbackMultiplier).strength});
+    run.impacts.push({x,y,life:.32,max:.32,combo:s.combo,feedback,echo,index,angle:Math.atan2(s.by-s.ay,s.bx-s.ax),spacing:Math.hypot(s.bx-s.ax,s.by-s.ay)/10,strength:feedbackSpec(feedback,s.feedbackMultiplier).strength});
     particle(x,y,echo?'#a7e2d4':feedback==='triple'?'#8ee9da':feedback==='dense'?'#a56c4466':'#ffbb69',echo?5:9,echo?120:feedback==='dense'?100:240,echo?3:feedback==='dense'?3:5);
     particle(x,y,feedback==='triple'?'#dffff4':'#fff4d3',4,110,2);
     if(!echo&&[0,5,10].includes(index))scatterShards(s,x,y);
     if(index===0){
       run.shake=Math.max(run.shake,feedbackSpec(feedback,s.feedbackMultiplier).shake);run.leapFlash=feedback==='normal'?.06:0;
       blastSound(feedback,echo,s.feedbackMultiplier);
-    }else if(index%3===0&&(feedback!=='dense'||echo))tone(feedback==='triple'?280+index*12:90+index*9,.09,'triangle',.025,feedback==='triple'?1.4:.35);
+    }else if(index%3===0)stitchNodeSound(feedback,index,echo);
+  }
+  function stitchNodeSound(kind,index,echo=false) {
+    if(kind==='normal'||echo){tone(kind==='triple'?280+index*12:90+index*9,.09,'triangle',.025,kind==='triple'?1.4:.35);return;}
+    // The same falling chain motif, compressed for dense and opened by a second voice for triple.
+    tone((90+index*9)*(kind==='dense'?.78:1),kind==='dense'?.06:.09,'triangle',.018,.35);
+    if(kind==='triple')tone(280+index*12,.09,'triangle',.012,1.4);
   }
   function blastSound(kind='normal',echo=false,multiplier=1) {
     const f=feedbackSpec(kind,multiplier);
     if(kind==='dense'&&!echo){
       if(!soundOn||!audio||audio.state!=='running')return;
-      // A single compressed, fast-attack stroke; no repetition of the ordinary blast tones.
+      // Keep the ordinary falling motif beneath the short, compressed stroke.
+      tone(72,.14,'sine',.045,.38);tone(140,.07,'triangle',.025,.3);
       const now=audio.currentTime,osc=audio.createOscillator(),shape=audio.createWaveShaper(),gain=audio.createGain();
       osc.type='triangle';osc.frequency.setValueAtTime(f.bass,now);osc.frequency.exponentialRampToValueAtTime(f.bass*f.slide,now+.065);
       shape.curve=Float32Array.from({length:128},(_,i)=>Math.tanh((i/127*2-1)*2.5)/Math.tanh(2.5));shape.oversample='2x';
@@ -519,8 +526,9 @@
       transient.gain.setValueAtTime(f.noise,now);transient.gain.exponentialRampToValueAtTime(.0001,now+f.noiseDuration);
       noise.connect(filter);filter.connect(transient);transient.connect(audio.destination);noise.start(now);return;
     }
-    tone(echo?100:f.bass,kind==='dense'?.26:.32,'sine',echo?.08:kind==='dense'?.13+f.strength*.025:kind==='triple'?.065:.14,echo?.38:f.slide);
-    tone(kind==='triple'?420:kind==='dense'?185:140,kind==='dense'?.10:.17,'triangle',echo?.035:kind==='triple'?.045:.07,kind==='triple'?1.65:.3);
+    if(kind==='triple'&&!echo){tone(72,.25,'sine',.07,.38);tone(140,.12,'triangle',.035,.3);}
+    tone(echo?100:f.bass,kind==='dense'?.26:.32,'sine',echo?.08:kind==='dense'?.13+f.strength*.025:kind==='triple'?.035:.14,echo?.38:f.slide);
+    tone(kind==='triple'?420:kind==='dense'?185:140,kind==='dense'?.10:.17,'triangle',echo?.035:kind==='triple'?.025:.07,kind==='triple'?1.65:.3);
     if(!soundOn||!audio||audio.state!=='running')return;
     const length=Math.floor(audio.sampleRate*.22),buffer=audio.createBuffer(1,length,audio.sampleRate),data=buffer.getChannelData(0);
     // Sound uses a separate random source, so audio settings never alter gameplay.
@@ -728,8 +736,8 @@
       const bx=s.ax+(s.bx-s.ax)*s.progress,by=s.ay+(s.by-s.ay)*s.progress;
       if(s.exploded){
         line(s.ax,s.ay,bx,by,col+(spent?'18':'44'),dense?10:24);
-        line(s.ax,s.ay,bx,by,spent?col+'30':dense?'#ffe2b7':col,spent?1.5:dense?2.5:4);
-        if(!spent&&dense){const dx=s.bx-s.ax,dy=s.by-s.ay,l=Math.hypot(dx,dy)||1;line(bx-dx/l*14,by-dy/l*14,bx,by,'#fff8ed',4);circle(bx,by,5,'#fff3df');}
+        line(s.ax,s.ay,bx,by,spent?col+'30':dense?'#fff7da':col,spent?1.5:dense?3.5:4);
+        if(!spent&&dense){const dx=s.bx-s.ax,dy=s.by-s.ay,l=Math.hypot(dx,dy)||1;line(bx-dx/l*22,by-dy/l*22,bx,by,'#fff8ed',5);circle(bx,by,6,'#fff3df');}
       }
       if(s.echoed){const ex=s.bx+(s.ax-s.bx)*s.echoProgress,ey=s.by+(s.ay-s.by)*s.echoProgress,done=s.echoProgress===1;line(s.bx,s.by,ex,ey,done?'#a6f9e210':'#a6f9e233',run.player.stitchEcho>=2?s.width*2.7:26);line(s.bx,s.by,ex,ey,done?'#bfffe630':'#bfffe6',done?1.5:5);}
       if(!s.exploded){circle(s.ax,s.ay,9+Math.sin(ambient*45)*3,col+'55',col,2);circle(s.bx,s.by,18,null,col+'99',2);}
@@ -756,7 +764,14 @@
       if(!q.echo&&q.feedback==='dense'){
         const strength=q.strength||0;
         if(!q.focus){ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.angle);
-          circle(0,0,(5+strength*2)*(1-t),'#fff4e5');line(-12*(1-t),0,12*(1-t),0,'#ffd3a3',2);ctx.restore();continue;}
+          // Each ordinary blast becomes a tighter, white-hot pressure ring. No new simulation particles.
+          ctx.globalCompositeOperation='lighter';
+          circle(0,0,12+t*26,'#ffc3630c','#ffdca8',2.5);circle(0,0,8+t*6,'#fff4c780','#fff9de',1.5);
+          if(q.index>0&&t<.38){const x=-q.spacing*.5;ctx.globalAlpha=(1-t/.38)*.8;
+            circle(x,0,6+t*9,'#ffe5a32a','#fff3c2',1.5);circle(x,0,7*(1-t/.38),'#fff8df');}
+          if(t<.45){ctx.globalAlpha=(1-t/.45)*.95;line(-q.spacing*.55,0,q.spacing*.55,0,'#fff7d4',3);circle(0,0,(12+strength*3)*(1-t/.45),'#fffbea');
+            line(-18,0,18,0,'#fff8e5',3);line(0,-15,0,15,'#fff0c8',2);}
+          ctx.restore();continue;}
         ctx.save();ctx.translate(q.x,q.y);
         // Every main-route hit flashes once. Captured targets get only a small success marker.
         if(q.marker)circle(0,0,10+(1-t)*9,null,'#ffb473',1);
@@ -765,10 +780,12 @@
       }
       if(!q.echo&&q.feedback==='triple'){
         ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.angle);
-        if(q.index%5===0){ctx.beginPath();ctx.ellipse(0,0,24+t*34,14+t*66,0,0,TAU);ctx.strokeStyle='#9eeddb';ctx.lineWidth=2.5;ctx.stroke();
-          line(0,-12-t*58,0,-20-t*66,'#d4fff3',2);line(0,12+t*58,0,20+t*66,'#d4fff3',2);}
-        circle(0,0,9+t*16,'#93eed426');
-        if(t<.3){ctx.globalAlpha=(1-t/.3)*.7;line(-18,0,18,0,'#e6fff6',2);}
+        // Every node retains the flash, hot center and growing shell of the standard chain.
+        ctx.beginPath();ctx.ellipse(0,0,14+t*38,16+t*65,0,0,TAU);ctx.fillStyle='#93eed418';ctx.fill();ctx.strokeStyle='#9eeddb';ctx.lineWidth=2.5;ctx.stroke();
+        circle(0,0,8+t*22,'#dbfff24c');
+        if(q.index%5===0){ctx.beginPath();ctx.ellipse(0,0,24+t*34,18+t*85,0,0,TAU);ctx.strokeStyle='#9eeddb';ctx.lineWidth=2.5;ctx.stroke();
+          line(0,-14-t*77,0,-22-t*85,'#d4fff3',2);line(0,14+t*77,0,22+t*85,'#d4fff3',2);}
+        if(t<.35){ctx.globalAlpha=(1-t/.35)*.85;circle(0,0,16*(1-t/.35),'#effff7');line(-26,0,26,0,'#e6fff6',2);line(0,-32,0,32,'#d4fff3',2);}
         ctx.restore();continue;
       }
       circle(q.x,q.y,12+t*58,col+'15',col,2.5);circle(q.x,q.y,8+t*22,'#ffe1a555');
@@ -844,7 +861,7 @@
   // Explicit test mode exposes mechanics for deterministic verification, never used in normal play.
   if(new URLSearchParams(location.search).has('test'))window.AshfallTest={
     start,update,spawnEnemy,hurtEnemy,hurtPlayer,startDash,endDash,seedEnemy,predictLeap,stitchDamage,addXp,chooseUpgrade,rollUpgrades,finish,goTitle,pause,resume,
-    segmentDistance,UPGRADES,TYPES,keys,mouse,drawGame,updateHud,wardSpec,denseSpec,pressureMultiplier,lineDamage,feedbackSpec,blastSound,frontCrossing,weight,eligible,scatterShards,assistedAngle,showRelics,selectRelic,showStitchHelp,upgradeCard,
+    segmentDistance,UPGRADES,TYPES,keys,mouse,drawGame,updateHud,wardSpec,denseSpec,pressureMultiplier,lineDamage,feedbackSpec,blastSound,stitchNodeSound,frontCrossing,weight,eligible,scatterShards,assistedAngle,showRelics,selectRelic,showStitchHelp,upgradeCard,
     get run(){return run;},get state(){return state;},get meta(){return meta;},get audioState(){return audio?.state;},seed(v){seed=v||1;},
     step(seconds){for(let t=0;t<seconds;t+=1/60)update(Math.min(1/60,seconds-t));},
     apply(id){const u=UPGRADES.find(u=>u.id===id);if(!u)throw new Error(id);u.apply(run.player);run.player.upgrades[id]=(run.player.upgrades[id]||0)+1;updateBuild();updateHud();}
