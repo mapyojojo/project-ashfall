@@ -1,0 +1,53 @@
+{
+  "version": "0.7.0",
+  "date": "2026-10-02T14:43:36.384Z",
+  "browser": "Edg/154.0.4258.48",
+  "sourceSHA256": "6d75ac4843c30fd5faa35cfc414e23077d6647371cb3edfc42079a3412b619e5",
+  "upgradesSHA256": "d60c1443ad94ab3c067a47bafc339f04c229f7b40b763061f38ae4701ff42042",
+  "naturalInput": {
+    "state": "result",
+    "outcome": "win",
+    "time": 751.7495999986058,
+    "hp": 150,
+    "kills": 2384,
+    "level": 20,
+    "bosses": 4,
+    "poweredLeaps": 502,
+    "denseLeaps": 123,
+    "comboLeaps": 109,
+    "bonusLeaps": 74,
+    "chainLeaps": 0,
+    "maxStitchTargets": 8,
+    "bulletsCleared": 481,
+    "upgradesChosen": 19,
+    "upgrades": {
+      "pierce": 3,
+      "width": 2,
+      "echo": 1,
+      "vital": 2,
+      "ricochet": 3,
+      "quick": 3,
+      "propagation": 1,
+      "frost": 1,
+      "heal": 2,
+      "scatter": 1
+    },
+    "damageTotals": {
+      "bullet": 8374.71524221728,
+      "stitch": 159884.48870116606
+    },
+    "stitchDamageShare": 0.9502272978479367,
+    "onboarding": {
+      "stage": 2,
+      "introduced": true,
+      "disabled": false,
+      "firstSeed": 1.604399999999999,
+      "firstLeap": 2.8198999999999916,
+      "firstKill": 3.02809999999999,
+      "completeAt": 3.02809999999999
+    }
+  },
+  "method": "960-second target in tests/browser-check.cjs. Opening and full run used real keyboard/mouse input, no run/HP/XP/clock injection. Captured actual finished state after victory; UI driver failed at the subsequent reset assertion because natural victory was previously handled only as a playing/paused outcome. That test navigation was corrected; the complete regression is rerun separately.",
+  "log": "work/v07-browser-first.log",
+  "limits": "Automated input, not a human playtest. This records the full natural-input combat outcome, separate from subsequent isolated UI/mechanics fixtures."
+}

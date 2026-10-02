@@ -87,8 +87,12 @@ if(source){
    assert.equal(snapshot(after),snapshot(before));
   }
  });
- // Upgrade definitions, spawn odds and numerical stages must be byte-identical.
+ // Player copy may change; effect functions and availability must stay identical.
  const old=require('node:child_process').execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:upgrades.js`],{cwd:root});
- test('upgrade definitions, stages, eligibility and appearance weights are byte-identical to v0.6',()=>assert.ok(old.equals(fs.readFileSync(path.join(root,'upgrades.js')))));
+ test('upgrade effects, eligibility and appearance weights match v0.6',()=>{
+  const before=engine({source,catalogSource:old.toString()}),after=engine();
+  const catalog=a=>Array.from(a.UPGRADES,u=>({id:u.id,family:u.family,max:u.max,excludes:u.excludes,requires:u.requires?.toString(),apply:u.apply.toString()}));
+  assert.deepEqual(catalog(after),catalog(before));assert.equal(after.weight.toString(),before.weight.toString());assert.equal(after.eligible.toString(),before.eligible.toString());
+ });
 }else console.log('SKIP repository-only v0.6 parity audit: baseline commit unavailable.');
 console.log(`${passed} stitch feedback checks passed.`);

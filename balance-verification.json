@@ -1,7 +1,7 @@
 {
-  "version": "0.6.3",
-  "date": "2026-10-02T07:15:00.795Z",
-  "baseline": "028ca08",
+  "version": "0.7.0",
+  "date": "2026-10-02T14:27:58.510Z",
+  "baseline": "b3f9265eef10ada6c728feb85896a235814c71d9",
   "eligibleAttackUpgrades": 19,
   "parity": [
     {
@@ -35,12 +35,12 @@
       "matched": true
     }
   ],
-  "method": "deterministic accelerated simulation; matched v0.6.2/v0.6.3 planners and 6 seeds; all combat results, upgrades, damage totals and minute samples asserted identical; normal HP/damage/XP; exact route knowledge; no injected fuel/XP/invulnerability or balancing changes; not human playtests",
-  "upgradesSHA256": "2758b96d032b3522d7abd8fb46433e5502bbc2806fa4a5a1d3746e4f5acc91e1",
-  "sourceSHA256": "39adee04aad53e13c3b4be3f387859c28deb754e9b8969e0eefdace00e5a48ed",
+  "method": "deterministic accelerated simulation; matched v0.6.3/v0.7 planners and catalogs and 6 seeds; all combat results, upgrades, damage totals and minute samples asserted identical; normal HP/damage/XP; exact route knowledge; no injected fuel/XP/invulnerability or balancing changes; not human playtests",
+  "upgradesSHA256": "d60c1443ad94ab3c067a47bafc339f04c229f7b40b763061f38ae4701ff42042",
+  "sourceSHA256": "6d75ac4843c30fd5faa35cfc414e23077d6647371cb3edfc42079a3412b619e5",
   "results": [
     {
-      "version": "0.6.2 baseline",
+      "version": "0.6.3 baseline",
       "mode": "cycle",
       "build": "weave",
       "seed": 4721,
@@ -252,7 +252,7 @@
       ]
     },
     {
-      "version": "0.6.2 baseline",
+      "version": "0.6.3 baseline",
       "mode": "cycle",
       "build": "dense",
       "seed": 9481,
@@ -513,7 +513,7 @@
       ]
     },
     {
-      "version": "0.6.2 baseline",
+      "version": "0.6.3 baseline",
       "mode": "cycle",
       "build": "flow",
       "seed": 20261001,
@@ -763,7 +763,7 @@
       ]
     },
     {
-      "version": "0.6.2 baseline",
+      "version": "0.6.3 baseline",
       "mode": "cycle",
       "build": "weave",
       "seed": 8606,
@@ -1017,7 +1017,7 @@
       ]
     },
     {
-      "version": "0.6.2 baseline",
+      "version": "0.6.3 baseline",
       "mode": "cycle",
       "build": "dense",
       "seed": 6606,
@@ -1272,7 +1272,7 @@
       ]
     },
     {
-      "version": "0.6.2 baseline",
+      "version": "0.6.3 baseline",
       "mode": "cycle",
       "build": "flow",
       "seed": 4606,
@@ -1530,7 +1530,7 @@
       ]
     },
     {
-      "version": "0.6.3",
+      "version": "0.7.0",
       "mode": "shoot-only",
       "build": "weave",
       "seed": 4721,
@@ -1738,7 +1738,7 @@
       ]
     },
     {
-      "version": "0.6.3",
+      "version": "0.7.0",
       "mode": "leap-only",
       "build": "weave",
       "seed": 4721,
@@ -1946,7 +1946,7 @@
       ]
     },
     {
-      "version": "0.6.3",
+      "version": "0.7.0",
       "mode": "cycle",
       "build": "weave",
       "seed": 4721,
@@ -2158,7 +2158,7 @@
       ]
     },
     {
-      "version": "0.6.3",
+      "version": "0.7.0",
       "mode": "cycle",
       "build": "dense",
       "seed": 9481,
@@ -2419,7 +2419,7 @@
       ]
     },
     {
-      "version": "0.6.3",
+      "version": "0.7.0",
       "mode": "cycle",
       "build": "flow",
       "seed": 20261001,
@@ -2669,7 +2669,7 @@
       ]
     },
     {
-      "version": "0.6.3",
+      "version": "0.7.0",
       "mode": "cycle",
       "build": "weave",
       "seed": 8606,
@@ -2923,7 +2923,7 @@
       ]
     },
     {
-      "version": "0.6.3",
+      "version": "0.7.0",
       "mode": "cycle",
       "build": "dense",
       "seed": 6606,
@@ -3178,7 +3178,7 @@
       ]
     },
     {
-      "version": "0.6.3",
+      "version": "0.7.0",
       "mode": "cycle",
       "build": "flow",
       "seed": 4606,
