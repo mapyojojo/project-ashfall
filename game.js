@@ -410,7 +410,7 @@
   function updateEnemies(dt) {
     const p=run.player;
     for(const e of run.enemies) {
-      if(e.dead)continue;e.hit=Math.max(0,e.hit-dt);e.slow=Math.max(0,e.slow-dt);
+      if(e.dead)continue;e.stitchPrevX=e.x;e.stitchPrevY=e.y;e.hit=Math.max(0,e.hit-dt);e.slow=Math.max(0,e.slow-dt);
       e.seedCooldown=Math.max(0,e.seedCooldown-dt);e.seedFlash=Math.max(0,e.seedFlash-dt);e.spreadCooldown=Math.max(0,e.spreadCooldown-dt);e.stitchHold=Math.max(0,e.stitchHold-dt);e.wake=Math.max(0,e.wake-dt);
       if(e.ash){e.ashLife-=dt;if(e.ashLife<=0){e.ash--;e.ashLife=1.8;}}
       const dx=p.x-e.x,dy=p.y-e.y,d=Math.hypot(dx,dy)||1,nx=dx/d,ny=dy/d;
@@ -485,10 +485,10 @@
     return {kind,strength,color:kind==='triple'?'#93eed4':kind==='dense'?'#ffb473':'#ffd194',
       hitStop:kind==='dense'?.070+strength*.018:kind==='triple'?.065:.045,
       shake:kind==='dense'?7+strength:kind==='triple'?10:6,
-      radius:30+strength*8,sparks:8+Math.round(strength*4),
-      bass:kind==='dense'?58-strength*6:kind==='triple'?180:72,
-      slide:kind==='triple'?1.8:kind==='dense'?.32:.38,
-      noise:kind==='dense'?.10+strength*.02:kind==='triple'?.075:.13};
+      bass:kind==='dense'?100-strength*8:kind==='triple'?180:72,
+      slide:kind==='triple'?1.8:kind==='dense'?.42:.38,
+      noise:kind==='dense'?.07+strength*.01:kind==='triple'?.075:.13,
+      attack:kind==='dense'?.002:0,soundDuration:kind==='dense'?.12:.32,noiseDuration:kind==='dense'?.045:.22};
   }
   function stitchImpact(s,index,echo=false) {
     const t=echo?1-index/10:index/10,x=s.ax+(s.bx-s.ax)*t,y=s.ay+(s.by-s.ay)*t;
@@ -500,10 +500,25 @@
     if(index===0){
       run.shake=Math.max(run.shake,feedbackSpec(feedback,s.feedbackMultiplier).shake);run.leapFlash=feedback==='normal'?.06:0;
       blastSound(feedback,echo,s.feedbackMultiplier);
-    }else if(index%3===0)tone(feedback==='triple'?280+index*12:90+index*9,.09,'triangle',feedback==='dense'?.012:.025,feedback==='triple'?1.4:.35);
+    }else if(index%3===0&&(feedback!=='dense'||echo))tone(feedback==='triple'?280+index*12:90+index*9,.09,'triangle',.025,feedback==='triple'?1.4:.35);
   }
   function blastSound(kind='normal',echo=false,multiplier=1) {
     const f=feedbackSpec(kind,multiplier);
+    if(kind==='dense'&&!echo){
+      if(!soundOn||!audio||audio.state!=='running')return;
+      // A single compressed, fast-attack stroke; no repetition of the ordinary blast tones.
+      const now=audio.currentTime,osc=audio.createOscillator(),shape=audio.createWaveShaper(),gain=audio.createGain();
+      osc.type='triangle';osc.frequency.setValueAtTime(f.bass,now);osc.frequency.exponentialRampToValueAtTime(f.bass*f.slide,now+.065);
+      shape.curve=Float32Array.from({length:128},(_,i)=>Math.tanh((i/127*2-1)*2.5)/Math.tanh(2.5));shape.oversample='2x';
+      const peak=.14+f.strength*.016;gain.gain.setValueAtTime(0,now);gain.gain.linearRampToValueAtTime(peak,now+f.attack);gain.gain.setValueAtTime(peak*.8,now+.008);gain.gain.exponentialRampToValueAtTime(.0001,now+f.soundDuration);
+      osc.connect(shape);shape.connect(gain);gain.connect(audio.destination);osc.start(now);osc.stop(now+f.soundDuration);
+      const length=Math.floor(audio.sampleRate*f.noiseDuration),buffer=audio.createBuffer(1,length,audio.sampleRate),data=buffer.getChannelData(0);
+      for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,4);
+      const noise=audio.createBufferSource(),filter=audio.createBiquadFilter(),transient=audio.createGain();
+      noise.buffer=buffer;filter.type='bandpass';filter.frequency.value=750;filter.Q.value=.8;
+      transient.gain.setValueAtTime(f.noise,now);transient.gain.exponentialRampToValueAtTime(.0001,now+f.noiseDuration);
+      noise.connect(filter);filter.connect(transient);transient.connect(audio.destination);noise.start(now);return;
+    }
     tone(echo?100:f.bass,kind==='dense'?.26:.32,'sine',echo?.08:kind==='dense'?.13+f.strength*.025:kind==='triple'?.065:.14,echo?.38:f.slide);
     tone(kind==='triple'?420:kind==='dense'?185:140,kind==='dense'?.10:.17,'triangle',echo?.035:kind==='triple'?.045:.07,kind==='triple'?1.65:.3);
     if(!soundOn||!audio||audio.state!=='running')return;
@@ -514,10 +529,36 @@
     noise.buffer=buffer;filter.type=kind==='triple'?'bandpass':'lowpass';filter.frequency.value=kind==='triple'?1500:kind==='dense'?480:700;gain.gain.value=echo?.06:f.noise;
     noise.connect(filter);filter.connect(gain);gain.connect(audio.destination);noise.start();
   }
+  function frontCrossing(s,e,fromTimer,toTimer,delay=0,width=s.width) {
+    const dt=fromTimer-toTimer;if(dt<=0)return null;
+    const begin=Math.max(0,(fromTimer+delay)/dt),end=Math.min(1,(fromTimer+delay+.28)/dt);
+    // Clip to the active sweep, including sub-frame warmup and completion. Afterglow never hits.
+    if(begin>end||end<0||begin>1||fromTimer+delay<=-.28)return null;
+    const dx=s.bx-s.ax,dy=s.by-s.ay,length2=dx*dx+dy*dy||1;
+    const ax=e.stitchPrevX??e.x,ay=e.stitchPrevY??e.y,vx=e.x-ax,vy=e.y-ay;
+    const u0=((ax-s.ax)*dx+(ay-s.ay)*dy)/length2,du=(vx*dx+vy*dy)/length2;
+    const breaks=[begin,end];
+    // Projection clamps at each endpoint: split there so even a fast crossing remains linear.
+    if(du)for(const edge of [0,1]){const t=(edge-u0)/du;if(t>begin&&t<end)breaks.push(t);}
+    breaks.sort((a,b)=>a-b);
+    const relative=t=>{const value=clamp(u0+du*t,0,1)-clamp(-(fromTimer-dt*t+delay)/.28,0,1);return Math.abs(value)<1e-10?0:value;};
+    for(let i=0;i<breaks.length-1;i++){
+      const a=breaks[i],b=breaks[i+1],ra=relative(a),rb=relative(b);
+      if(ra*rb>0)continue;
+      let t;
+      if(Math.abs(ra-rb)<1e-10){
+        // A foe moving with the front can cross its width between both sampled positions.
+        const v0=(ax-s.ax)*dy-(ay-s.ay)*dx,dv=vx*dy-vy*dx;
+        t=dv?clamp(-v0/dv,a,b):a;
+      }else t=a+(b-a)*ra/(ra-rb);
+      if(segmentDistance(ax+vx*t,ay+vy*t,s.ax,s.ay,s.bx,s.by)<width+e.r)return t;
+    }
+    return null;
+  }
   function updateStitches(dt) {
     const p=run.player;
     for(const s of run.stitches) {
-      s.timer-=dt;s.life-=dt;
+      const previousTimer=s.timer;s.timer-=dt;s.life-=dt;
       if(!s.count){if(s.timer<=0)s.exploded=true;continue;}
       if(s.timer<=0){
         s.exploded=true;s.progress=clamp(-s.timer/.28,0,1);
@@ -529,22 +570,28 @@
         const nodes=Math.min(11,1+Math.floor(s.echoProgress*10));
         while(s.echoNodes<nodes)stitchImpact(s,s.echoNodes++,true);
       }
+      const mainActive=previousTimer>-.28&&s.timer<=0,echoActive=p.stitchEcho&&previousTimer>-.78&&s.timer<=-.5;
+      if(!mainActive&&!echoActive)continue;
       for(const e of run.enemies){
-        if(e.dead||!s.exploded)continue;
+        // Splitter children born in this hit loop have no earlier motion sample to cross.
+        if(e.dead||!s.exploded||e.stitchPrevX===undefined)continue;
         const dx=s.bx-s.ax,dy=s.by-s.ay,length=Math.hypot(dx,dy)||1;
-        const fraction=clamp(((e.x-s.ax)*dx+(e.y-s.ay)*dy)/(length*length),0,1);
-        const distance=segmentDistance(e.x,e.y,s.ax,s.ay,s.bx,s.by);if(distance>=s.width*(p.stitchEcho>=2?1.35:1)+e.r)continue;
-        const hit=(ids,scale)=>{
+        const hit=(ids,scale,crossing)=>{
           if(ids.has(e.id))return;ids.add(e.id);
           const first=s.hitIds.size===1&&!s.echoed;
           hurtEnemy(e,lineDamage(s,e,scale),'stitch',dx/length*65,dy/length*65);
-          const focus=s.feedback==='dense'&&ids===s.hitIds&&s.targets.has(e.id),f=feedbackSpec(s.feedback,s.denseMultiplier*pressureMultiplier(s.targets.get(e.id)||0));
+          const focus=s.feedback==='dense'&&ids===s.hitIds,f=feedbackSpec(s.feedback,s.denseMultiplier*pressureMultiplier(s.targets.get(e.id)||0));
           particle(e.x,e.y,'#fff4d5',9,focus?110:190,4);if(p.stitchSlow)e.slow=p.stitchSlow;
-          if(focus)run.impacts.push({x:e.x,y:e.y,life:.32,max:.32,feedback:'dense',focus:true,strength:f.strength});
-          if(first){run.hitStop=Math.max(run.hitStop,f.hitStop);tone(s.feedback==='triple'?220:45,.16,'sine',s.feedback==='triple'?.04:.1,s.feedback==='triple'?1.6:.55);}
+          if(focus){const x=(e.stitchPrevX??e.x)+(e.x-(e.stitchPrevX??e.x))*crossing,y=(e.stitchPrevY??e.y)+(e.y-(e.stitchPrevY??e.y))*crossing;
+            run.impacts.push({x,y,life:.14,max:.14,feedback:'dense',focus:true,marker:s.targets.has(e.id),strength:f.strength});}
+          if(first){run.hitStop=Math.max(run.hitStop,f.hitStop);if(s.feedback!=='dense')tone(s.feedback==='triple'?220:45,.16,'sine',s.feedback==='triple'?.04:.1,s.feedback==='triple'?1.6:.55);}
         };
-        if(distance<s.width+e.r&&fraction<=s.progress+.035)hit(s.hitIds,1);
-        if(!e.dead&&s.echoed&&1-fraction<=s.echoProgress+.035)hit(s.echoIds,p.stitchEcho===1?.75:1);
+        const crossing=mainActive?frontCrossing(s,e,previousTimer,s.timer):null;
+        if(crossing!==null)hit(s.hitIds,1,crossing);
+        if(!e.dead&&echoActive){
+          const reverse={ax:s.bx,ay:s.by,bx:s.ax,by:s.ay,width:s.width},back=frontCrossing(reverse,e,previousTimer,s.timer,.5,s.width*(p.stitchEcho>=2?1.35:1));
+          if(back!==null)hit(s.echoIds,p.stitchEcho===1?.75:1,back);
+        }
       }
     }
     for(const s of run.stitches){const rank=p.upgrades.point||0,e=s.pointTarget;
@@ -673,14 +720,18 @@
   function drawStitches() {
     ctx.save();ctx.lineCap='round';
     for(const s of run.stitches){
-      const alpha=clamp(s.life*2,0,1),col=feedbackSpec(s.feedback).color;ctx.globalAlpha=alpha;
-      line(s.ax,s.ay,s.bx,s.by,s.count?col+'19':'#89a39644',s.count?s.width*2:2);
+      const alpha=clamp(s.life*2,0,1),col=feedbackSpec(s.feedback).color,dense=s.feedback==='dense',spent=s.progress===1;ctx.globalAlpha=alpha;
+      line(s.ax,s.ay,s.bx,s.by,s.count?col+(spent?'08':'19'):'#89a39644',s.count?s.width*2:2);
       if(!s.count)continue;
       // Unlit fuse glows tightly before a white hot front walks from origin to destination.
-      line(s.ax,s.ay,s.bx,s.by,s.feedback==='normal'?'#ffbd7866':col+'66',10);line(s.ax,s.ay,s.bx,s.by,s.feedback==='triple'?'#dbfff2':'#ffe7ba',s.exploded?1.5:3.5);
+      if(!spent){line(s.ax,s.ay,s.bx,s.by,s.feedback==='normal'?'#ffbd7866':col+'66',dense?7:10);line(s.ax,s.ay,s.bx,s.by,s.feedback==='triple'?'#dbfff2':dense?'#fff4e5':'#ffe7ba',s.exploded?1.5:dense?2.5:3.5);}
       const bx=s.ax+(s.bx-s.ax)*s.progress,by=s.ay+(s.by-s.ay)*s.progress;
-      if(s.exploded){line(s.ax,s.ay,bx,by,col+'44',s.feedback==='dense'?12:24);line(s.ax,s.ay,bx,by,col,4);}
-      if(s.echoed){const ex=s.bx+(s.ax-s.bx)*s.echoProgress,ey=s.by+(s.ay-s.by)*s.echoProgress;line(s.bx,s.by,ex,ey,'#a6f9e233',run.player.stitchEcho>=2?s.width*2.7:26);line(s.bx,s.by,ex,ey,'#bfffe6',5);}
+      if(s.exploded){
+        line(s.ax,s.ay,bx,by,col+(spent?'18':'44'),dense?10:24);
+        line(s.ax,s.ay,bx,by,spent?col+'30':dense?'#ffe2b7':col,spent?1.5:dense?2.5:4);
+        if(!spent&&dense){const dx=s.bx-s.ax,dy=s.by-s.ay,l=Math.hypot(dx,dy)||1;line(bx-dx/l*14,by-dy/l*14,bx,by,'#fff8ed',4);circle(bx,by,5,'#fff3df');}
+      }
+      if(s.echoed){const ex=s.bx+(s.ax-s.bx)*s.echoProgress,ey=s.by+(s.ay-s.by)*s.echoProgress,done=s.echoProgress===1;line(s.bx,s.by,ex,ey,done?'#a6f9e210':'#a6f9e233',run.player.stitchEcho>=2?s.width*2.7:26);line(s.bx,s.by,ex,ey,done?'#bfffe630':'#bfffe6',done?1.5:5);}
       if(!s.exploded){circle(s.ax,s.ay,9+Math.sin(ambient*45)*3,col+'55',col,2);circle(s.bx,s.by,18,null,col+'99',2);}
     }
     for(const q of run.trails){ctx.globalAlpha=q.life/.22*.4;polygon(q.x,q.y,16,3,q.aim+Math.PI,q.feedback==='dense'?'#ffd194':q.feedback==='triple'?'#93eed4':'#c8eadc');}
@@ -703,14 +754,13 @@
         circle(q.x,q.y,6+t*12,'#ffb47344');continue;
       }
       if(!q.echo&&q.feedback==='dense'){
-        if(!q.focus){circle(q.x,q.y,6*(1-t),'#ffc48066');continue;}
-        const f=feedbackSpec('dense',1+(q.strength||0)*2),r=f.radius*(1-t)+8;
-        ctx.save();ctx.translate(q.x+Math.sin(t*57)*(1-t)*2.5,q.y+Math.cos(t*63)*(1-t)*1.5);
-        circle(0,0,r,'#ff9c501a','#ffb473',2.5);circle(0,0,r*.65,null,'#ffe9c7',1.5);
-        // Fixed spokes avoid any interaction with combat RNG or the shared particle cap.
-        for(let i=0;i<f.sparks;i++){const a=i/f.sparks*TAU+.25,outer=r+12*(1-t),inner=r*.55;
-          line(Math.cos(a)*outer,Math.sin(a)*outer,Math.cos(a)*inner,Math.sin(a)*inner,'#ffcf97',1.8);}
-        if(t<.32){ctx.globalAlpha=(1-t/.32)*.9;circle(0,0,9*(1-t/.32),'#fff8ec');line(-25*(1-t),0,25*(1-t),0,'#fff3dd',3);}
+        const strength=q.strength||0;
+        if(!q.focus){ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.angle);
+          circle(0,0,(5+strength*2)*(1-t),'#fff4e5');line(-12*(1-t),0,12*(1-t),0,'#ffd3a3',2);ctx.restore();continue;}
+        ctx.save();ctx.translate(q.x,q.y);
+        // Every main-route hit flashes once. Captured targets get only a small success marker.
+        if(q.marker)circle(0,0,10+(1-t)*9,null,'#ffb473',1);
+        circle(0,0,(4+strength*2)*(1-t),'#fff8ec');line(-12*(1-t),0,12*(1-t),0,'#ffe4c0',2);
         ctx.restore();continue;
       }
       if(!q.echo&&q.feedback==='triple'){
@@ -794,7 +844,7 @@
   // Explicit test mode exposes mechanics for deterministic verification, never used in normal play.
   if(new URLSearchParams(location.search).has('test'))window.AshfallTest={
     start,update,spawnEnemy,hurtEnemy,hurtPlayer,startDash,endDash,seedEnemy,predictLeap,stitchDamage,addXp,chooseUpgrade,rollUpgrades,finish,goTitle,pause,resume,
-    segmentDistance,UPGRADES,TYPES,keys,mouse,drawGame,updateHud,wardSpec,denseSpec,pressureMultiplier,lineDamage,feedbackSpec,blastSound,weight,eligible,scatterShards,assistedAngle,showRelics,selectRelic,showStitchHelp,upgradeCard,
+    segmentDistance,UPGRADES,TYPES,keys,mouse,drawGame,updateHud,wardSpec,denseSpec,pressureMultiplier,lineDamage,feedbackSpec,blastSound,frontCrossing,weight,eligible,scatterShards,assistedAngle,showRelics,selectRelic,showStitchHelp,upgradeCard,
     get run(){return run;},get state(){return state;},get meta(){return meta;},get audioState(){return audio?.state;},seed(v){seed=v||1;},
     step(seconds){for(let t=0;t<seconds;t+=1/60)update(Math.min(1/60,seconds-t));},
     apply(id){const u=UPGRADES.find(u=>u.id===id);if(!u)throw new Error(id);u.apply(run.player);run.player.upgrades[id]=(run.player.upgrades[id]||0)+1;updateBuild();updateHud();}

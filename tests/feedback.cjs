@@ -20,24 +20,26 @@ test('explicit normal, triple and dense feedback follows mutually exclusive earn
  }
 });
 test('unupgraded dense success has focused light and modest dedicated hit feel at multiplier one',()=>{
- const a=scene({marks:[6,0,0]});a.step(.34);
+ const a=scene({marks:[6,0,0]});a.step(.37);
  assert.equal(a.run.player.upgrades.dense,undefined);assert.equal(a.run.stitches[0].denseMultiplier,1);
  assert.ok(a.run.impacts.some(q=>q.focus&&q.feedback==='dense'&&q.strength===0));
  assert.equal(a.run.hitStop,.070);assert.ok(a.run.hitStop>a.feedbackSpec('normal').hitStop);
 });
 test('dense and pressure multipliers subtly scale capped feedback without changing their values',()=>{
- const a=scene({marks:[6,0,0],upgrades:['dense','dense','dense','pressure','pressure','pressure']});a.step(.34);
+ const a=scene({marks:[6,0,0],upgrades:['dense','dense','dense','pressure','pressure','pressure']});a.step(.37);
  const s=a.run.stitches[0],f=a.feedbackSpec('dense',s.feedbackMultiplier);
  assert.equal(s.denseMultiplier,1.75);assert.equal(a.pressureMultiplier(6),1.45);
  assert.equal(s.feedbackMultiplier,1.75*1.45);assert.ok(f.strength>0&&f.strength<1);
  assert.ok(a.run.impacts.find(q=>q.focus).strength>0);assert.ok(a.run.hitStop>.070&&a.run.hitStop<=.088);
- const max=a.feedbackSpec('dense',100);assert.equal(max.strength,1);assert.equal(max.sparks,12);assert.equal(max.radius,38);
+ const max=a.feedbackSpec('dense',100);assert.equal(max.strength,1);assert.ok(Math.abs(max.hitStop-.088)<1e-12);assert.equal(max.shake,8);
  assert.equal(a.feedbackSpec('dense',.5).strength,0);
 });
 test('triple sound opens upward while dense sound compresses downward with less high-frequency noise',()=>{
  const a=engine(),n=a.feedbackSpec('normal'),t=a.feedbackSpec('triple'),d=a.feedbackSpec('dense');
  assert.equal(n.hitStop,.045);assert.equal(t.hitStop,.065);
  assert.ok(t.slide>1&&d.slide<1);assert.ok(t.bass>d.bass);assert.ok(d.noise<n.noise);
+ assert.equal(d.attack,.002);assert.equal(d.soundDuration,.12);assert.equal(d.noiseDuration,.045);
+ assert.ok(d.soundDuration<n.soundDuration&&d.soundDuration<t.soundDuration);
 });
 test('point blast keeps its delayed timing, hit count and damage after focused main feedback',()=>{
  const a=scene({marks:[6,0,0],upgrades:['point','point']}),e=a.run.enemies[0];
@@ -58,36 +60,32 @@ test('triple dissolve light is capped separately and cannot clear ground attacks
  a.step(.25);assert.ok(!a.run.impacts.some(q=>q.clear));
 });
 
-// This optional repository-only audit is exact simulation parity, not a fun evaluation.
+// Audit protected numerical values against v0.6.1; hit timing intentionally differs.
 // A source archive can run the mechanics above without a local Git history.
-const root=path.resolve(__dirname,'..'),baseline='2be9dce';
+const root=path.resolve(__dirname,'..'),baseline='dae2977';
 let source;
 try{source=require('node:child_process').execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:game.js`],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();}catch{}
 if(source){
- const ignored=new Set(['particles','impacts','shake','hitStop','leapFlash','feedback','feedbackMultiplier']);
- const snapshot=a=>JSON.parse(JSON.stringify({state:a.state,run:a.run},(key,value)=>{
-  if(ignored.has(key))return;
-  if(Object.prototype.toString.call(value)==='[object Map]')return Array.from(value);
-  if(Object.prototype.toString.call(value)==='[object Set]')return Array.from(value);
-  return value;
- }));
- for(const setup of [
-  {marks:[3,0,0]}, {marks:[2,2,2],upgrades:['quick','chain','ward','heal']},
-  {marks:[6,0,0]}, {marks:[3,3,0],upgrades:['dense','echo','shards']},
-  {marks:[6,0,0],upgrades:['dense','dense','dense','pressure','pressure','point','point','echo','echo','frost']}
- ])test(`v0.6 combat and subsequent RNG match exactly: ${JSON.stringify(setup)}`,()=>{
-  const before=scene({...setup,source}),after=scene(setup);
-  for(const a of [before,after]){
-   a.run.player.hp=60;a.run.player.autoFire=true;
-   a.run.hazards.push({x:310,y:0,r:50,timer:1,life:1.45,damage:24,hit:false});
-   for(let i=0;i<25;i++)a.run.hostile.push({x:310,y:80+i,vx:-120,vy:0,r:4,life:3,damage:12});
+ test('enemy definitions, success thresholds, damage multipliers and ward values match v0.6.1',()=>{
+  const before=engine({source}),after=engine();assert.equal(JSON.stringify(after.TYPES),JSON.stringify(before.TYPES));
+  for(let rank=0;rank<=3;rank++){
+   if(rank)for(const a of [before,after]){a.apply('dense');a.apply('pressure');}
+   for(const targets of [0,1,2,3,6])for(const ash of [0,1,5,6,9,12,18]){
+    assert.equal(JSON.stringify(after.denseSpec(targets,ash)),JSON.stringify(before.denseSpec(targets,ash)));
+    assert.equal(after.pressureMultiplier(ash),before.pressureMultiplier(ash));
+    assert.equal(JSON.stringify(after.wardSpec(ash,targets)),JSON.stringify(before.wardSpec(ash,targets)));
+    for(const danger of [0,2,8])assert.equal(after.stitchDamage(ash,6,danger),before.stitchDamage(ash,6,danger));
+   }
   }
-  for(let i=0;i<360;i++){
-   for(const a of [before,after]){if(i===120){a.run.player.dashTimer=0;a.startDash(-1,0);}a.update(1/60);}
-   assert.deepEqual(snapshot(after),snapshot(before),`simulation step ${i}`);
+ });
+ test('triple, dense, healing and return rewards at landing match v0.6.1',()=>{
+  for(const marks of [[3,0,0],[2,2,2],[6,0,0],[3,3,0]]){
+   const setup={marks,upgrades:['quick','chain','heal','ward','dense','pressure']};
+   const before=scene({...setup,source}),after=scene(setup);
+   for(const a of [before,after]){a.run.player.hp=60;a.step(.2);}
+   const snapshot=a=>JSON.stringify({last:a.run.lastLeap,hp:a.run.player.hp,cd:a.run.player.dashTimer,bonus:a.run.player.bonusStitch,wards:a.run.wards});
+   assert.equal(snapshot(after),snapshot(before));
   }
-  for(let i=0;i<25;i++){const b=before.spawnEnemy('runner'),a=after.spawnEnemy('runner');assert.deepEqual(JSON.parse(JSON.stringify(a)),JSON.parse(JSON.stringify(b)));}
-  before.rollUpgrades();after.rollUpgrades();assert.equal(after.run.cards.map(u=>u.id).join(),before.run.cards.map(u=>u.id).join());
  });
  // Upgrade definitions, spawn odds and numerical stages must be byte-identical.
  const old=require('node:child_process').execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:upgrades.js`],{cwd:root});

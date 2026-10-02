@@ -1,9 +1,9 @@
 {
-  "version": "0.6",
+  "version": "0.6.2",
   "change": "v0.6 staged family cards, bounded ricochet, dense blasts, shards, capped chain, preserved ground attacks and direct file startup.",
-  "date": "2026-10-01T14:45:35.386Z",
+  "date": "2026-10-02T05:25:00.601Z",
   "upgradesSHA256": "2758b96d032b3522d7abd8fb46433e5502bbc2806fa4a5a1d3746e4f5acc91e1",
-  "sourceSHA256": "6adeb101026e809856644758668fa82a56062c483fafedee0ab3219af20f73f1",
+  "sourceSHA256": "fe66f74052f5d78ca3544172fb71a6ee85d114d62f69b1d4c53d712cb3a1db2c",
   "browser": "Edg/154.0.4258.48",
   "runtimeErrors": 0,
   "clarity": {

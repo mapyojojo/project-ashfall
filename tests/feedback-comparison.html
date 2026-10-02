@@ -10,25 +10,28 @@ body{margin:24px;background:#111c21;color:#e3ece4;font:16px/1.6 system-ui,sans-s
 <p>同じ敵・位置・経路を使用。左は3灰、中央は3体×2灰、右は1体×6灰。敵は生存させて演出を観察します。</p>
 <label>時点 <input id="time" type="range" min="0" max="1300" step="10" value="380"><output id="stamp"></output></label>
 <label>密縫い <select id="power"><option value="base">強化なし</option><option value="boost">密縫いLv3＋灰圧Lv3</option><option value="point">一点穿ちLv2（基礎密縫い）</option></select></label>
+<label>状態 <select id="scenario"><option value="feedback">演出比較</option><option value="main">本撃後に敵が入る</option><option value="echo">再炸裂後に敵が入る</option></select></label>
 <button id="play" disabled>順番に再生（音声あり）</button>
 <div class="panels">
  <section class="panel"><h2>通常灰縫い</h2><div class="frame"><iframe title="通常灰縫い" src="../index.html?test"></iframe></div></section>
  <section class="panel triple"><h2>三重縫い</h2><div class="frame"><iframe title="三重縫い" src="../index.html?test"></iframe></div></section>
  <section class="panel dense"><h2>密縫い</h2><div class="frame"><iframe title="密縫い" src="../index.html?test"></iframe></div></section>
 </div>
-<small>0ms：予告 / 180ms：着地・予熱 / 380ms：炸裂 / 500ms：安全圏 / 710・940ms：一点穿ち。時点はゲーム内時間。再生時はヒットストップも含みます。</small>
+<small>0ms：予告 / 180ms：着地・予熱 / 430ms：炸裂 / 710・940ms：一点穿ち。本撃後の敵は620ms、再炸裂後の敵は1100msで経路へ入ります。敵HPは各20000。時点はゲーム内時間。</small>
 <script>
 (() => {
- const frames=[...document.querySelectorAll('iframe')],time=document.getElementById('time'),power=document.getElementById('power'),play=document.getElementById('play');
+ const frames=[...document.querySelectorAll('iframe')],time=document.getElementById('time'),power=document.getElementById('power'),scenario=document.getElementById('scenario'),play=document.getElementById('play');
  let generation=0,ready=0;
  function setup(index){
   const f=frames[index],a=f.contentWindow.AshfallTest;a.start();a.seed(600601);a.run.onboarding.disabled=true;
   a.run.enemies=[];a.run.spawnTimer=1000;a.run.player.autoFire=false;a.mouse.active=false;a.run.player.aim=0;
   a.apply('heavy');a.apply('heavy');
+  if(scenario.value==='echo'){a.apply('echo');a.apply('echo');}
   if(index===2&&power.value==='boost')for(const id of ['dense','dense','dense','pressure','pressure','pressure'])a.apply(id);
   if(index===2&&power.value==='point'){a.apply('point');a.apply('point');}
   const marks=index===1?[2,2,2]:index===2?[0,6,0]:[0,3,0];
   [80,170,260].forEach((x,i)=>{const e=a.spawnEnemy('brute',x,0);e.speed=0;e.wake=1000;e.hp=e.maxHp=20000;if(marks[i])a.seedEnemy(e,marks[i]);});
+  if(scenario.value!=='feedback'){const e=a.spawnEnemy('runner',220,190);e.testLate=true;e.speed=0;e.wake=1000;e.hp=e.maxHp=20000;}
   a.run.camX=155;a.run.camY=0;
   return a;
  }
@@ -36,24 +39,34 @@ body{margin:24px;background:#111c21;color:#e3ece4;font:16px/1.6 system-ui,sans-s
   a.pause();const doc=frames[index].contentDocument;doc.getElementById('pause').hidden=true;
   for(const id of ['hud','coach','announcement','bossHud'])doc.getElementById(id).hidden=true;
   a.run.texts=[];a.run.camX=155;a.run.camY=0;a.run.shake=0;a.drawGame();
+  let status=frames[index].parentElement.parentElement.querySelector('.late-state');
+  if(!status){status=document.createElement('small');status.className='late-state';frames[index].parentElement.parentElement.append(status);}
+  const e=a.run.enemies.find(e=>e.testLate);
+  status.textContent=e?`遅れて入る敵：HP ${Math.round(e.hp)} / 20000 · ${e.y>100?'経路外で待機':'経路へ進入済み'}`:'';
  }
  function render(){
   if(ready!==3)return;++generation;
   const seconds=Number(time.value)/1000;document.getElementById('stamp').value=`${time.value}ms`;
-  frames.forEach((_,i)=>{const a=setup(i);if(seconds){a.startDash(1,0);a.step(seconds);}freeze(a,i);});
+  frames.forEach((_,i)=>{const a=setup(i);if(seconds){a.startDash(1,0);
+    const enter=scenario.value==='echo'?1.10:.62;
+    if(scenario.value!=='feedback'&&seconds>=enter){a.step(enter);const e=a.run.enemies.find(e=>e.testLate);e.y=0;a.step(seconds-enter);}else a.step(seconds);
+   }freeze(a,i);});
  }
  frames.forEach(f=>f.addEventListener('load',()=>{if(++ready===3){play.disabled=false;render();}}));
- time.oninput=render;power.onchange=render;
+ time.oninput=render;power.onchange=render;scenario.onchange=()=>{time.value=scenario.value==='echo'?1250:scenario.value==='main'?850:430;render();};
  play.onclick=async()=>{
   if(ready!==3||play.disabled)return;
-  const token=++generation;time.disabled=power.disabled=play.disabled=true;
+  const token=++generation;time.disabled=power.disabled=scenario.disabled=play.disabled=true;
   // Initialize all contexts within this user gesture, then isolate the three sounds.
   frames.forEach((_,i)=>freeze(setup(i),i));
   for(let i=0;i<3&&token===generation;i++){
    const a=setup(i);a.startDash(1,0);
+   const late=a.run.enemies.find(e=>e.testLate);
+   const entry=late?setInterval(()=>{if(a.run.time>=(scenario.value==='echo'?1.1:.62)){late.y=0;clearInterval(entry);}},10):null;
    await new Promise(resolve=>setTimeout(resolve,1700));freeze(a,i);
+   if(entry)clearInterval(entry);
   }
-  time.disabled=power.disabled=play.disabled=false;
+  time.disabled=power.disabled=scenario.disabled=play.disabled=false;
  };
  window.FeedbackComparison={render,get ready(){return ready;},get scenes(){return frames.map(f=>f.contentWindow.AshfallTest);}};
 })();

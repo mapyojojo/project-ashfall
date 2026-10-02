@@ -1,9 +1,9 @@
 {
-  "version": "0.6",
-  "date": "2026-10-01",
+  "version": "0.6.2",
+  "date": "2026-10-02T05:24:48.302Z",
   "browser": "Edg/154.0.4258.48",
   "upgradesSHA256": "2758b96d032b3522d7abd8fb46433e5502bbc2806fa4a5a1d3746e4f5acc91e1",
-  "sourceSHA256": "6adeb101026e809856644758668fa82a56062c483fafedee0ab3219af20f73f1",
+  "sourceSHA256": "fe66f74052f5d78ca3544172fb71a6ee85d114d62f69b1d4c53d712cb3a1db2c",
   "passed": [
     "normal build starts with consistent player terminology",
     "title/help navigation",
@@ -15,7 +15,7 @@
     "opening cycle completes within first minute without state injection",
     "pause/resume stops game time",
     "preparation defaults on and can be paused",
-    "420 game seconds through actual keyboard/mouse input",
+    "actual keyboard/mouse input: 420.1 seconds, goal-reached, target 420",
     "natural upgrade choices through number keys",
     "natural damage is dominated by ash stitch",
     "title/restart reset cycle statistics",
@@ -119,7 +119,7 @@
     },
     "front": {
       "time": 0.39,
-      "kills": 2,
+      "kills": 1,
       "harvests": 0,
       "ash": 9,
       "nodes": 5,
@@ -437,43 +437,44 @@
   },
   "naturalInput": {
     "goalSeconds": 420,
-    "wallSeconds": 438.326,
+    "wallSeconds": 441.641,
     "upgradesChosen": 12,
-    "time": 420.13320000008264,
-    "hp": 63.187577499995186,
-    "kills": 830,
+    "outcome": "goal-reached",
+    "time": 420.0999000000826,
+    "hp": 99,
+    "kills": 823,
     "level": 13,
     "bosses": 2,
-    "poweredLeaps": 212,
-    "denseLeaps": 46,
+    "poweredLeaps": 258,
+    "denseLeaps": 42,
     "chainLeaps": 0,
     "shardsFired": 0,
-    "comboLeaps": 17,
-    "bonusLeaps": 13,
-    "maxStitchTargets": 4,
-    "bulletsCleared": 110,
+    "comboLeaps": 54,
+    "bonusLeaps": 46,
+    "maxStitchTargets": 9,
+    "bulletsCleared": 185,
     "upgrades": {
       "pierce": 3,
-      "quick": 1,
-      "ricochet": 2,
-      "frost": 2,
-      "scatter": 2,
-      "echo": 1,
-      "width": 1
+      "propagation": 2,
+      "width": 1,
+      "quick": 2,
+      "magnet": 1,
+      "heal": 2,
+      "scatter": 1
     },
     "damageTotals": {
-      "bullet": 4780.078273800632,
-      "stitch": 46044.850760535286
+      "bullet": 1714.4954976666131,
+      "stitch": 50208.343853779996
     },
-    "stitchDamageShare": 0.9059501239918831,
+    "stitchDamageShare": 0.9669799356298329,
     "onboarding": {
       "stage": 2,
       "introduced": true,
       "disabled": false,
-      "firstSeed": 1.6165999999999987,
-      "firstLeap": 2.933199999999997,
-      "firstKill": 3.1331999999999973,
-      "completeAt": 3.1331999999999973
+      "firstSeed": 1.6165999999999985,
+      "firstLeap": 2.916499999999997,
+      "firstKill": 3.1164999999999963,
+      "completeAt": 3.1164999999999963
     }
   },
   "limits": "Automated real-time input and visual inspection; not a human playtest. Relic/effects/stress/victory/layout tests use explicit test state setup."

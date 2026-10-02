@@ -1,8 +1,8 @@
 {
-  "version": "0.6.1",
-  "date": "2026-10-01T14:53:23.507Z",
-  "baseline": "2be9dce",
-  "sourceSHA256": "6adeb101026e809856644758668fa82a56062c483fafedee0ab3219af20f73f1",
+  "version": "0.6.2",
+  "date": "2026-10-02T05:25:09.843Z",
+  "baseline": "dae2977",
+  "sourceSHA256": "fe66f74052f5d78ca3544172fb71a6ee85d114d62f69b1d4c53d712cb3a1db2c",
   "upgradesSHA256": "2758b96d032b3522d7abd8fb46433e5502bbc2806fa4a5a1d3746e4f5acc91e1",
   "browser": "Edg/154.0.4258.48",
   "runtimeErrors": 0,
@@ -18,6 +18,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -25,6 +26,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -32,6 +34,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -39,6 +42,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -46,6 +50,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -53,6 +58,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -60,6 +66,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -71,6 +78,7 @@
           "max": 0.39499999999999996
         }
       ],
+      "late": [],
       "damage": 323.67999999999995
     },
     {
@@ -84,6 +92,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -91,6 +100,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -98,6 +108,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -105,6 +116,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -112,6 +124,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -119,6 +132,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -126,6 +140,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -137,6 +152,7 @@
           "max": 0.84
         }
       ],
+      "late": [],
       "damage": 489.59999999999997
     },
     {
@@ -150,6 +166,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -157,6 +174,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -164,27 +182,7 @@
         {
           "kind": "dense",
           "focus": false,
-          "point": false,
-          "echo": false,
-          "strength": 0
-        },
-        {
-          "kind": "dense",
-          "focus": false,
-          "point": false,
-          "echo": false,
-          "strength": 0
-        },
-        {
-          "kind": "dense",
-          "focus": false,
-          "point": false,
-          "echo": false,
-          "strength": 0
-        },
-        {
-          "kind": "dense",
-          "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -192,6 +190,7 @@
         {
           "kind": "dense",
           "focus": true,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -199,6 +198,39 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": false,
+          "strength": 0
+        },
+        {
+          "kind": "dense",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": false,
+          "strength": 0
+        },
+        {
+          "kind": "dense",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": false,
+          "strength": 0
+        },
+        {
+          "kind": "dense",
+          "focus": true,
+          "marker": true,
+          "point": false,
+          "echo": false,
+          "strength": 0
+        },
+        {
+          "kind": "dense",
+          "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -210,6 +242,7 @@
           "max": 0.43999999999999995
         }
       ],
+      "late": [],
       "damage": 560.3199999999999
     }
   ],
@@ -225,6 +258,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -232,6 +266,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -239,6 +274,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -246,6 +282,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -253,6 +290,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -260,6 +298,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -267,6 +306,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -274,6 +314,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -281,6 +322,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -292,6 +334,7 @@
           "max": 0.39499999999999996
         }
       ],
+      "late": [],
       "damage": 432.4799999999999
     },
     {
@@ -305,6 +348,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -312,6 +356,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -319,6 +364,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -326,6 +372,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -333,6 +380,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -340,6 +388,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -347,6 +396,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -354,6 +404,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -361,6 +412,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -372,6 +424,7 @@
           "max": 0.84
         }
       ],
+      "late": [],
       "damage": 734.4
     },
     {
@@ -385,6 +438,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -392,6 +446,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -399,6 +454,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -406,6 +462,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -413,6 +470,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -420,6 +478,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -427,6 +486,7 @@
         {
           "kind": "dense",
           "focus": true,
+          "marker": true,
           "point": false,
           "echo": false,
           "strength": 0
@@ -434,6 +494,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -441,6 +502,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -448,6 +510,15 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": false,
+          "strength": 0
+        },
+        {
+          "kind": "dense",
+          "focus": true,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -459,6 +530,7 @@
           "max": 0.43999999999999995
         }
       ],
+      "late": [],
       "damage": 734.3999999999999
     }
   ],
@@ -474,6 +546,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -481,6 +554,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -488,6 +562,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -495,6 +570,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -502,6 +578,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -509,6 +586,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -516,6 +594,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -527,6 +606,7 @@
           "max": 0.39499999999999996
         }
       ],
+      "late": [],
       "damage": 323.67999999999995
     },
     {
@@ -540,6 +620,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -547,6 +628,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -554,6 +636,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -561,6 +644,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -568,6 +652,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -575,6 +660,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -582,6 +668,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -593,6 +680,7 @@
           "max": 0.84
         }
       ],
+      "late": [],
       "damage": 489.59999999999997
     },
     {
@@ -606,6 +694,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0.76875
@@ -613,6 +702,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0.76875
@@ -620,27 +710,7 @@
         {
           "kind": "dense",
           "focus": false,
-          "point": false,
-          "echo": false,
-          "strength": 0.76875
-        },
-        {
-          "kind": "dense",
-          "focus": false,
-          "point": false,
-          "echo": false,
-          "strength": 0.76875
-        },
-        {
-          "kind": "dense",
-          "focus": false,
-          "point": false,
-          "echo": false,
-          "strength": 0.76875
-        },
-        {
-          "kind": "dense",
-          "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0.76875
@@ -648,6 +718,15 @@
         {
           "kind": "dense",
           "focus": true,
+          "marker": false,
+          "point": false,
+          "echo": false,
+          "strength": 0.375
+        },
+        {
+          "kind": "dense",
+          "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0.76875
@@ -655,6 +734,31 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": false,
+          "strength": 0.76875
+        },
+        {
+          "kind": "dense",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": false,
+          "strength": 0.76875
+        },
+        {
+          "kind": "dense",
+          "focus": true,
+          "marker": true,
+          "point": false,
+          "echo": false,
+          "strength": 0.76875
+        },
+        {
+          "kind": "dense",
+          "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0.76875
@@ -666,6 +770,7 @@
           "max": 0.43999999999999995
         }
       ],
+      "late": [],
       "damage": 1284.724
     }
   ],
@@ -681,6 +786,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -688,6 +794,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -695,6 +802,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -702,6 +810,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -709,6 +818,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -716,6 +826,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -723,6 +834,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -730,6 +842,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -737,6 +850,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -748,6 +862,7 @@
           "max": 0.39499999999999996
         }
       ],
+      "late": [],
       "damage": 432.4799999999999
     },
     {
@@ -761,6 +876,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -768,6 +884,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -775,6 +892,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -782,6 +900,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -789,6 +908,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -796,6 +916,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -803,6 +924,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -810,6 +932,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -817,6 +940,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -828,6 +952,7 @@
           "max": 0.84
         }
       ],
+      "late": [],
       "damage": 734.4
     },
     {
@@ -841,6 +966,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -848,6 +974,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -855,6 +982,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -862,6 +990,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -869,6 +998,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -876,6 +1006,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -883,6 +1014,7 @@
         {
           "kind": "dense",
           "focus": true,
+          "marker": true,
           "point": false,
           "echo": false,
           "strength": 0
@@ -890,6 +1022,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -897,6 +1030,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -904,6 +1038,15 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": false,
+          "strength": 0
+        },
+        {
+          "kind": "dense",
+          "focus": true,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -915,6 +1058,7 @@
           "max": 0.43999999999999995
         }
       ],
+      "late": [],
       "damage": 734.3999999999999
     }
   ],
@@ -930,6 +1074,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -937,6 +1082,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -944,6 +1090,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -951,6 +1098,7 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -958,12 +1106,14 @@
         {
           "kind": "normal",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
         }
       ],
       "wards": [],
+      "late": [],
       "damage": 432.4799999999999
     },
     {
@@ -977,6 +1127,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -984,6 +1135,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -991,6 +1143,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -998,6 +1151,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -1005,6 +1159,7 @@
         {
           "kind": "triple",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -1016,6 +1171,7 @@
           "max": 0.84
         }
       ],
+      "late": [],
       "damage": 734.4
     },
     {
@@ -1028,7 +1184,8 @@
       "impacts": [
         {
           "kind": "dense",
-          "focus": true,
+          "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -1036,6 +1193,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -1043,6 +1201,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -1050,6 +1209,7 @@
         {
           "kind": "dense",
           "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -1057,13 +1217,7 @@
         {
           "kind": "dense",
           "focus": false,
-          "point": false,
-          "echo": false,
-          "strength": 0
-        },
-        {
-          "kind": "dense",
-          "focus": false,
+          "marker": false,
           "point": false,
           "echo": false,
           "strength": 0
@@ -1071,11 +1225,13 @@
         {
           "kind": "point",
           "focus": false,
+          "marker": false,
           "point": true,
           "echo": false
         }
       ],
       "wards": [],
+      "late": [],
       "damage": 966.1439999999998
     }
   ],
@@ -1089,6 +1245,7 @@
       "pointPops": 0,
       "impacts": [],
       "wards": [],
+      "late": [],
       "damage": 432.4799999999999
     },
     {
@@ -1105,6 +1262,7 @@
           "max": 0.84
         }
       ],
+      "late": [],
       "damage": 734.4
     },
     {
@@ -1118,29 +1276,302 @@
         {
           "kind": "point",
           "focus": false,
+          "marker": false,
           "point": true,
           "echo": false
         },
         {
           "kind": "point",
           "focus": false,
+          "marker": false,
           "point": true,
           "echo": false
         }
       ],
       "wards": [],
+      "late": [],
       "damage": 1197.8879999999997
+    }
+  ],
+  "lateMain": [
+    {
+      "kind": "normal",
+      "targets": 1,
+      "ash": 3,
+      "multiplier": 1,
+      "hitStop": 0.045,
+      "pointPops": 0,
+      "impacts": [
+        {
+          "kind": "normal",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": false,
+          "strength": 0
+        }
+      ],
+      "wards": [],
+      "late": [
+        {
+          "hp": 20000,
+          "y": 0,
+          "mainHit": false,
+          "echoHit": false
+        }
+      ],
+      "damage": 432.4799999999999
+    },
+    {
+      "kind": "triple",
+      "targets": 3,
+      "ash": 6,
+      "multiplier": 1,
+      "hitStop": 0.065,
+      "pointPops": 0,
+      "impacts": [
+        {
+          "kind": "triple",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": false,
+          "strength": 0
+        }
+      ],
+      "wards": [
+        {
+          "radius": 182,
+          "max": 0.84
+        }
+      ],
+      "late": [
+        {
+          "hp": 20000,
+          "y": 0,
+          "mainHit": false,
+          "echoHit": false
+        }
+      ],
+      "damage": 734.4
+    },
+    {
+      "kind": "dense",
+      "targets": 1,
+      "ash": 6,
+      "multiplier": 1,
+      "hitStop": 0.07,
+      "pointPops": 0,
+      "impacts": [
+        {
+          "kind": "dense",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": false,
+          "strength": 0
+        }
+      ],
+      "wards": [],
+      "late": [
+        {
+          "hp": 20000,
+          "y": 0,
+          "mainHit": false,
+          "echoHit": false
+        }
+      ],
+      "damage": 734.3999999999999
+    }
+  ],
+  "lateEcho": [
+    {
+      "kind": "normal",
+      "targets": 1,
+      "ash": 3,
+      "multiplier": 1,
+      "hitStop": 0.045,
+      "pointPops": 0,
+      "impacts": [
+        {
+          "kind": "normal",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": true,
+          "strength": 0
+        },
+        {
+          "kind": "normal",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": true,
+          "strength": 0
+        },
+        {
+          "kind": "normal",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": true,
+          "strength": 0
+        },
+        {
+          "kind": "normal",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": true,
+          "strength": 0
+        }
+      ],
+      "wards": [],
+      "late": [
+        {
+          "hp": 20000,
+          "y": 0,
+          "mainHit": false,
+          "echoHit": false
+        }
+      ],
+      "damage": 864.9599999999998
+    },
+    {
+      "kind": "triple",
+      "targets": 3,
+      "ash": 6,
+      "multiplier": 1,
+      "hitStop": 0.065,
+      "pointPops": 0,
+      "impacts": [
+        {
+          "kind": "triple",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": true,
+          "strength": 0
+        },
+        {
+          "kind": "triple",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": true,
+          "strength": 0
+        },
+        {
+          "kind": "triple",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": true,
+          "strength": 0
+        },
+        {
+          "kind": "triple",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": true,
+          "strength": 0
+        }
+      ],
+      "wards": [],
+      "late": [
+        {
+          "hp": 20000,
+          "y": 0,
+          "mainHit": false,
+          "echoHit": false
+        }
+      ],
+      "damage": 1468.8
+    },
+    {
+      "kind": "dense",
+      "targets": 1,
+      "ash": 6,
+      "multiplier": 1,
+      "hitStop": 0.07,
+      "pointPops": 0,
+      "impacts": [
+        {
+          "kind": "dense",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": true,
+          "strength": 0
+        },
+        {
+          "kind": "dense",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": true,
+          "strength": 0
+        },
+        {
+          "kind": "dense",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": true,
+          "strength": 0
+        },
+        {
+          "kind": "dense",
+          "focus": false,
+          "marker": false,
+          "point": false,
+          "echo": true,
+          "strength": 0
+        }
+      ],
+      "wards": [],
+      "late": [
+        {
+          "hp": 20000,
+          "y": 0,
+          "mainHit": false,
+          "echoHit": false
+        }
+      ],
+      "damage": 1468.7999999999997
     }
   ],
   "sounds": [
     {
       "kind": "normal",
       "state": "running",
+      "profile": {
+        "kind": "normal",
+        "strength": 0,
+        "color": "#ffd194",
+        "hitStop": 0.045,
+        "shake": 6,
+        "bass": 72,
+        "slide": 0.38,
+        "noise": 0.13,
+        "attack": 0,
+        "soundDuration": 0.32,
+        "noiseDuration": 0.22
+      },
       "filters": [
         {
           "type": "lowpass",
           "frequency": 700
         }
+      ],
+      "oscillators": [
+        "sine",
+        "triangle"
+      ],
+      "shapers": [],
+      "buffers": [
+        0.22
       ],
       "gains": [
         1,
@@ -1151,11 +1582,32 @@
     {
       "kind": "triple",
       "state": "running",
+      "profile": {
+        "kind": "triple",
+        "strength": 0,
+        "color": "#93eed4",
+        "hitStop": 0.065,
+        "shake": 10,
+        "bass": 180,
+        "slide": 1.8,
+        "noise": 0.075,
+        "attack": 0,
+        "soundDuration": 0.32,
+        "noiseDuration": 0.22
+      },
       "filters": [
         {
           "type": "bandpass",
           "frequency": 1500
         }
+      ],
+      "oscillators": [
+        "sine",
+        "triangle"
+      ],
+      "shapers": [],
+      "buffers": [
+        0.22
       ],
       "gains": [
         1,
@@ -1166,18 +1618,42 @@
     {
       "kind": "dense",
       "state": "running",
+      "profile": {
+        "kind": "dense",
+        "strength": 0,
+        "color": "#ffb473",
+        "hitStop": 0.07,
+        "shake": 7,
+        "bass": 100,
+        "slide": 0.42,
+        "noise": 0.07,
+        "attack": 0.002,
+        "soundDuration": 0.12,
+        "noiseDuration": 0.045
+      },
       "filters": [
         {
-          "type": "lowpass",
-          "frequency": 480
+          "type": "bandpass",
+          "frequency": 750
         }
+      ],
+      "oscillators": [
+        "triangle"
+      ],
+      "shapers": [
+        {
+          "samples": 128,
+          "oversample": "2x"
+        }
+      ],
+      "buffers": [
+        0.045
       ],
       "gains": [
         1,
-        1,
-        0.10000000149011612
+        1
       ]
     }
   ],
-  "limits": "Actual browser canvas snapshots and live Web Audio graph verified. Visual inspection is separate; audio perception and feel require a human playtest. Deterministic combat parity ignores intentional hitstop wall time."
+  "limits": "Actual browser canvas snapshots and live Web Audio graph verified. Perceived clarity and gameplay impact require human playtests; front-only damage intentionally changes combat outcomes."
 }

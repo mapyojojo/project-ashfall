@@ -8,8 +8,8 @@ const root=path.resolve(__dirname,'..');
  const send=(method,params={})=>new Promise((resolve,reject)=>{const id=++next,timer=setTimeout(()=>{pending.delete(id);reject(new Error(method));},15000);pending.set(id,{resolve,reject,timer});ws.send(JSON.stringify({id,method,params}));});
  const evaluate=async expression=>{const r=await send('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw new Error(JSON.stringify(r.exceptionDetails));return r.result.value;};
  const wait=ms=>new Promise(r=>setTimeout(r,ms));
- const shot=async name=>{const r=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(root,'docs/screenshots',name),Buffer.from(r.data,'base64'));};
- const snapshot=()=>evaluate(`FeedbackComparison.scenes.map(a=>({kind:a.run.stitches[0]?.feedback??'preview',targets:a.run.lastLeap?.targets,ash:a.run.lastLeap?.freshAsh,multiplier:a.run.stitches[0]?.denseMultiplier,hitStop:a.run.hitStop,pointPops:a.run.stitches[0]?.pointPops,impacts:a.run.impacts.map(q=>({kind:q.feedback,focus:!!q.focus,point:!!q.point,echo:!!q.echo,strength:q.strength})),wards:a.run.wards.map(w=>({radius:w.r,max:w.max})),damage:a.run.damageTotals.stitch}))`);
+ const shot=async name=>{const r=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(root,'docs/screenshots',name.startsWith('feedback-')?'timing-'+name:name),Buffer.from(r.data,'base64'));};
+ const snapshot=()=>evaluate(`FeedbackComparison.scenes.map(a=>({kind:a.run.stitches[0]?.feedback??'preview',targets:a.run.lastLeap?.targets,ash:a.run.lastLeap?.freshAsh,multiplier:a.run.stitches[0]?.denseMultiplier,hitStop:a.run.hitStop,pointPops:a.run.stitches[0]?.pointPops,impacts:a.run.impacts.map(q=>({kind:q.feedback,focus:!!q.focus,marker:!!q.marker,point:!!q.point,echo:!!q.echo,strength:q.strength})),wards:a.run.wards.map(w=>({radius:w.r,max:w.max})),late:a.run.enemies.filter(e=>e.testLate).map(e=>({hp:e.hp,y:e.y,mainHit:a.run.stitches[0]?.hitIds.has(e.id)??false,echoHit:a.run.stitches[0]?.echoIds.has(e.id)??false})),damage:a.run.damageTotals.stitch}))`);
  const render=async(ms,power='base')=>{await evaluate(`document.getElementById('time').value=${ms};document.getElementById('power').value='${power}';FeedbackComparison.render()`);return snapshot();};
  try{
   await send('Runtime.enable');await send('Page.enable');await send('Emulation.setDeviceMetricsOverride',{width:1440,height:740,deviceScaleFactor:1,mobile:false});
@@ -21,28 +21,34 @@ const root=path.resolve(__dirname,'..');
   const main=await render(430);assert.deepEqual(main.map(s=>s.kind),['normal','triple','dense']);
   assert.ok(main[1].impacts.some(q=>q.kind==='triple'));assert.ok(main[2].impacts.some(q=>q.focus&&q.kind==='dense'&&q.strength===0));
   assert.equal(main[2].multiplier,1);await shot('feedback-comparison.png');
+  assert.ok(main[2].impacts.some(q=>q.focus&&q.marker));assert.ok(main[2].impacts.some(q=>q.focus&&!q.marker));
   const safety=await render(500);assert.ok(safety[1].wards[0].radius>safety[2].wards[0].radius);await shot('feedback-safety.png');
   const boosted=await render(430,'boost');assert.equal(boosted[2].multiplier,1.75);assert.ok(boosted[2].impacts.some(q=>q.focus&&q.strength>0));await shot('feedback-boosted.png');
   const beforePoint=await render(490,'point');assert.equal(beforePoint[2].pointPops,0);
   const point=await render(710,'point');assert.equal(point[2].pointPops,1);assert.ok(point[2].impacts.some(q=>q.point&&q.kind==='point'));await shot('feedback-point.png');
   const second=await render(940,'point');assert.equal(second[2].pointPops,2);
   console.log('PASS actual canvas comparison: preview, landing, main blast, safety, boosted dense and delayed point');
+  await evaluate("document.getElementById('scenario').value='main'");const lateMain=await render(850);assert.ok(lateMain.every(s=>s.late[0].hp===20000&&s.late[0].y===0&&!s.late[0].mainHit));await shot('timing-late-main.png');
+  await evaluate("document.getElementById('scenario').value='echo'");const lateEcho=await render(1250);assert.ok(lateEcho.every(s=>s.late[0].hp===20000&&!s.late[0].mainHit&&!s.late[0].echoHit));await shot('timing-late-echo.png');
+  await evaluate("document.getElementById('scenario').value='feedback'");await render(430);
+  console.log('PASS main and reverse afterglow: enemies enter with 20000 HP and receive no damage');
 
   // Observe the actual Web Audio graph, not only the profile helper.
   await evaluate(`(()=>{for(const f of document.querySelectorAll('iframe')){const w=f.contentWindow,p=w.AudioContext.prototype,events=[];w.feedbackAudioEvents=events;
-    for(const name of ['createOscillator','createBiquadFilter','createGain']){const original=p[name];p[name]=function(...args){const node=original.apply(this,args);events.push({name,node});return node;};}
+    for(const name of ['createOscillator','createBiquadFilter','createGain','createWaveShaper','createBuffer']){const original=p[name];p[name]=function(...args){const node=original.apply(this,args);events.push({name,node,args});return node;};}
    }})()`);
   const button=await evaluate(`(()=>{const r=document.getElementById('play').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
   await send('Input.dispatchMouseEvent',{type:'mousePressed',...button,button:'left',clickCount:1});await send('Input.dispatchMouseEvent',{type:'mouseReleased',...button,button:'left',clickCount:1});
   // Button activates all contexts; isolate dedicated blast calls after the live replay.
   await wait(5400);
-  const sounds=await evaluate(`(()=>{const frames=[...document.querySelectorAll('iframe')];return frames.map((f,i)=>{const w=f.contentWindow,a=w.AshfallTest;w.feedbackAudioEvents.length=0;a.blastSound(['normal','triple','dense'][i]);return {kind:['normal','triple','dense'][i],state:a.audioState,filters:w.feedbackAudioEvents.filter(e=>e.name==='createBiquadFilter').map(e=>({type:e.node.type,frequency:e.node.frequency.value})),gains:w.feedbackAudioEvents.filter(e=>e.name==='createGain').map(e=>e.node.gain.value)};});})()`);
+  const sounds=await evaluate(`(()=>{const frames=[...document.querySelectorAll('iframe')];return frames.map((f,i)=>{const w=f.contentWindow,a=w.AshfallTest;w.feedbackAudioEvents.length=0;a.blastSound(['normal','triple','dense'][i]);return {kind:['normal','triple','dense'][i],state:a.audioState,profile:a.feedbackSpec(['normal','triple','dense'][i]),filters:w.feedbackAudioEvents.filter(e=>e.name==='createBiquadFilter').map(e=>({type:e.node.type,frequency:e.node.frequency.value})),oscillators:w.feedbackAudioEvents.filter(e=>e.name==='createOscillator').map(e=>e.node.type),shapers:w.feedbackAudioEvents.filter(e=>e.name==='createWaveShaper').map(e=>({samples:e.node.curve.length,oversample:e.node.oversample})),buffers:w.feedbackAudioEvents.filter(e=>e.name==='createBuffer').map(e=>e.node.duration),gains:w.feedbackAudioEvents.filter(e=>e.name==='createGain').map(e=>e.node.gain.value)};});})()`);
   assert.ok(sounds.every(s=>s.state==='running'&&s.filters.length===1));
-  assert.deepEqual(sounds.map(s=>s.filters[0]),[{type:'lowpass',frequency:700},{type:'bandpass',frequency:1500},{type:'lowpass',frequency:480}]);
-  assert.ok(sounds[2].gains.at(-1)<sounds[0].gains.at(-1));
-  console.log('PASS live replay and activated Web Audio: airy triple bandpass, low dense compression, original normal filter');
+  assert.deepEqual(sounds.map(s=>s.filters[0]),[{type:'lowpass',frequency:700},{type:'bandpass',frequency:1500},{type:'bandpass',frequency:750}]);
+  assert.deepEqual(sounds[2].oscillators,['triangle']);assert.equal(sounds[2].shapers.length,1);assert.equal(sounds[0].shapers.length,0);assert.equal(sounds[1].shapers.length,0);
+  assert.ok(sounds[2].buffers[0]<.046&&sounds[0].buffers[0]>.21);assert.equal(sounds[2].profile.soundDuration,.12);assert.equal(sounds[2].profile.attack,.002);
+  console.log('PASS live Web Audio: single compressed triangle, 2ms attack, 120ms tail, 45ms transient; distinct ordinary/triple graphs');
   assert.equal(errors.length,0,JSON.stringify(errors));
   const hash=file=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex');
-  fs.writeFileSync(path.join(root,'feedback-verification.json'),JSON.stringify({version:'0.6.1',date:new Date().toISOString(),baseline:'2be9dce',sourceSHA256:hash('game.js'),upgradesSHA256:hash('upgrades.js'),browser:(await send('Browser.getVersion')).product,runtimeErrors:errors.length,main,safety,boosted,beforePoint,point,second,sounds,limits:'Actual browser canvas snapshots and live Web Audio graph verified. Visual inspection is separate; audio perception and feel require a human playtest. Deterministic combat parity ignores intentional hitstop wall time.'},null,2));
+  fs.writeFileSync(path.join(root,'feedback-verification.json'),JSON.stringify({version:'0.6.2',date:new Date().toISOString(),baseline:'dae2977',sourceSHA256:hash('game.js'),upgradesSHA256:hash('upgrades.js'),browser:(await send('Browser.getVersion')).product,runtimeErrors:errors.length,main,safety,boosted,beforePoint,point,second,lateMain,lateEcho,sounds,limits:'Actual browser canvas snapshots and live Web Audio graph verified. Perceived clarity and gameplay impact require human playtests; front-only damage intentionally changes combat outcomes.'},null,2));
  }finally{ws.close();for(const p of pending.values())clearTimeout(p.timer);}
 })().catch(e=>{console.error(e);process.exitCode=1;});

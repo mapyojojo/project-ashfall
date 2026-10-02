@@ -7,7 +7,7 @@ const preferences={
  flow:['short','fast','quick','chain','regen','propagation','ricochet','pierce','shards','heal','ward','heavy','dense','pressure','vital','echo','point','rapid','magnet','scatter'],
  gun:['scatter','ricochet','rapid','pierce','heavy','vital','quick','width','regen','magnet']
 };
-function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,version='0.6'}) {
+function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,version='0.6.2'}) {
  const a=engine({intro:true,source});a.seed(seed);a.mouse.active=true;a.run.player.autoFire=mode!=='leap-only';
  const events=[];let nextPlan=0,nextSample=0;
  for(let tick=0;tick<limit*30+1000&&a.state!=='result'&&a.run.time<limit;tick++) {
@@ -36,8 +36,8 @@ function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,ve
      const fuel=route.ash+(p.bonusStitch?.fuel||0);if(!fuel)continue;
      const dense=a.denseSpec?.(route.targets,route.ash)||{success:false,multiplier:1};
      let value=fuel*5+route.targets*35;
-     if(!source&&build==='dense'&&dense.success)value+=120;
-     if(!source&&build==='dense'&&!dense.success&&route.targets<3&&route.ash<6&&r.enemies.some(e=>e.type==='boss'||e.type==='elite'))continue;
+     if(a.denseSpec&&build==='dense'&&dense.success)value+=120;
+     if(a.denseSpec&&build==='dense'&&!dense.success&&route.targets<3&&route.ash<6&&r.enemies.some(e=>e.type==='boss'||e.type==='elite'))continue;
      for(const e of r.enemies){if(e.dead)continue;
       if(a.segmentDistance(e.x,e.y,p.x,p.y,route.bx,route.by)<p.stitchWidth+e.r)value+=Math.min(e.hp,a.stitchDamage(fuel,e.ash||0,route.danger)*dense.multiplier*(a.pressureMultiplier?.(e.ash||0)||1))*(e.type==='boss'?1.5:1);
       if(Math.hypot(e.x-route.bx,e.y-route.by)<e.r+28)value-=e.damage*12;
@@ -61,14 +61,14 @@ function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,ve
 }
 const results=[];
 try {
- const source=require('node:child_process').execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show','main:game.js'],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();
- for(const [build,seed] of [['weave',4721],['dense',9481],['flow',20261001]])results.push(simulate({build,seed,source,version:'main baseline'}));
-}catch{console.log('Local main baseline unavailable; comparison skipped.');}
+ const source=require('node:child_process').execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show','dae2977:game.js'],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();
+ for(const [build,seed] of [['weave',4721],['dense',9481],['flow',20261001],['weave',8606],['dense',6606],['flow',4606]])results.push(simulate({build,seed,source,version:'0.6.1 baseline'}));
+}catch{console.log('Local v0.6.1 baseline unavailable; comparison skipped.');}
 results.push(simulate({mode:'shoot-only',limit:300}));
 results.push(simulate({mode:'leap-only',limit:300}));
 for(const [build,seed] of [['weave',4721],['dense',9481],['flow',20261001],['weave',8606],['dense',6606],['flow',4606]])results.push(simulate({build,seed}));
-const cycles=results.filter(r=>r.version==='0.6'&&r.mode==='cycle');
-assert.ok(results.filter(r=>r.version==='0.6'&&r.mode!=='cycle').every(r=>r.kills===0));
+const cycles=results.filter(r=>r.version==='0.6.2'&&r.mode==='cycle');
+assert.ok(results.filter(r=>r.version==='0.6.2'&&r.mode!=='cycle').every(r=>r.kills===0));
 assert.ok(cycles.every(r=>r.firstStitchKill!==null&&r.firstStitchKill<60));
 assert.ok(cycles.every(r=>r.stitchDamageShare>=.85));
 assert.ok(cycles.some(r=>r.time>=300&&r.kills>=150),'At least one natural five-minute cycle must remain playable.');
@@ -81,5 +81,5 @@ assert.ok(cycles.every(r=>r.remaining.length>=5),'Late runs must still have seve
 assert.ok(cycles.find(r=>r.build==='dense').denseLeaps>10,'Concentration must earn actual dense successes.');
 assert.ok(cycles.find(r=>r.build==='flow').poweredLeaps>100,'Continuous route must keep cycling.');
 assert.ok(new Set(cycles.map(r=>JSON.stringify(Object.keys(r.upgrades).sort()))).size>=3,'Strategies must result in different builds.');
-fs.writeFileSync(path.join(root,'balance-verification.json'),JSON.stringify({version:'0.6',date:'2026-10-01',eligibleAttackUpgrades:eligibleAttack,method:'deterministic accelerated simulation; current main v0.5 baseline; normal HP/damage and XP; exact route knowledge; dense bot waits for 6 ash on strong targets; no added fuel/XP/invulnerability; different strategies are not a controlled difficulty or fun comparison',upgradesSHA256:require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'upgrades.js'))).digest('hex'),sourceSHA256:require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'game.js'))).digest('hex'),results},null,2));
+fs.writeFileSync(path.join(root,'balance-verification.json'),JSON.stringify({version:'0.6.2',date:new Date().toISOString(),baseline:'dae2977',eligibleAttackUpgrades:eligibleAttack,method:'deterministic accelerated simulation; matched v0.6.1 and v0.6.2 planners, strategies and seeds; normal HP/damage/XP; exact route knowledge; dense bot waits for 6 ash on strong targets; no injected fuel/XP/invulnerability; front-only hits intentionally change outcomes; no compensating numerical tuning; not human playtests',upgradesSHA256:require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'upgrades.js'))).digest('hex'),sourceSHA256:require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'game.js'))).digest('hex'),results},null,2));
 console.log('Core-loop balance assertions passed. These are bots, not human playtests.');

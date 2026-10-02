@@ -70,8 +70,8 @@ test('retired satellites are absent from choices; saved gear indices keep their 
  assert.ok(a.UPGRADES.every(u=>u.id!=='orbit'));a.selectRelic(2);assert.equal(a.meta.relic,0);a.showRelics();assert.ok(!a.elements.get('relicChoices').innerHTML.includes('衛星'));
  const b=engine({savedMeta:{marks:30,relic:3}});assert.equal(b.meta.relic,3);assert.equal(b.run.player.shots,2);assert.equal(b.run.player.fireRate,.18*1.12);
 });
-test('burning stitch hits a late entrant once, not every frame',()=>{
- const a=engine();mark(a,foe(a));a.startDash(1,0);a.step(.4);const e=foe(a,'brute',140);e.hp=e.maxHp=500;a.update(.01);const hp=e.hp;assert.ok(hp<500);a.update(.01);assert.equal(e.hp,hp);
+test('a late entrant behind the blast front receives no lingering stitch damage',()=>{
+ const a=engine();mark(a,foe(a));a.startDash(1,0);a.step(.4);const e=foe(a,'brute',100);e.hp=e.maxHp=500;a.update(.01);assert.equal(e.hp,500);a.step(.5);assert.equal(e.hp,500);
 });
 test('echo detonates only a fueled stitch and deals a second hit',()=>{
  const a=engine(),e=foe(a,'brute');e.hp=e.maxHp=1000;a.apply('echo');mark(a,e);a.startDash(1,0);a.step(.4);const hp=e.hp;a.step(.7);assert.ok(e.hp<hp);assert.ok(a.run.stitches[0].echoed);

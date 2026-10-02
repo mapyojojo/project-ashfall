@@ -1,6 +1,6 @@
-# Project Ashfall v0.6.1
+# Project Ashfall v0.6.2
 
-三重縫いは青緑で外へ広がり、密縫いは橙の光が対象へ収束します。v0.6.1は視覚・音・ヒット感の改修で、戦闘バランスと強化内容はv0.6を維持しています。
+三重縫いは青緑で広がり、密縫いは白熱した経路と短い圧縮音で伝えます。v0.6.2では本撃・再炸裂を前線通過時だけの命中へそろえ、通過後の残光にダメージはありません。強化内容と威力・敵性能などの数値は維持しています。
 
 **狙って仕込む。クリックで縫い、軌跡を炸裂させる。**
 
@@ -77,9 +77,10 @@ npm run test:balance
 npm run test:browser
 node tests/clarity-check.cjs
 node tests/hazard-check.cjs
+npm run test:feedback
 ```
 
-主要テストと加速シミュレーションはNode.jsのみで動作します。バランス検証は、このリポジトリのローカル `main` を読み取り専用で比較します。配布版にGit履歴がなければ比較だけ省略します。
+主要テストと加速シミュレーションはNode.jsのみで動作します。バランス検証は、v0.6.1の `dae2977` を読み取り専用で取得し、同じ6seed・強化選好・経路計画で比較します。配布版にGit履歴がなければ比較だけ省略します。
 
 ブラウザ検証は `npm start` とDevToolsポート9223のChromiumを使います。Windowsの例：
 
@@ -87,10 +88,11 @@ node tests/hazard-check.cjs
 & 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe' --headless=new --remote-debugging-port=9223 --user-data-dir="$env:TEMP\ashfall-browser-test" http://localhost:4173/?test
 ```
 
-専用プロファイルを使い、他のページを開かず、別ターミナルでテストを実行してください。全体のブラウザ検証は7分の実時間入力を含み約8〜10分、UXと地面攻撃を確認する `clarity-check.cjs` は短い個別場面の検証です。ゲームの通常起動にはDevToolsは不要です。
+専用プロファイルを使い、他のページを開かず、別ターミナルでテストを順番に実行してください。全体のブラウザ検証は最大7分の実時間入力を含み約8〜10分です。通常入力中に死亡した場合も結果を保存し、残る画面・戦闘回帰を検証します。合格は生存の保証ではありません。UXと地面攻撃を確認する `clarity-check.cjs` は短い個別場面の検証です。ゲームの通常起動にはDevToolsは不要です。
 
 - [v0.6の仕様・数値・次の人間プレイの確認点](docs/V0.6-BUILD-DIVERSITY.md)
 - [v0.6.1の演出と比較ページの使い方](docs/V0.6-STITCH-FEEDBACK.md)（専用ブラウザ検証：`npm run test:feedback`）
+- [v0.6.2の音・経路表現・前線命中と人間確認項目](docs/V0.6.2-STITCH-TIMING.md)
 - [現在のデザイン概要](DESIGN.md)
 - [自己レビュー](REVIEW.md)
 - [検証結果](TEST-REPORT.md)
