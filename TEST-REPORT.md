@@ -1,3 +1,35 @@
+# v0.7.x — 全画面・ポーズUXの検証結果
+
+基準：main `3ff193c`。作業：`work/v0.7-fullscreen-pause-ux`。検証日：2026-10-03（Asia/Tokyo）。バージョンは `0.7.0` を維持。戦闘・強化・抽選・演出・ラン構成は変更しない。mainへのmerge・push・外部公開は行わない。
+
+タイトルとポーズに共通の全画面切替を置き、実際の状態に合わせて「全画面にする / 全画面を解除」を同期する。プレイ中の全画面解除は既存のpauseを呼ぶ。Pはポーズ / 再開、Escは通常画面でポーズ、全画面中はブラウザの解除を優先する。Escでポーズから再開しないため、解除イベントとキー入力の順序が違っても直後に戦闘へ戻らない。再開はPまたは「戦闘へ戻る」。
+
+| 検証 | 結果 |
+| --- | --- |
+| npm test | 140項目合格（既存133＋全画面・ポーズ7）。Esc非キャンセル、イベント順序、P、API拒否・非対応、blur・visibilitychangeとの重複、非プレイ画面を確認。 |
+| npm run test:balance | 14ラン合格。6seedの結果・取得強化・ダメージ・途中サンプルがmainと完全一致。従来のv0.6.3比較も維持。 |
+| npm run test:public | 9項目合格。実APIのタイトル／ポーズ切替、開始、自動ポーズ、再入場、P、ラン・強化候補・音声ラベルとWeb Audio状態の保持、小画面・file起動を確認。例外0。 |
+| npm run test:browser | 29項目合格。通常入力420.1ゲーム秒、goal-reached。画面導線と既存の戦闘・表示を維持。例外0。 |
+| npm run test:feedback | 既存Canvas・Web Audio・通過後の無傷を維持。例外0。 |
+| node tests/clarity-check.cjs | 全55段階・実取得・導入・小画面・file起動を維持。例外0。 |
+| node tests/hazard-check.cjs | 消弾・地面攻撃・既存灰縫いの流れを維持。例外0。 |
+| mainとの追加照合 | 7場面×360フレームでrun・meta・キー・マウスの全シリアライズ状態が一致。続く敵20体の生成と強化抽選の乱数も一致。戦闘関数・敵定義・upgrades.js・style.css・version.jsは不変。 |
+| git diff --check / 文書リンク | 合格。 |
+
+詳細：[fullscreen-verification.json](fullscreen-verification.json)、[公開UI検証](public-ui-verification.json)。今回再生成した8つの検証JSONのソースハッシュを照合した。画像：[全画面中のポーズ](docs/screenshots/v0.7-fullscreen-pause-on.png)、[解除後のポーズ](docs/screenshots/v0.7-fullscreen-pause-exit.png)（1024×640）。共通ポーズ処理自体はmainと同一で、再開時の入力解除とラン保持も既存回帰を維持する。
+
+## 自動確認の範囲と人間へ残す項目
+
+実ブラウザはEdg/154.0.4258.48。実際のクリックによるFullscreen APIのON/OFFと、document.exitFullscreenが発生させる解除イベントからの自動ポーズを確認した。一方、CDPのEsc入力はゲームへ届き、defaultPrevented=falseだったが、ブラウザ自体の全画面を解除しなかった。Escキーだけで解除 → 自動ポーズまで再現したとは記録しない。画面のあるEdge / Chrome / Firefoxで物理Escによる解除とポーズ画面からの全画面復帰を確認する必要がある。
+
+ユーザーから、Chrome / Firefoxで起動・開始・基本操作・灰縫い・おおまかな画面遷移を人間が簡易確認し、ざっと重大な問題なしとの報告を受けた。READMEと公開準備へこの確認レベルを反映した。Chrome / Firefoxの詳細回帰や今回の全画面UXの実機確認を済んだ扱いにはしない。Safariは未確認。
+
+現在の文言は [プレイヤー向け一覧](docs/V0.7-PLAYER-COPY-REVIEW.md)、後続の確認事項は [公開準備](docs/V0.7-PUBLIC-READINESS.md) に追記した。過去の未確認チェック・検証記録・自然勝利画像は当時の記録として維持する。
+
+---
+
+以下は今回の修正前の検証記録。各記録の基準コミット・確認時点を参照し、現在の全画面仕様やブラウザ確認状況には上の結果を用いる。
+
 # v0.7.x — プレイヤー向け文言の最終整理の検証結果
 
 基準：`work/v0.7-public-readiness` の `8ddf412`。作業：`work/v0.7-copy-polish`。検証日：2026-10-03（Asia/Tokyo）。表示名1件と説明4件を変更し、ゲームのバージョンは `0.7.0` を維持する。main・作業元へのmerge・pushは行わない。

@@ -1,0 +1,141 @@
+{
+  "version": "0.7.0",
+  "date": "2026-10-03T11:29:41.059Z",
+  "baseline": "3ff193cf2af5595807170af139f2acbcc0429c0b",
+  "branch": "work/v0.7-fullscreen-pause-ux",
+  "sourceSHA256": "a9b5218be65e5961332493a688b63f994c2b31cbf8d4d4ab9805f0ed061cf3b8",
+  "upgradesSHA256": "58c88ae1e703dd188a8e5d2f57c40c13bf9dc1a029c0bcb2eedf30fe952524ae",
+  "unchangedFiles": [
+    "upgrades.js",
+    "version.js",
+    "style.css",
+    "server.js",
+    "Start.bat"
+  ],
+  "unchangedFunctions": [
+    "update",
+    "spawnEnemy",
+    "hurtEnemy",
+    "hurtPlayer",
+    "startDash",
+    "endDash",
+    "seedEnemy",
+    "predictLeap",
+    "stitchDamage",
+    "denseSpec",
+    "pressureMultiplier",
+    "wardSpec",
+    "frontCrossing",
+    "lineDamage",
+    "addXp",
+    "scatterShards",
+    "assistedAngle",
+    "weight",
+    "eligible",
+    "pause",
+    "resume"
+  ],
+  "enemyDefinitionsUnchanged": true,
+  "frameParity": [
+    {
+      "scene": "normal",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    },
+    {
+      "scene": "triple",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    },
+    {
+      "scene": "dense",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    },
+    {
+      "scene": "dense/pressure/point",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    },
+    {
+      "scene": "propagation/shards/echo",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    },
+    {
+      "scene": "return/chain",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    },
+    {
+      "scene": "short",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    }
+  ],
+  "seedParity": [
+    {
+      "build": "weave",
+      "seed": 4721,
+      "matched": true
+    },
+    {
+      "build": "dense",
+      "seed": 9481,
+      "matched": true
+    },
+    {
+      "build": "flow",
+      "seed": 20261001,
+      "matched": true
+    },
+    {
+      "build": "weave",
+      "seed": 8606,
+      "matched": true
+    },
+    {
+      "build": "dense",
+      "seed": 6606,
+      "matched": true
+    },
+    {
+      "build": "flow",
+      "seed": 4606,
+      "matched": true
+    }
+  ],
+  "all14RunRecordsAndMinuteSamplesMatched": true,
+  "fullscreenUnitChecks": 7,
+  "publicUiChecks": 9,
+  "browser": "Edg/154.0.4258.48",
+  "fullscreen": {
+    "pauseToggle": {
+      "runPreserved": true,
+      "timePreserved": true,
+      "soundPreserved": true,
+      "audioContextState": "running"
+    },
+    "escapeProbe": {
+      "fullscreen": true,
+      "state": "playing",
+      "event": {
+        "defaultPrevented": false
+      }
+    },
+    "nativeEscapeExitObserved": false,
+    "playingExit": {
+      "paused": true,
+      "timeFrozen": true,
+      "runPreserved": true,
+      "escapeDidNotResume": true
+    },
+    "nonPlayingExit": {
+      "titlePreserved": true,
+      "helpPreserved": true,
+      "resultPreserved": true,
+      "upgradeChoicesPreserved": true
+    }
+  },
+  "limits": "All serialized run/meta/key/mouse state is compared frame by frame without copy exclusions. Fullscreen and P/Escape transition semantics are tested separately. Native Fullscreen API transitions are verified in headless Edge; CDP Escape did not exit browser fullscreen, so physical Escape in headed Edge/Chrome/Firefox remains a human check. Chrome/Firefox basic manual checks are user-reported; Safari is untested."
+}
