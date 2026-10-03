@@ -1,3 +1,28 @@
+# v0.7.x — プレイヤー向け文言の最終整理の検証結果
+
+基準：`work/v0.7-public-readiness` の `8ddf412`。作業：`work/v0.7-copy-polish`。検証日：2026-10-03（Asia/Tokyo）。表示名1件と説明4件を変更し、ゲームのバージョンは `0.7.0` を維持する。main・作業元へのmerge・pushは行わない。
+
+| 検証 | 結果 |
+| --- | --- |
+| npm test | 133項目合格。期待値の更新は、2つのカタログ比較の `dense` 表示名だけ。ほかの名称・効果・条件の比較は維持。 |
+| npm run test:balance | 14ラン合格。6seedの通し結果・取得強化・ダメージ・途中サンプルが作業元と完全一致。射撃のみ／仕込みなしの記録も一致。従来のv0.6.3比較も維持。 |
+| npm run test:browser | 29項目合格。通常入力420.0ゲーム秒、goal-reached、例外0。タイトル・開始・強化・ポーズ・結果・再挑戦を確認。 |
+| npm run test:public | 6項目合格。音状態同期・全画面・ポーズのヘルプ・小画面・file起動・再挑戦を維持。 |
+| npm run test:feedback | Canvas・Web Audio・通過後の無傷を維持。例外0。 |
+| node tests/clarity-check.cjs | 全55段階の表示・実取得・導入案内・小画面・file起動を確認。例外0。 |
+| node tests/hazard-check.cjs | 消弾・地面攻撃・既存の灰縫いの流れを維持。例外0。 |
+| 作業元との追加照合 | 7場面×360フレームの戦闘状態と、その後の敵生成・強化抽選の乱数が一致。カタログの差分は指定した表示名1件・本文4件だけ。 |
+| 文言・画像確認 | 4件の新本文とカード名をDOMで照合。1024×640で収まりを画像確認。結果の強化欄は「密縫いの極意」、成功回数は「密縫い」を維持。 |
+| git diff --check / 文書リンク | 合格。 |
+
+ゲーム本体・HTML・CSS・バージョン・起動設定は作業元と一致する。効果関数・最大Lv・Lv詳細・倍率・重み・排他・前提条件・演出・音は変更していない。詳細は [copy-polish-verification.json](copy-polish-verification.json) に記録する。8つの再生成した検証JSONのソースハッシュを現在のファイルと照合済み。
+
+実ブラウザ：Edg/154.0.4258.48。現在のカード画像：[残灰・密縫いの極意・余韻](docs/screenshots/v0.7-copy-polish-cards.png)、[連環縫い](docs/screenshots/v0.7-copy-polish-chain.png)。文言の旧→新と理由は [プレイヤー向け一覧](docs/V0.7-PLAYER-COPY-REVIEW.md#v07x--公開前の最終調整) と [強化レビュー](docs/V0.7-UPGRADE-COPY-REVIEW.md#v07x--公開前の最終調整) に記録する。文章の自然さと初見理解は人間レビュー待ち。
+
+以下は作業元 `8ddf412` の公開準備時の検証記録。751.7秒の自然勝利記録と従来のv0.7.0画像はその時点の資料として保持し、今回の文言で再取得した記録として扱わない。
+
+---
+
 # v0.7 — 公開準備の検証結果
 
 基準：main `b3f9265`（v0.6.3）。作業：`work/v0.7-public-readiness`。検証日：2026-10-02（Asia/Tokyo）。バージョンはversion.jsの `0.7.0` を各レポートが参照する。mainへのmerge・push・外部公開は行わない。

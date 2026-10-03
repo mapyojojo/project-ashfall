@@ -1,6 +1,6 @@
 {
   "version": "0.7.0",
-  "date": "2026-10-02T14:27:58.510Z",
+  "date": "2026-10-02T15:57:00.328Z",
   "baseline": "b3f9265eef10ada6c728feb85896a235814c71d9",
   "eligibleAttackUpgrades": 19,
   "parity": [
@@ -36,7 +36,7 @@
     }
   ],
   "method": "deterministic accelerated simulation; matched v0.6.3/v0.7 planners and catalogs and 6 seeds; all combat results, upgrades, damage totals and minute samples asserted identical; normal HP/damage/XP; exact route knowledge; no injected fuel/XP/invulnerability or balancing changes; not human playtests",
-  "upgradesSHA256": "d60c1443ad94ab3c067a47bafc339f04c229f7b40b763061f38ae4701ff42042",
+  "upgradesSHA256": "acc27026fe1303564be287f91463c307ccd4cb9a70a3435fc578cccc367c3574",
   "sourceSHA256": "6d75ac4843c30fd5faa35cfc414e23077d6647371cb3edfc42079a3412b619e5",
   "results": [
     {

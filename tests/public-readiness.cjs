@@ -36,7 +36,8 @@ if (source) {
   test('all upgrade effects, eligibility, weights, enemy definitions and combat functions match v0.6.3', () => {
     const before = engine({ source, catalogSource }), after = engine();
     const catalog = a => Array.from(a.UPGRADES, u => ({ id:u.id, name:u.name, family:u.family, max:u.max, excludes:u.excludes, apply:u.apply.toString(), requires:u.requires?.toString() }));
-    assert.deepEqual(catalog(after), catalog(before));
+    const expectedCatalog = catalog(before).map(u => u.id === 'dense' ? { ...u, name:'密縫いの極意' } : u);
+    assert.deepEqual(catalog(after), expectedCatalog);
     assert.equal(JSON.stringify(after.TYPES), JSON.stringify(before.TYPES));
     for (const key of ['update','spawnEnemy','hurtEnemy','hurtPlayer','startDash','endDash','seedEnemy','predictLeap','stitchDamage','denseSpec','pressureMultiplier','wardSpec','frontCrossing','lineDamage','addXp','scatterShards','assistedAngle','weight','eligible'])
       assert.equal(after[key].toString(), before[key].toString(), key);

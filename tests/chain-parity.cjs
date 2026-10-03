@@ -79,6 +79,7 @@ test('front crossing, damage, landing, combat loop and upgrade definitions are u
  const old=cp.execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:upgrades.js`],{cwd:root}).toString();
  const oldCatalog=engine({source,catalogSource:old});
  const combatCatalog=a=>Array.from(a.UPGRADES,u=>({id:u.id,name:u.name,family:u.family,max:u.max,excludes:u.excludes,requires:u.requires?.toString(),apply:u.apply.toString()}));
- assert.deepEqual(combatCatalog(after),combatCatalog(oldCatalog),'catalog behavior is unchanged; player copy may change');
+ const expectedCatalog=combatCatalog(oldCatalog).map(u=>u.id==='dense'?{...u,name:'密縫いの極意'}:u);
+ assert.deepEqual(combatCatalog(after),expectedCatalog,'catalog behavior is unchanged; only the dense display name changes');
 });
 console.log(`${passed} chain parity checks passed against ${baseline}.`);
