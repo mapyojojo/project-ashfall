@@ -1,3 +1,33 @@
+# v0.7.1 — 公開前バージョン表記の検証結果
+
+基準：main `a03fe4c`。作業：`work/v0.7.1-version`。検証日：2026-10-03（Asia/Tokyo）。公開前バージョンを `v0.7.0` → **v0.7.1** へ更新。mainへのmerge・push・外部公開は行わない。
+
+実行時ファイルの差分は、version.jsの `0.7.0` → `0.7.1` の1か所だけ。タイトル表示と既存テストはこの共通値を参照するため、HTML・ゲームコード・テスト期待値への固定文字列追加は不要。READMEの現在版・画像参照、文言一覧の現在表示、公開準備の追記と今回の検証資料を揃えた。ゲームロジック・バランス・UI挙動・強化・敵・演出は変更していない。
+
+| 検証 | 結果 |
+| --- | --- |
+| npm test | 140項目合格。テストファイルは変更なし。 |
+| npm run test:balance | 14ラン合格。6seedを含む全結果・取得強化・ダメージ・途中サンプルが、版番号を除いてmainと一致。従来のv0.6.3比較も維持。 |
+| npm run test:public | 9項目合格。HTTP / file起動の両方でv0.7.1の表示を確認。音声・全画面・ポーズ・小画面・再挑戦を維持。例外0。 |
+| npm run test:browser | 再実行で29項目合格。通常入力350.8ゲーム秒、loss。画面導線と既存の戦闘・表示を維持。例外0。 |
+| npm run test:feedback | 既存Canvas・Web Audio・残留表示中の無傷を維持。 |
+| node tests/clarity-check.cjs | 全55段階・実取得・導入・小画面・file起動を維持。例外0。 |
+| node tests/hazard-check.cjs | 消弾・地面攻撃・既存灰縫いの流れを維持。例外0。 |
+| mainとの追加照合 | ゲーム本体・起動設定・既存テストの内容が不変。7場面×360フレームの全状態と、続く敵生成・強化抽選の乱数が一致。 |
+| git diff --check / 文書リンク | 合格。 |
+
+ブラウザ回帰の初回は、UX場面での再読み込み後にgame.jsの取得が約982msかかり、既存の固定待機400msを超えてテスト用APIが未定義となった。取得完了後はAPIが存在することを確認。2回目はゲーム時間の進みが実時間より遅く、通常入力テストの実時間上限に達した。専用の非表示Edgeを再起動し、バックグラウンド抑制とフレームレート制限を無効にして、同じ既存コマンドを再実行した。ゲーム・テストのコード、待機時間、420秒の目標と期待値は変更していない。自然入力の結果はフレーム・入力タイミングで変わり得るため、戦闘の一致は固定seedの14ランと追加のフレーム・乱数照合で判断する。
+
+再起動時の追加フラグ：`--disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding --disable-frame-rate-limit`。テスト用プロファイルを使用し、プレイヤー向けの起動方法や設定は変更していない。
+
+詳細：[版表記のみの変更とmain照合](version-verification.json)。今回再生成した7件の検証JSONは現在の版・ソースハッシュを照合済み。再実行日時や通常入力・保存状態の観測値も新しく取得している。[現在のタイトル画像](docs/screenshots/v0.7.1-title.png)は別ファイルに保存し、旧画像を上書きしていない。
+
+以下の検証本文は当時の履歴として保持する。自然勝利の [natural-input-verification.json](natural-input-verification.json)、文言調整の [copy-polish-verification.json](copy-polish-verification.json)、全画面UXの [fullscreen-verification.json](fullscreen-verification.json)、既存の画像もv0.7.0当時の資料として変更していない。Chrome / Firefoxは既報の簡易確認、Safariは未確認。物理Esc・全画面の実機確認と初見プレイヤーの人間レビューは引き続き残る。
+
+---
+
+以下はv0.7.1更新前の検証記録。現在の版については上の結果を参照する。
+
 # v0.7.x — 全画面・ポーズUXの検証結果
 
 基準：main `3ff193c`。作業：`work/v0.7-fullscreen-pause-ux`。検証日：2026-10-03（Asia/Tokyo）。バージョンは `0.7.0` を維持。戦闘・強化・抽選・演出・ラン構成は変更しない。mainへのmerge・push・外部公開は行わない。
