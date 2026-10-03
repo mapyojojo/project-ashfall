@@ -8,6 +8,7 @@
   const ARENA = 1560, HALF = ARENA / 2, END_TIME = 720;
   let W = 1280, H = 720, dpr = 1, state = 'title', run = null, last = 0, ambient = 0;
   let soundOn = true, audio = null, seed = 0, frame = 0;
+  let fullscreenActive = !!document.fullscreenElement;
   const keys = new Set(), mouse = { x: 900, y: 360, down: false, active: false };
   let meta = { marks: 0, best: 0, wins: 0, runs: 0, relic: 0 };
   try { Object.assign(meta, JSON.parse(localStorage.getItem('ashfall.v1')) || {}); } catch {}
@@ -37,6 +38,16 @@
   function initAudio() { try { audio ||= new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch {} }
   function updateSoundLabels() { $('soundButton').textContent = `音声 ${soundOn ? 'ON' : 'OFF'}`; $('pauseSound').textContent = `音声 ${soundOn ? 'ON' : 'OFF'} [M]`; }
   function toggleSound() { soundOn = !soundOn; updateSoundLabels(); if (soundOn) initAudio(); }
+  function updateFullscreenLabels() {
+    const label = document.fullscreenElement ? '全画面を解除' : '全画面にする';
+    $('fullscreenButton').textContent = $('pauseFullscreen').textContent = label;
+  }
+  async function toggleFullscreen() {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen?.();
+      else await document.documentElement.requestFullscreen?.();
+    } catch { /* A denied or unavailable browser action leaves the current screen intact. */ }
+  }
   function screen(id) { ['title','help','relics','upgrade','pause','result'].forEach(s => { $(s).hidden = s !== id; }); $('hud').hidden = !run || id === 'title' || (id === 'help' && !run); }
   function saveMeta() { try { localStorage.setItem('ashfall.v1', JSON.stringify(meta)); } catch {} }
   function titleRecord() {
@@ -838,12 +849,19 @@
     if(run&&run.hitStop>0&&state==='playing')run.hitStop=Math.max(0,run.hitStop-dt);else update(dt);
     if(run)drawGame();else drawTitle();requestAnimationFrame(loop);
   }
-  const playingKeyCodes=new Set(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','KeyF','KeyP','Escape','Digit1','Digit2','Digit3']);
+  const playingKeyCodes=new Set(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','KeyF','KeyP','Digit1','Digit2','Digit3']);
   addEventListener('keydown',e=>{
     if(playingKeyCodes.has(e.code))e.preventDefault();
     if(e.repeat)return;
     if(e.code==='KeyM'){toggleSound();return;}
-    if(e.code==='Escape'||e.code==='KeyP'){if(state==='relics'){state='title';screen('title');}else if(state==='help'){state=run?'paused':'title';screen(run?'pause':'title');}else pause();return;}
+    if(e.code==='Escape'||e.code==='KeyP'){
+      if(e.code==='Escape'&&document.fullscreenElement)return;
+      if(state==='relics'){state='title';screen('title');}
+      else if(state==='help'){state=run?'paused':'title';screen(run?'pause':'title');}
+      // Escape pauses but never resumes, including after the browser exits fullscreen.
+      else if(e.code==='KeyP'||state==='playing')pause();
+      return;
+    }
     if(state==='upgrade'&&['Digit1','Digit2','Digit3'].includes(e.code)){chooseUpgrade(Number(e.code.slice(-1))-1);return;}
     if(state==='playing'){keys.add(e.code);if(e.code==='Space')run.leapRequested=true;if(e.code==='KeyF'){run.player.autoFire=!run.player.autoFire;announce(`自動射撃 ${run.player.autoFire?'ON':'OFF'}`,1.5);}}
   });
@@ -853,13 +871,18 @@
   addEventListener('mouseup',()=>{mouse.down=false;});canvas.addEventListener('contextmenu',e=>e.preventDefault());
   addEventListener('blur',()=>{keys.clear();mouse.down=false;if(state==='playing')pause();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='playing')pause();last=performance.now();});
+  document.addEventListener('fullscreenchange',()=>{
+    const active = !!document.fullscreenElement;
+    if(fullscreenActive&&!active&&state==='playing')pause();
+    fullscreenActive=active;updateFullscreenLabels();
+  });
   $('startButton').onclick=start;$('restartButton').onclick=start;$('titleButton').onclick=goTitle;$('quitButton').onclick=goTitle;
   $('pauseButton').onclick=pause;$('resumeButton').onclick=resume;$('soundButton').onclick=toggleSound;$('pauseSound').onclick=toggleSound;
   $('helpButton').onclick=$('pauseHelp').onclick=()=>{state='help';screen('help');};$('closeHelp').onclick=()=>{state=run?'paused':'title';screen(run?'pause':'title');};
-  $('fullscreenButton').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.().catch(()=>{});};
+  $('fullscreenButton').onclick=$('pauseFullscreen').onclick=toggleFullscreen;
   $('relicButton').onclick=showRelics;$('closeRelics').onclick=()=>{state='title';screen('title');};
   $('versionLabel').textContent=`v${globalThis.AshfallRelease.version}`;
-  updateSoundLabels();titleRecord();requestAnimationFrame(loop);
+  updateSoundLabels();updateFullscreenLabels();titleRecord();requestAnimationFrame(loop);
   // Explicit test mode exposes mechanics for deterministic verification, never used in normal play.
   if(new URLSearchParams(location.search).has('test'))window.AshfallTest={
     start,update,spawnEnemy,hurtEnemy,hurtPlayer,startDash,endDash,seedEnemy,predictLeap,stitchDamage,addXp,chooseUpgrade,rollUpgrades,finish,goTitle,pause,resume,
