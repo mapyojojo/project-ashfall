@@ -1,6 +1,6 @@
 {
-  "version": "0.7.0",
-  "date": "2026-10-03T11:19:31.874Z",
+  "version": "0.7.1",
+  "date": "2026-10-03T11:57:40.284Z",
   "baseline": "b3f9265eef10ada6c728feb85896a235814c71d9",
   "eligibleAttackUpgrades": 19,
   "parity": [
@@ -37,7 +37,7 @@
   ],
   "method": "deterministic accelerated simulation; matched v0.6.3/v0.7 planners and catalogs and 6 seeds; all combat results, upgrades, damage totals and minute samples asserted identical; normal HP/damage/XP; exact route knowledge; no injected fuel/XP/invulnerability or balancing changes; not human playtests",
   "upgradesSHA256": "58c88ae1e703dd188a8e5d2f57c40c13bf9dc1a029c0bcb2eedf30fe952524ae",
-  "sourceSHA256": "a9b5218be65e5961332493a688b63f994c2b31cbf8d4d4ab9805f0ed061cf3b8",
+  "sourceSHA256": "0b9767f0d2acaa26f8858053b8c74ba00830c00c25583c8945b3ccacbaa9769d",
   "results": [
     {
       "version": "0.6.3 baseline",
@@ -1530,7 +1530,7 @@
       ]
     },
     {
-      "version": "0.7.0",
+      "version": "0.7.1",
       "mode": "shoot-only",
       "build": "weave",
       "seed": 4721,
@@ -1738,7 +1738,7 @@
       ]
     },
     {
-      "version": "0.7.0",
+      "version": "0.7.1",
       "mode": "leap-only",
       "build": "weave",
       "seed": 4721,
@@ -1946,7 +1946,7 @@
       ]
     },
     {
-      "version": "0.7.0",
+      "version": "0.7.1",
       "mode": "cycle",
       "build": "weave",
       "seed": 4721,
@@ -2158,7 +2158,7 @@
       ]
     },
     {
-      "version": "0.7.0",
+      "version": "0.7.1",
       "mode": "cycle",
       "build": "dense",
       "seed": 9481,
@@ -2419,7 +2419,7 @@
       ]
     },
     {
-      "version": "0.7.0",
+      "version": "0.7.1",
       "mode": "cycle",
       "build": "flow",
       "seed": 20261001,
@@ -2669,7 +2669,7 @@
       ]
     },
     {
-      "version": "0.7.0",
+      "version": "0.7.1",
       "mode": "cycle",
       "build": "weave",
       "seed": 8606,
@@ -2923,7 +2923,7 @@
       ]
     },
     {
-      "version": "0.7.0",
+      "version": "0.7.1",
       "mode": "cycle",
       "build": "dense",
       "seed": 6606,
@@ -3178,7 +3178,7 @@
       ]
     },
     {
-      "version": "0.7.0",
+      "version": "0.7.1",
       "mode": "cycle",
       "build": "flow",
       "seed": 4606,

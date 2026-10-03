@@ -1,8 +1,8 @@
 {
-  "version": "0.7.0",
-  "date": "2026-10-03T11:27:55.633Z",
+  "version": "0.7.1",
+  "date": "2026-10-03T12:07:15.572Z",
   "baseline": "028ca08",
-  "sourceSHA256": "a9b5218be65e5961332493a688b63f994c2b31cbf8d4d4ab9805f0ed061cf3b8",
+  "sourceSHA256": "0b9767f0d2acaa26f8858053b8c74ba00830c00c25583c8945b3ccacbaa9769d",
   "upgradesSHA256": "58c88ae1e703dd188a8e5d2f57c40c13bf9dc1a029c0bcb2eedf30fe952524ae",
   "browser": "Edg/154.0.4258.48",
   "runtimeErrors": 0,
@@ -1697,12 +1697,12 @@
             {
               "method": "setValueAtTime",
               "value": 72,
-              "time": 5.4
+              "time": 5.370666666666667
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 27.36,
-              "time": 5.720000000000001
+              "time": 5.690666666666667
             }
           ]
         },
@@ -1712,12 +1712,12 @@
             {
               "method": "setValueAtTime",
               "value": 140,
-              "time": 5.4
+              "time": 5.370666666666667
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 42,
-              "time": 5.57
+              "time": 5.540666666666667
             }
           ]
         }
@@ -1731,24 +1731,24 @@
           {
             "method": "setValueAtTime",
             "value": 0.14,
-            "time": 5.4
+            "time": 5.370666666666667
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.720000000000001
+            "time": 5.690666666666667
           }
         ],
         [
           {
             "method": "setValueAtTime",
             "value": 0.07,
-            "time": 5.4
+            "time": 5.370666666666667
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.57
+            "time": 5.540666666666667
           }
         ],
         []
@@ -1760,12 +1760,12 @@
             {
               "method": "setValueAtTime",
               "value": 117,
-              "time": 5.4
+              "time": 5.370666666666667
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 40.949999999999996,
-              "time": 5.49
+              "time": 5.460666666666667
             }
           ]
         }
@@ -1800,12 +1800,12 @@
             {
               "method": "setValueAtTime",
               "value": 72,
-              "time": 5.38
+              "time": 5.36
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 27.36,
-              "time": 5.63
+              "time": 5.61
             }
           ]
         },
@@ -1815,12 +1815,12 @@
             {
               "method": "setValueAtTime",
               "value": 140,
-              "time": 5.38
+              "time": 5.36
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 42,
-              "time": 5.5
+              "time": 5.48
             }
           ]
         },
@@ -1830,12 +1830,12 @@
             {
               "method": "setValueAtTime",
               "value": 180,
-              "time": 5.38
+              "time": 5.36
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 324,
-              "time": 5.7
+              "time": 5.680000000000001
             }
           ]
         },
@@ -1845,12 +1845,12 @@
             {
               "method": "setValueAtTime",
               "value": 420,
-              "time": 5.38
+              "time": 5.36
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 693,
-              "time": 5.55
+              "time": 5.53
             }
           ]
         }
@@ -1864,48 +1864,48 @@
           {
             "method": "setValueAtTime",
             "value": 0.07,
-            "time": 5.38
+            "time": 5.36
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.63
+            "time": 5.61
           }
         ],
         [
           {
             "method": "setValueAtTime",
             "value": 0.035,
-            "time": 5.38
+            "time": 5.36
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.5
+            "time": 5.48
           }
         ],
         [
           {
             "method": "setValueAtTime",
             "value": 0.035,
-            "time": 5.38
+            "time": 5.36
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.7
+            "time": 5.680000000000001
           }
         ],
         [
           {
             "method": "setValueAtTime",
             "value": 0.025,
-            "time": 5.38
+            "time": 5.36
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.55
+            "time": 5.53
           }
         ],
         []
@@ -1917,12 +1917,12 @@
             {
               "method": "setValueAtTime",
               "value": 117,
-              "time": 5.38
+              "time": 5.370666666666667
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 40.949999999999996,
-              "time": 5.47
+              "time": 5.460666666666667
             }
           ]
         },
@@ -1932,12 +1932,12 @@
             {
               "method": "setValueAtTime",
               "value": 316,
-              "time": 5.38
+              "time": 5.370666666666667
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 442.4,
-              "time": 5.47
+              "time": 5.460666666666667
             }
           ]
         }
@@ -1972,12 +1972,12 @@
             {
               "method": "setValueAtTime",
               "value": 72,
-              "time": 5.38
+              "time": 5.370666666666667
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 27.36,
-              "time": 5.52
+              "time": 5.510666666666666
             }
           ]
         },
@@ -1987,12 +1987,12 @@
             {
               "method": "setValueAtTime",
               "value": 140,
-              "time": 5.38
+              "time": 5.370666666666667
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 42,
-              "time": 5.45
+              "time": 5.440666666666667
             }
           ]
         },
@@ -2002,12 +2002,12 @@
             {
               "method": "setValueAtTime",
               "value": 100,
-              "time": 5.38
+              "time": 5.370666666666667
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 42,
-              "time": 5.445
+              "time": 5.435666666666667
             }
           ]
         }
@@ -2026,58 +2026,58 @@
           {
             "method": "setValueAtTime",
             "value": 0.045,
-            "time": 5.38
+            "time": 5.370666666666667
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.52
+            "time": 5.510666666666666
           }
         ],
         [
           {
             "method": "setValueAtTime",
             "value": 0.025,
-            "time": 5.38
+            "time": 5.370666666666667
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.45
+            "time": 5.440666666666667
           }
         ],
         [
           {
             "method": "setValueAtTime",
             "value": 0,
-            "time": 5.38
+            "time": 5.370666666666667
           },
           {
             "method": "linearRampToValueAtTime",
             "value": 0.14,
-            "time": 5.382
+            "time": 5.3726666666666665
           },
           {
             "method": "setValueAtTime",
             "value": 0.11200000000000002,
-            "time": 5.388
+            "time": 5.378666666666667
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.5
+            "time": 5.490666666666667
           }
         ],
         [
           {
             "method": "setValueAtTime",
             "value": 0.07,
-            "time": 5.38
+            "time": 5.370666666666667
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.425
+            "time": 5.415666666666667
           }
         ]
       ],
@@ -2088,12 +2088,12 @@
             {
               "method": "setValueAtTime",
               "value": 91.26,
-              "time": 5.38
+              "time": 5.370666666666667
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 31.941,
-              "time": 5.4399999999999995
+              "time": 5.430666666666666
             }
           ]
         }
