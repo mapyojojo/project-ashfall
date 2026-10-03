@@ -1,0 +1,60 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const {version}=require('../version.js');
+const root=path.resolve(__dirname,'..');
+(async()=>{
+ const targets=await(await fetch(`http://127.0.0.1:${process.env.ASHFALL_CDP_PORT||9223}/json`)).json();
+ const target=targets.find(t=>t.type==='page'&&(t.url.startsWith('http://localhost:4173/')||t.url.startsWith('file:///')&&t.url.includes('/index.html')));assert.ok(target,'dedicated Ashfall test page');
+ const ws=new WebSocket(target.webSocketDebuggerUrl),pending=new Map(),errors=[],checks=[],copy={};let next=0;
+ await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject;});
+ ws.onmessage=ev=>{const m=JSON.parse(ev.data);if(m.id){const p=pending.get(m.id);if(p){pending.delete(m.id);clearTimeout(p.timer);m.error?p.reject(new Error(JSON.stringify(m.error))):p.resolve(m.result);}}else if(m.method==='Runtime.exceptionThrown')errors.push(m.params.exceptionDetails);};
+ const send=(method,params={})=>new Promise((resolve,reject)=>{const id=++next,timer=setTimeout(()=>{pending.delete(id);reject(new Error(method));},15000);pending.set(id,{resolve,reject,timer});ws.send(JSON.stringify({id,method,params}));});
+ const evaluate=async expression=>{const r=await send('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw new Error(JSON.stringify(r.exceptionDetails));return r.result.value;};
+ const wait=ms=>new Promise(r=>setTimeout(r,ms));
+ const click=async selector=>{await evaluate(`document.querySelector(${JSON.stringify(selector)}).scrollIntoView({block:'center'})`);const p=await evaluate(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);await send('Input.dispatchMouseEvent',{type:'mousePressed',...p,button:'left',clickCount:1});await send('Input.dispatchMouseEvent',{type:'mouseReleased',...p,button:'left',clickCount:1});};
+ const key=async(code,value)=>{await send('Input.dispatchKeyEvent',{type:'keyDown',code,key:value});await send('Input.dispatchKeyEvent',{type:'keyUp',code,key:value});};
+ const shot=async name=>{const r=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(root,'docs/screenshots',`v${version}-${name}.png`),Buffer.from(r.data,'base64'));};
+ const passed=name=>{checks.push(name);console.log('PASS',name);};
+ const copyOf=selector=>evaluate(`document.querySelector(${JSON.stringify(selector)}).innerText`);
+ const panelFits=selector=>evaluate(`(()=>{const e=document.querySelector(${JSON.stringify(selector)}),r=e.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight&&e.scrollWidth<=e.clientWidth+1;})()`);
+ try{
+  await send('Runtime.enable');await send('Page.enable');await send('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
+  await send('Page.navigate',{url:'http://localhost:4173/'});await wait(400);
+  assert.equal(await evaluate('typeof AshfallTest'),'undefined');
+  assert.equal(await copyOf('#versionLabel'),`v${version}`);copy.title=await copyOf('#title');await shot('title');
+  await click('#soundButton');assert.equal(await copyOf('#soundButton'),'音声 OFF');await click('#soundButton');assert.equal(await copyOf('#soundButton'),'音声 ON');
+  await click('#fullscreenButton');await wait(200);assert.equal(await evaluate('!!document.fullscreenElement'),true);await evaluate('document.exitFullscreen()');await wait(200);
+  passed('shared version, title sound state and fullscreen enter/exit work through real clicks');
+  await click('#helpButton');copy.help=await copyOf('#help');assert.ok(await panelFits('.help-panel'));await shot('help');await click('#closeHelp');
+  await click('#relicButton');copy.relics=await copyOf('#relics');assert.ok(await panelFits('.relic-panel'));await shot('relics');await click('#closeRelics');
+  await send('Emulation.setDeviceMetricsOverride',{width:1024,height:640,deviceScaleFactor:1,mobile:false});await wait(100);
+  assert.ok(await evaluate("(()=>{const r=document.getElementById('startButton').getBoundingClientRect();return r.top>=0&&r.bottom<innerHeight;})()"));await shot('compact-title');
+  await click('#helpButton');assert.ok(await panelFits('.help-panel'));await shot('compact-help');await click('#closeHelp');
+  await click('#relicButton');assert.ok(await panelFits('.relic-panel'));await shot('compact-relics');await click('#closeRelics');
+  passed('title, help and loadout are readable and navigable at 1024x640');
+  await send('Page.navigate',{url:'http://localhost:4173/?test'});await wait(350);await click('#startButton');await key('Escape','Escape');
+  assert.equal(await evaluate('AshfallTest.state'),'paused');copy.pause=await copyOf('#pause');
+  await click('#pauseSound');assert.equal(await copyOf('#soundButton'),'音声 OFF');assert.equal(await copyOf('#pauseSound'),'音声 OFF [M]');
+  await key('KeyM','m');assert.equal(await copyOf('#pauseSound'),'音声 ON [M]');
+  const pausedTime=await evaluate('AshfallTest.run.time');await click('#pauseHelp');assert.equal(await evaluate('AshfallTest.state'),'help');await wait(100);assert.equal(await evaluate('AshfallTest.run.time'),pausedTime);
+  await click('#closeHelp');assert.equal(await evaluate('AshfallTest.state'),'paused');await shot('pause');await click('#resumeButton');assert.equal(await evaluate('AshfallTest.state'),'playing');
+  passed('pause sound button and M keep both labels synchronized; help preserves paused time and returns to pause');
+  // Card/result fixtures only. Full normal-input combat is covered by browser-check.cjs.
+  const init="const a=AshfallTest;a.start();a.run.enemies=[];a.run.spawnTimer=1000;a.run.onboarding.disabled=true;";
+  await evaluate(`(()=>{${init}a.apply('pierce');a.apply('heavy');a.apply('quick');a.run.cards=['propagation','pressure','chain'].map(id=>a.UPGRADES.find(u=>u.id===id));a.addXp(20);a.update(.01);a.run.cards=['propagation','pressure','chain'].map(id=>a.UPGRADES.find(u=>u.id===id));document.getElementById('upgradeCards').innerHTML=a.run.cards.map(a.upgradeCard).join('');})()`);
+  assert.ok(await panelFits('.upgrade-panel'));assert.ok(await evaluate("Array.from(document.querySelectorAll('.upgrade-card')).every(e=>e.getBoundingClientRect().bottom<=innerHeight)"));await shot('compact-copy-cards');copy.upgrades=await copyOf('.upgrade-panel');
+  await key('Digit1','1');assert.equal(await evaluate('AshfallTest.run.player.upgrades.propagation'),1);
+  await key('Escape','Escape');assert.equal(await evaluate('AshfallTest.state'),'paused');await click('#resumeButton');assert.equal(await evaluate('AshfallTest.state'),'playing');
+  await evaluate('AshfallTest.finish(false)');copy.result=await copyOf('#result');
+  assert.equal(await evaluate("document.querySelectorAll('#resultStats strong').length"),4);assert.ok((await copyOf('#resultBuild')).includes('新しい灰紋を1〜2体から合計6灰以上回収'));assert.ok(await panelFits('.result-panel'));await shot('compact-result');
+  await click('#restartButton');assert.equal(await evaluate('AshfallTest.run.upgradesTaken'),0);assert.equal(await evaluate('AshfallTest.state'),'playing');await key('Escape','Escape');await click('#quitButton');assert.equal(await evaluate('AshfallTest.state'),'title');
+  passed('copy-heavy cards, unchanged result counters and retry/title navigation fit at 1024x640');
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
+  await evaluate(`(()=>{${init}a.apply('quick');a.apply('chain');a.apply('heavy');a.apply('dense');a.finish(false);})()`);await shot('result');
+  // Use the real markup for both HTTP and offline startup; no metadata fetch is needed.
+  await send('Page.navigate',{url:'file:///'+root.replaceAll('\\','/')+'/index.html?test'});await wait(400);assert.equal(await copyOf('#versionLabel'),`v${version}`);await click('#startButton');assert.equal(await evaluate('AshfallTest.state'),'playing');
+  passed('offline file entry loads the release script and starts without a server');
+  assert.equal(errors.length,0,JSON.stringify(errors));passed('zero browser runtime exceptions');
+  const hash=file=>require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex');
+  fs.writeFileSync(path.join(root,'public-ui-verification.json'),JSON.stringify({version,date:new Date().toISOString(),browser:(await send('Browser.getVersion')).product,sourceSHA256:hash('game.js'),upgradesSHA256:hash('upgrades.js'),runtimeErrors:errors.length,checks,copy,limits:'Real mouse/keyboard navigation, native fullscreen and isolated card/result fixtures. Normal-input run is recorded separately; natural Japanese and first-time comprehension require human review.'},null,2));
+ }finally{ws.close();for(const p of pending.values())clearTimeout(p.timer);}
+})().catch(e=>{console.error(e);process.exitCode=1;});

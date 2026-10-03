@@ -1,3 +1,112 @@
+# v0.7.x — プレイヤー向け文言の最終整理の検証結果
+
+基準：`work/v0.7-public-readiness` の `8ddf412`。作業：`work/v0.7-copy-polish`。検証日：2026-10-03（Asia/Tokyo）。表示名1件と説明4件を変更し、ゲームのバージョンは `0.7.0` を維持する。main・作業元へのmerge・pushは行わない。
+
+| 検証 | 結果 |
+| --- | --- |
+| npm test | 133項目合格。期待値の更新は、2つのカタログ比較の `dense` 表示名だけ。ほかの名称・効果・条件の比較は維持。 |
+| npm run test:balance | 14ラン合格。6seedの通し結果・取得強化・ダメージ・途中サンプルが作業元と完全一致。射撃のみ／仕込みなしの記録も一致。従来のv0.6.3比較も維持。 |
+| npm run test:browser | 29項目合格。通常入力420.0ゲーム秒、goal-reached、例外0。タイトル・開始・強化・ポーズ・結果・再挑戦を確認。 |
+| npm run test:public | 6項目合格。音状態同期・全画面・ポーズのヘルプ・小画面・file起動・再挑戦を維持。 |
+| npm run test:feedback | Canvas・Web Audio・通過後の無傷を維持。例外0。 |
+| node tests/clarity-check.cjs | 全55段階の表示・実取得・導入案内・小画面・file起動を確認。例外0。 |
+| node tests/hazard-check.cjs | 消弾・地面攻撃・既存の灰縫いの流れを維持。例外0。 |
+| 作業元との追加照合 | 7場面×360フレームの戦闘状態と、その後の敵生成・強化抽選の乱数が一致。カタログの差分は指定した表示名1件・本文4件だけ。 |
+| 文言・画像確認 | 4件の新本文とカード名をDOMで照合。1024×640で収まりを画像確認。結果の強化欄は「密縫いの極意」、成功回数は「密縫い」を維持。 |
+| git diff --check / 文書リンク | 合格。 |
+
+ゲーム本体・HTML・CSS・バージョン・起動設定は作業元と一致する。効果関数・最大Lv・Lv詳細・倍率・重み・排他・前提条件・演出・音は変更していない。詳細は [copy-polish-verification.json](copy-polish-verification.json) に記録する。8つの再生成した検証JSONのソースハッシュを現在のファイルと照合済み。
+
+実ブラウザ：Edg/154.0.4258.48。現在のカード画像：[残灰・密縫いの極意・余韻](docs/screenshots/v0.7-copy-polish-cards.png)、[連環縫い](docs/screenshots/v0.7-copy-polish-chain.png)。文言の旧→新と理由は [プレイヤー向け一覧](docs/V0.7-PLAYER-COPY-REVIEW.md#v07x--公開前の最終調整) と [強化レビュー](docs/V0.7-UPGRADE-COPY-REVIEW.md#v07x--公開前の最終調整) に記録する。文章の自然さと初見理解は人間レビュー待ち。
+
+以下は作業元 `8ddf412` の公開準備時の検証記録。751.7秒の自然勝利記録と従来のv0.7.0画像はその時点の資料として保持し、今回の文言で再取得した記録として扱わない。
+
+---
+
+# v0.7 — 公開準備の検証結果
+
+基準：main `b3f9265`（v0.6.3）。作業：`work/v0.7-public-readiness`。検証日：2026-10-02（Asia/Tokyo）。バージョンはversion.jsの `0.7.0` を各レポートが参照する。mainへのmerge・push・外部公開は行わない。
+
+## 結果
+
+| 検証 | 結果 |
+| --- | --- |
+| npm test | 133項目合格（既存123＋公開準備10）。既存の戦闘・UI・ビルド・演出・前線・乱数の検証を維持。 |
+| npm run test:balance | 旧6＋現在6＋射撃のみ／仕込みなし各1＝14ラン。6seedの結果・強化取得・ダメージ・途中サンプルがv0.6.3と完全一致。 |
+| npm run test:browser | 29項目合格。通常入力420.1ゲーム秒、goal-reached。例外0。 |
+| node tests/clarity-check.cjs | 全55段階の表示・実取得・案内終了・小画面・直接file起動を確認。 |
+| node tests/hazard-check.cjs | 飛翔弾の消弾、地面攻撃の予告・寿命・ダメージを維持。 |
+| npm run test:feedback | 通常・三重・密縫いのCanvas・Web Audioと、前線通過後の無傷を維持。 |
+| npm run test:public | 6項目合格。版表示・音状態同期・ポーズのヘルプ・実際の全画面ON/OFF・画面導線・1024×640・file起動。 |
+| git diff --check | 合格。 |
+
+ブラウザ：Edg/154.0.4258.48。Windowsで1440×900 / 1024×640を確認。主要ブラウザのChrome・Firefox・Safariはこの環境に未導入で、実機確認は公開前チェックリストに未完了として残す。
+
+## 通常入力による1ラン
+
+最初の目標を960秒とし、HP・経験値・灰・時計・無敵を注入せず、実際のキーボード・マウス入力で**751.7ゲーム秒で勝利**した。耐久150、討伐2384、Lv20、強化19回、番人3体と炉心を撃破。灰のある灰縫い502回、三重109回、密縫い123回、返し74回、連環0回、消した敵弾481発。灰縫いのダメージ比率95.02%。初回仕込み1.60秒、初回灰縫い2.82秒、初討伐3.03秒。
+
+この自然勝利の直後、回帰スクリプトが結果画面からの移動を、進行中のランと同じポーズ経路として扱ってリセットassertに失敗した。ゲームの勝利処理は完了しており、実際の終了状態を [natural-input-verification.json](natural-input-verification.json) と [勝利画像](docs/screenshots/v0.7.0-natural-victory.png) に保存した。テスト側を勝利・死亡の両方でタイトルへ戻るよう修正し、420秒目標の通常入力を含む全ブラウザ回帰を再実行して合格した。数値を補正して合格へ合わせる変更はしていない。
+
+この1ランは自動入力で、人間プレイヤーの初見理解や文章の自然さの確認ではない。後半の個別場面・勝利fixture・カードの全段階などは、通常入力とは分離した明示的なテスト配置を使う。
+
+## 戦闘・乱数・バランスの維持
+
+| 構成 / seed | 結果 | 終了 | 討伐 | 強化取得 | v0.6.3との比較 |
+| --- | --- | --- | --- | --- | --- |
+| weave / 4721 | loss | 347秒 | 526 | 10 | 一致 |
+| dense / 9481 | win | 726秒 | 2400 | 19 | 一致 |
+| flow / 20261001 | win | 758秒 | 2487 | 19 | 一致 |
+| weave / 8606 | win | 753秒 | 2333 | 19 | 一致 |
+| dense / 6606 | win | 724秒 | 2410 | 19 | 一致 |
+| flow / 4606 | win | 780秒 | 2413 | 19 | 一致 |
+
+7構成で各360フレームの戦闘状態と、その後の敵生成20体・強化抽選を旧game.jsと旧upgrades.jsの両方で比較。除くのはプレイヤー文言のannounced文字列とカードの説明メタデータのみ。敵HP・火力・出現密度・ボス・灰縫い威力・成功条件・強化効果・抽選重み・経験値曲線は同一。効果関数の比較は改行コードを正規化し、文章だけの変更を許容する。
+
+既存の「upgrades.jsがバイト単位で同一」というassertは、効果関数・最大Lv・系統・前提・排他・抽選重みの同一比較へ更新した。Lvの排他表示を確認するテストは、現在の共通欄「同時取得不可」を検証する。戦闘のassertを緩めた変更はない。
+
+## UIの画像確認と人間へ残す点
+
+[タイトル](docs/screenshots/v0.7.0-title.png)、[ヘルプ](docs/screenshots/v0.7.0-help.png)、[長い数値・シナジー付きカード](docs/screenshots/v0.7.0-compact-copy-cards.png)、[小画面ヘルプ](docs/screenshots/v0.7.0-compact-help.png)、[リザルト](docs/screenshots/v0.7.0-result.png) を確認する。3枚のカード、Lv詳細、排他・シナジー、ボタンの配置を維持。説明パネルは画面内で必要に応じてスクロールできる。
+
+文言全文は [人間レビュー一覧](docs/V0.7-PLAYER-COPY-REVIEW.md)、公開前の残りは [公開準備](docs/V0.7-PUBLIC-READINESS.md)。文章の自然さ、灰紋・残火・残火印の混同、同名の密縫い成功と強化の理解、三重と密の視認性は人間の最終確認待ち。ライセンス・正式クレジットは権利者の決定待ちで、仮のLICENSEは作らない。
+
+## 再実行
+
+Node.js 22で検証。自動テストと通し比較はGit履歴があるこのリポジトリで実行した。ZIPなどで基準コミットがない場合は、Git比較部分の省略を明示する。
+
+```text
+npm test
+npm run test:balance
+```
+
+ブラウザ回帰はnpm startと、ゲームページ1つを開いた専用Chromium系プロファイルを使う。既存の一般閲覧タブを回帰テストへ使わない。今回使ったDevToolsポートは9227。起動例：
+
+```powershell
+Start-Process -WindowStyle Hidden -FilePath 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe' -ArgumentList @('--headless=new','--disable-extensions','--no-first-run','--remote-debugging-port=9227','--user-data-dir=D:\develop\project-ashfall\work\v07-browser-profile','http://localhost:4173/?test')
+$env:ASHFALL_CDP_PORT='9227'
+npm run test:browser
+node tests/clarity-check.cjs
+node tests/hazard-check.cjs
+npm run test:feedback
+npm run test:public
+```
+
+同じブラウザを使う検証は順番に実行する。通常入力の標準目標は420ゲーム秒。1ランまで続ける場合は `$env:ASHFALL_BROWSER_SECONDS='960'` を設定してtest:browserを実行する。途中で自然に勝利・死亡したら終了結果を保存し、残りの回帰を進める。ブラウザのフレーム時刻や入力時刻が違うため、実時間ランの結果は旧版との完全一致の根拠にしない。完全一致は同じseedの加速比較で検証する。
+
+## 検証成果物
+
+8件の検証JSONは現在のgame.js / upgrades.jsのSHA-256と一致。バージョン表示・各検証JSONはversion.jsを参照し、古い画像と記録は履歴として維持する。今回の画像は `v0.7.0-` で区別する。
+
+| ファイル | SHA-256 |
+| --- | --- |
+| game.js | 6d75ac4843c30fd5faa35cfc414e23077d6647371cb3edfc42079a3412b619e5 |
+| upgrades.js | d60c1443ad94ab3c067a47bafc339f04c229f7b40b763061f38ae4701ff42042 |
+
+[バランス](balance-verification.json)、[ブラウザ回帰](browser-verification.json)、[UI・全段階](ux-verification.json)、[地面攻撃](hazard-verification.json)、[演出](feedback-verification.json)、[v0.6.3戦闘比較](public-parity-verification.json)、[公開UI](public-ui-verification.json)、[1ラン通常入力](natural-input-verification.json)。
+
+---
+
 # Project Ashfall v0.6.3 — 検証記録
 
 基準：`work/v0.6.2-stitch-timing` の `028ca08`。作業：`work/v0.6.3-stitch-chain-visuals`。検証日：2026-10-02（Asia/Tokyo）。通常の連鎖爆発を維持し、密縫いを高密度・高圧、三重縫いを広域・制圧の変奏へ調整。演出だけの改修。

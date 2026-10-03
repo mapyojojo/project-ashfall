@@ -1,0 +1,151 @@
+{
+  "version": "0.7.0",
+  "date": "2026-10-02T16:05:01.906Z",
+  "baseline": "8ddf412f2b5a54252bd627adef92ef233b917bf4",
+  "branch": "work/v0.7-copy-polish",
+  "sourceSHA256": "6d75ac4843c30fd5faa35cfc414e23077d6647371cb3edfc42079a3412b619e5",
+  "upgradesSHA256": "acc27026fe1303564be287f91463c307ccd4cb9a70a3435fc578cccc367c3574",
+  "unchangedFiles": [
+    "game.js",
+    "index.html",
+    "style.css",
+    "version.js",
+    "package.json",
+    "server.js",
+    "Start.bat"
+  ],
+  "onlyFivePlayerStringsChanged": true,
+  "allOtherCatalogFieldsUnchanged": true,
+  "changes": [
+    {
+      "id": "shards",
+      "oldName": "飛び散る残灰",
+      "newName": "飛び散る残灰",
+      "oldDescription": "灰縫いの最初の炸裂から小さな灰弾が飛び、灰紋に空きのある敵へ灰を付ける。次に縫う敵への仕込みを助ける。",
+      "newDescription": "灰縫いの経路上から小さな灰弾が飛び、灰紋に空きのある敵へ灰を付ける。次に縫う敵への仕込みを助ける。"
+    },
+    {
+      "id": "dense",
+      "oldName": "密縫い",
+      "newName": "密縫いの極意",
+      "oldDescription": "新しい灰紋を1〜2体から合計6灰以上回収すると、灰縫いの威力が増す。少数の強敵へ灰を集めるほど、大きな一撃を狙える。",
+      "newDescription": "密縫いに成功したときの威力が増す。少数の強敵へ灰を集めるほど、大きな一撃を狙える。"
+    },
+    {
+      "id": "regen",
+      "oldName": "火種の余韻",
+      "newName": "火種の余韻",
+      "oldDescription": "灰を使った灰縫いの後、しばらく耐久が少しずつ回復する。次の灰縫いで回復時間を延ばし、攻撃を続けながら立て直す。",
+      "newDescription": "灰を使った灰縫いの後、しばらく耐久が少しずつ回復する。灰縫いを続けると回復を維持し、攻撃しながら立て直せる。"
+    },
+    {
+      "id": "chain",
+      "oldName": "連環縫い",
+      "newName": "連環縫い",
+      "oldDescription": "返し縫いで必要な数の敵から新しい灰紋を回収すると、さらに1回縫える。通常・返し縫い・連環縫いの3回で、次の群れまで攻め続ける。",
+      "newDescription": "返し縫いで必要な数の敵から新しい灰紋を回収すると、さらに1回縫える。通常・返し縫い・連環縫いの3回をつないで攻め続ける。"
+    }
+  ],
+  "frameParity": [
+    {
+      "scene": "normal",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    },
+    {
+      "scene": "triple",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    },
+    {
+      "scene": "dense",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    },
+    {
+      "scene": "dense/pressure/point",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    },
+    {
+      "scene": "propagation/shards/echo",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    },
+    {
+      "scene": "return/chain",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    },
+    {
+      "scene": "short",
+      "frames": 360,
+      "futureEnemyAndUpgradeRNGMatched": true
+    }
+  ],
+  "seedParity": [
+    {
+      "build": "weave",
+      "seed": 4721,
+      "matched": true
+    },
+    {
+      "build": "dense",
+      "seed": 9481,
+      "matched": true
+    },
+    {
+      "build": "flow",
+      "seed": 20261001,
+      "matched": true
+    },
+    {
+      "build": "weave",
+      "seed": 8606,
+      "matched": true
+    },
+    {
+      "build": "dense",
+      "seed": 6606,
+      "matched": true
+    },
+    {
+      "build": "flow",
+      "seed": 4606,
+      "matched": true
+    }
+  ],
+  "all14RunRecordsAndMinuteSamplesMatched": true,
+  "limits": "Player announcements and card display metadata are excluded from frame state comparisons; all other combat state and future enemy/upgrade RNG are compared. The six deterministic seed runs are compared with the v0.7 base commit report. This does not replace human copy review.",
+  "browserCopy": {
+    "browser": "Edg/154.0.4258.48",
+    "width": 1024,
+    "height": 640,
+    "cards": [
+      {
+        "id": "shards",
+        "name": "飛び散る残灰",
+        "description": "灰縫いの経路上から小さな灰弾が飛び、灰紋に空きのある敵へ灰を付ける。次に縫う敵への仕込みを助ける。"
+      },
+      {
+        "id": "dense",
+        "name": "密縫いの極意",
+        "description": "密縫いに成功したときの威力が増す。少数の強敵へ灰を集めるほど、大きな一撃を狙える。"
+      },
+      {
+        "id": "regen",
+        "name": "火種の余韻",
+        "description": "灰を使った灰縫いの後、しばらく耐久が少しずつ回復する。灰縫いを続けると回復を維持し、攻撃しながら立て直せる。"
+      },
+      {
+        "id": "chain",
+        "name": "連環縫い",
+        "description": "返し縫いで必要な数の敵から新しい灰紋を回収すると、さらに1回縫える。通常・返し縫い・連環縫いの3回をつないで攻め続ける。"
+      }
+    ],
+    "allCardsFit": true,
+    "resultBuildIncludesNewCardName": true,
+    "resultCounterUsesUnchangedSuccessName": true,
+    "runtimeErrors": 0
+  }
+}

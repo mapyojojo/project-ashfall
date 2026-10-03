@@ -1,9 +1,9 @@
 {
-  "version": "0.6.3",
+  "version": "0.7.0",
   "change": "Landing wards clear flying projectiles only; ground attacks keep warning, lifetime and damage.",
-  "date": "2026-10-02T07:22:10.182Z",
-  "upgradesSHA256": "2758b96d032b3522d7abd8fb46433e5502bbc2806fa4a5a1d3746e4f5acc91e1",
-  "sourceSHA256": "39adee04aad53e13c3b4be3f387859c28deb754e9b8969e0eefdace00e5a48ed",
+  "date": "2026-10-02T16:09:13.055Z",
+  "upgradesSHA256": "acc27026fe1303564be287f91463c307ccd4cb9a70a3435fc578cccc367c3574",
+  "sourceSHA256": "6d75ac4843c30fd5faa35cfc414e23077d6647371cb3edfc42079a3412b619e5",
   "runtimeErrors": 0,
   "groundAttacks": {
     "landing": {

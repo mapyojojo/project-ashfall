@@ -1,14 +1,14 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto');
 const root=path.resolve(__dirname,'..');
 (async()=>{
- const targets=await(await fetch('http://127.0.0.1:9223/json')).json(),target=targets.find(t=>t.type==='page');assert.ok(target);
+ const targets=await(await fetch(`http://127.0.0.1:${process.env.ASHFALL_CDP_PORT||9223}/json`)).json(),target=targets.find(t=>t.type==='page'&&(t.url.startsWith('http://localhost:4173/')||t.url.startsWith('file:///')&&t.url.includes('/index.html')));assert.ok(target);
  const ws=new WebSocket(target.webSocketDebuggerUrl),pending=new Map(),errors=[];let next=0;
  await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject;});
  ws.onmessage=ev=>{const m=JSON.parse(ev.data);if(m.id){const p=pending.get(m.id);if(p){pending.delete(m.id);clearTimeout(p.timer);m.error?p.reject(new Error(JSON.stringify(m.error))):p.resolve(m.result);}}else if(m.method==='Runtime.exceptionThrown')errors.push(m.params.exceptionDetails);};
  const send=(method,params={})=>new Promise((resolve,reject)=>{const id=++next,timer=setTimeout(()=>{pending.delete(id);reject(new Error(method));},15000);pending.set(id,{resolve,reject,timer});ws.send(JSON.stringify({id,method,params}));});
  const evaluate=async expression=>{const r=await send('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw new Error(JSON.stringify(r.exceptionDetails));return r.result.value;};
  const wait=ms=>new Promise(r=>setTimeout(r,ms));
- const shot=async name=>{const r=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(root,'docs/screenshots',name.replace(/^feedback-/,'chain-').replace(/^timing-/,'chain-')),Buffer.from(r.data,'base64'));};
+ const shot=async name=>{const r=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(root,'docs/screenshots',`v${require('../version.js').version}-`+name.replace(/^feedback-/,'chain-').replace(/^timing-/,'chain-')),Buffer.from(r.data,'base64'));};
  const snapshot=()=>evaluate(`FeedbackComparison.scenes.map(a=>({kind:a.run.stitches[0]?.feedback??'preview',targets:a.run.lastLeap?.targets,ash:a.run.lastLeap?.freshAsh,multiplier:a.run.stitches[0]?.denseMultiplier,hitStop:a.run.hitStop,pointPops:a.run.stitches[0]?.pointPops,impacts:a.run.impacts.map(q=>({kind:q.feedback,focus:!!q.focus,marker:!!q.marker,point:!!q.point,echo:!!q.echo,strength:q.strength})),wards:a.run.wards.map(w=>({radius:w.r,max:w.max})),late:a.run.enemies.filter(e=>e.testLate).map(e=>({hp:e.hp,y:e.y,mainHit:a.run.stitches[0]?.hitIds.has(e.id)??false,echoHit:a.run.stitches[0]?.echoIds.has(e.id)??false})),damage:a.run.damageTotals.stitch}))`);
  const render=async(ms,power='base')=>{await evaluate(`document.getElementById('time').value=${ms};document.getElementById('power').value='${power}';FeedbackComparison.render()`);return snapshot();};
  try{
@@ -64,6 +64,6 @@ const root=path.resolve(__dirname,'..');
   console.log('PASS live Web Audio: shared falling blast and chain motif; compressed dense layer and rising triple layer; 2ms dense attack retained');
   assert.equal(errors.length,0,JSON.stringify(errors));
   const hash=file=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex');
-  fs.writeFileSync(path.join(root,'feedback-verification.json'),JSON.stringify({version:'0.6.3',date:new Date().toISOString(),baseline:'028ca08',sourceSHA256:hash('game.js'),upgradesSHA256:hash('upgrades.js'),browser:(await send('Browser.getVersion')).product,runtimeErrors:errors.length,phases,main,safety,boosted,beforePoint,point,second,lateMain,lateEcho,sounds,limits:'Actual browser canvas snapshots and live Web Audio graph verified. Exact v0.6.2 combat/RNG parity is tested separately; perceived impact, hierarchy and screen clutter require human playtests.'},null,2));
+  fs.writeFileSync(path.join(root,'feedback-verification.json'),JSON.stringify({version:require('../version.js').version,date:new Date().toISOString(),baseline:'028ca08',sourceSHA256:hash('game.js'),upgradesSHA256:hash('upgrades.js'),browser:(await send('Browser.getVersion')).product,runtimeErrors:errors.length,phases,main,safety,boosted,beforePoint,point,second,lateMain,lateEcho,sounds,limits:'Actual browser canvas snapshots and live Web Audio graph verified. Exact v0.6.2 combat/RNG parity is tested separately; perceived impact, hierarchy and screen clutter require human playtests.'},null,2));
  }finally{ws.close();for(const p of pending.values())clearTimeout(p.timer);}
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -35,7 +35,8 @@
     osc.connect(gain); gain.connect(audio.destination); osc.start(now); osc.stop(now + duration);
   }
   function initAudio() { try { audio ||= new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch {} }
-  function toggleSound() { soundOn = !soundOn; $('soundButton').textContent = `音声 ${soundOn ? 'ON' : 'OFF'}`; if (soundOn) initAudio(); }
+  function updateSoundLabels() { $('soundButton').textContent = `音声 ${soundOn ? 'ON' : 'OFF'}`; $('pauseSound').textContent = `音声 ${soundOn ? 'ON' : 'OFF'} [M]`; }
+  function toggleSound() { soundOn = !soundOn; updateSoundLabels(); if (soundOn) initAudio(); }
   function screen(id) { ['title','help','relics','upgrade','pause','result'].forEach(s => { $(s).hidden = s !== id; }); $('hud').hidden = !run || id === 'title' || (id === 'help' && !run); }
   function saveMeta() { try { localStorage.setItem('ashfall.v1', JSON.stringify(meta)); } catch {} }
   function titleRecord() {
@@ -110,8 +111,8 @@
     $('resultTitle').textContent = win ? '炉心は、沈黙した。' : '灰へ還る。';
     $('resultCopy').textContent = win ? '仕込み、見極め、突破した。炉に小さな夜明けが戻る。' : '撃って灰を仕込み、群れを灰縫いで断つ。次は、その経路を変えてみよう。';
     $('resultCopy').textContent += ` 生存時間 ${timeText(run.time)}。`;
-    $('resultStats').innerHTML = `<div><strong>${run.maxStitchTargets}<small>体</small></strong><span>最大同時灰縫い</span><small>1回で灰紋を回収した敵数</small></div><div><strong>${run.comboLeaps}<small>回</small></strong><span>三重縫い</span><small>灰紋3体以上の突破</small></div><div><strong>${run.bonusLeaps}<small>回</small></strong><span>返し縫い</span><small>実行した追加攻撃</small></div><div><strong>${run.bulletsCleared}<small>発</small></strong><span>消した敵弾</span><small>経路と着地の消弾の合計</small></div>`;
-    $('resultBuild').innerHTML = `<p class="build-summary">密縫い ${run.denseLeaps}回 / 連環縫い ${run.chainLeaps}回</p>`+(buildChips() || '<span class="chip">初期装備のみ</span>');
+    $('resultStats').innerHTML = `<div><strong>${run.maxStitchTargets}<small>体</small></strong><span>最大同時灰縫い</span><small>1回で灰紋を回収した敵数の最大</small></div><div><strong>${run.comboLeaps}<small>回</small></strong><span>三重縫い</span><small>灰紋のある敵を3体以上縫った回数</small></div><div><strong>${run.bonusLeaps}<small>回</small></strong><span>返し縫い</span><small>三重縫いから追加で縫った回数</small></div><div><strong>${run.bulletsCleared}<small>発</small></strong><span>消した敵弾</span><small>経路と着地で消した飛翔弾の合計</small></div>`;
+    $('resultBuild').innerHTML = `<div class="build-summary"><p>密縫い ${run.denseLeaps}回 / 連環縫い ${run.chainLeaps}回</p><small>密縫い：新しい灰紋を1〜2体から合計6灰以上回収<br>連環縫い：返し縫いから、さらに追加で縫った回数</small></div>`+(buildChips() || '<span class="chip">ラン内の強化なし</span>');
     const unlocked = relics.filter(r => !r.retired && r.need > before && r.need <= meta.marks);
     $('metaText').textContent = `残火印 +${marks} / 合計 ${meta.marks}。${unlocked.map(r => '「'+r.name+'」解放！').join(' ')}`;
     tone(win ? 440 : 160, .6, 'triangle', .1, win ? 2 : .3);
@@ -124,7 +125,7 @@
       const level=i+1,status=level<=current?'owned':level===next?'next':'locked',label=status==='owned'?'✓ 取得済み':status==='next'?'＋ 次のLv':'未取得';
       return `<span class="upgrade-stage ${status}" data-level="${level}" data-status="${status}"><span class="stage-label">Lv${level} · ${label}</span><span class="stage-detail">${detail}</span></span>`;
     }).join(''):'<span class="upgrade-stage next"><span class="stage-label">＋ 今回取得</span><span class="stage-detail">威力 ×1.08 / 取得時20回復</span></span>';
-    return `<button class="upgrade-card" data-card="${index}" data-current="${current}" data-next="${next}"><span class="family-tag ${u.family}">${families[u.family]}</span><span class="category">${u.cat}</span><span class="number">0${index+1}</span><h3>${u.name}</h3><span class="rank">現在 Lv${current}${current===0?'（未取得）':''} → <b>取得後 Lv${next}</b></span><p>${u.desc}</p><span class="upgrade-stages" aria-label="各段階の効果。数値はこの強化単独の累計">${stages}</span>${synergyNote(u.id)?`<small class="synergy-note">${synergyNote(u.id)}</small>`:''}</button>`;
+    return `<button class="upgrade-card" data-card="${index}" data-current="${current}" data-next="${next}"><span class="family-tag ${u.family}">${families[u.family]}</span><span class="category">${u.cat}</span><span class="number">0${index+1}</span><h3>${u.name}</h3><span class="rank">現在 Lv${current} → <b>取得後 Lv${next}</b></span><p>${u.desc}</p><span class="upgrade-stages" aria-label="各段階の効果。数値はこの強化単独の累計">${stages}</span>${u.excludes?`<small class="upgrade-rule">「${UPGRADES.find(v=>v.id===u.excludes).name}」と同時取得不可</small>`:''}${synergyNote(u.id)?`<small class="synergy-note">${synergyNote(u.id)}</small>`:''}</button>`;
   }
   function rollUpgrades() {
     const p = run.player;
@@ -136,7 +137,7 @@
     while(cards.length<Math.min(3,available.length))cards.push(weightedPick(available.filter(u=>!cards.includes(u))));
     for(let i=cards.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]];}
     run.cards = cards; state = 'upgrade'; mouse.down = false; keys.clear(); screen('upgrade');
-    $('upgradeSub').textContent = `LV ${p.level} · 耐久 ${Math.ceil(p.hp)} / ${p.maxHp} · 戦闘は一時停止中。段階の数値は各強化単独の累計。`;
+    $('upgradeSub').textContent = `Lv ${p.level} · 耐久 ${Math.ceil(p.hp)} / ${p.maxHp} · 戦闘は一時停止中。各Lvの数値はこの強化の累計。`;
     $('upgradeCards').innerHTML = cards.map(upgradeCard).join('');
     $('upgradeCards').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>chooseUpgrade(Number(b.dataset.card))));
     tone(620,.15,'triangle',.06,1.5);
@@ -167,13 +168,13 @@
     $('dashBar').style.width=`${introBlocked()?0:p.bonusStitch?100:clamp(1-p.dashTimer/p.dashCycle,0,1)*100}%`;$('dashText').textContent=introBlocked()?'仕込み':p.bonusStitch?(p.bonusStitch.depth===2?'連環縫い':'返し縫い'):p.dashTimer<=0?'READY':`${p.dashTimer.toFixed(1)}s`;
     $('killText').textContent=run.kills;$('announcement').style.opacity=clamp(run.announceTimer,0,1);
     const preview=predictLeap();
-    $('primeText').textContent=p.autoFire?'仕込み：自動':'仕込み：休止 [F]';
+    $('primeText').textContent=p.autoFire?'自動射撃 ON [F]':'自動射撃 OFF [F]';
     const dense=denseSpec(preview.targets,preview.ash),bonus=p.bonusStitch;
     $('routeText').textContent=bonus?(bonus.depth===2?'連環縫い：最後の1回':'返し縫い：あと1回 / 2秒以内'):preview.targets>=3?'三重縫い：広い消弾':dense.success?'密縫い：濃い少数へ炸裂':preview.ash?`灰紋 ${preview.targets}体 / ${preview.ash}灰`:'橙の灰紋を経路へ重ねる';$('routeText').dataset.combo=String(preview.targets>=3);
     const lesson=run.onboarding;
     $('coach').hidden=!showStitchHelp();$('routeText').hidden=!showStitchHelp();
     $('coach').dataset.stage=String(lesson.stage);
-    $('coachHint').textContent=lesson.stage===0?(run.time<1.6?'射撃は自動 / カーソルで方向を変える':'灰紋が付くまで、狙うだけ'):lesson.stage===1?'橙の経路を左クリックで灰縫い':'灰紋3体で広い消弾 / 少数なら6灰を狙う';
+    $('coachHint').textContent=lesson.stage===0?(run.time<1.6?'射撃は自動 / カーソルで敵を狙う':'敵を狙って、橙の灰紋を付けよう'):lesson.stage===1?'灰紋のある敵を経路へ → 左クリック':'また狙って仕込もう → 次の灰縫いへ';
     const boss=run.boss&&!run.boss.dead?run.boss:null;$('bossHud').hidden=!boss;
     if(boss){$('bossName').textContent=boss.type==='boss'?'炉心 / THE LAST FURNACE':'灰の番人';$('bossHp').textContent=`${Math.ceil(boss.hp/boss.maxHp*100)}%`;$('bossBar').style.width=`${boss.hp/boss.maxHp*100}%`;}
   }
@@ -844,7 +845,7 @@
     if(e.code==='KeyM'){toggleSound();return;}
     if(e.code==='Escape'||e.code==='KeyP'){if(state==='relics'){state='title';screen('title');}else if(state==='help'){state=run?'paused':'title';screen(run?'pause':'title');}else pause();return;}
     if(state==='upgrade'&&['Digit1','Digit2','Digit3'].includes(e.code)){chooseUpgrade(Number(e.code.slice(-1))-1);return;}
-    if(state==='playing'){keys.add(e.code);if(e.code==='Space')run.leapRequested=true;if(e.code==='KeyF'){run.player.autoFire=!run.player.autoFire;announce(`自動仕込み ${run.player.autoFire?'ON':'OFF'}`,1.5);}}
+    if(state==='playing'){keys.add(e.code);if(e.code==='Space')run.leapRequested=true;if(e.code==='KeyF'){run.player.autoFire=!run.player.autoFire;announce(`自動射撃 ${run.player.autoFire?'ON':'OFF'}`,1.5);}}
   });
   addEventListener('keyup',e=>keys.delete(e.code));
   canvas.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;mouse.active=true;});
@@ -854,10 +855,11 @@
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='playing')pause();last=performance.now();});
   $('startButton').onclick=start;$('restartButton').onclick=start;$('titleButton').onclick=goTitle;$('quitButton').onclick=goTitle;
   $('pauseButton').onclick=pause;$('resumeButton').onclick=resume;$('soundButton').onclick=toggleSound;$('pauseSound').onclick=toggleSound;
-  $('helpButton').onclick=()=>{state='help';screen('help');};$('closeHelp').onclick=()=>{state=run?'paused':'title';screen(run?'pause':'title');};
+  $('helpButton').onclick=$('pauseHelp').onclick=()=>{state='help';screen('help');};$('closeHelp').onclick=()=>{state=run?'paused':'title';screen(run?'pause':'title');};
   $('fullscreenButton').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.().catch(()=>{});};
   $('relicButton').onclick=showRelics;$('closeRelics').onclick=()=>{state='title';screen('title');};
-  titleRecord();requestAnimationFrame(loop);
+  $('versionLabel').textContent=`v${globalThis.AshfallRelease.version}`;
+  updateSoundLabels();titleRecord();requestAnimationFrame(loop);
   // Explicit test mode exposes mechanics for deterministic verification, never used in normal play.
   if(new URLSearchParams(location.search).has('test'))window.AshfallTest={
     start,update,spawnEnemy,hurtEnemy,hurtPlayer,startDash,endDash,seedEnemy,predictLeap,stitchDamage,addXp,chooseUpgrade,rollUpgrades,finish,goTitle,pause,resume,

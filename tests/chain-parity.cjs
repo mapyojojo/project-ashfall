@@ -76,6 +76,10 @@ test('normal chain drawing and sound commands are unchanged at start, middle and
 test('front crossing, damage, landing, combat loop and upgrade definitions are unchanged',()=>{
  const before=engine({source}),after=engine();
  for(const key of ['frontCrossing','lineDamage','stitchDamage','denseSpec','pressureMultiplier','wardSpec','endDash','update','scatterShards','weight','eligible'])assert.equal(after[key].toString(),before[key].toString(),key);
- const old=cp.execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:upgrades.js`],{cwd:root});assert.ok(old.equals(fs.readFileSync(path.join(root,'upgrades.js'))));
+ const old=cp.execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:upgrades.js`],{cwd:root}).toString();
+ const oldCatalog=engine({source,catalogSource:old});
+ const combatCatalog=a=>Array.from(a.UPGRADES,u=>({id:u.id,name:u.name,family:u.family,max:u.max,excludes:u.excludes,requires:u.requires?.toString(),apply:u.apply.toString()}));
+ const expectedCatalog=combatCatalog(oldCatalog).map(u=>u.id==='dense'?{...u,name:'密縫いの極意'}:u);
+ assert.deepEqual(combatCatalog(after),expectedCatalog,'catalog behavior is unchanged; only the dense display name changes');
 });
 console.log(`${passed} chain parity checks passed against ${baseline}.`);

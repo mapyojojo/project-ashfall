@@ -1,0 +1,21 @@
+{
+  "version": "0.7.0",
+  "baseline": "b3f9265eef10ada6c728feb85896a235814c71d9",
+  "baselineAvailable": true,
+  "date": "2026-10-02T15:56:31.108Z",
+  "sourceSHA256": "6d75ac4843c30fd5faa35cfc414e23077d6647371cb3edfc42079a3412b619e5",
+  "upgradesSHA256": "acc27026fe1303564be287f91463c307ccd4cb9a70a3435fc578cccc367c3574",
+  "checks": [
+    "pause help preserves the run and returns to pause; sound labels agree after button and key input",
+    "offline entry uses the shared release version without fetching metadata",
+    "all upgrade effects, eligibility, weights, enemy definitions and combat functions match v0.6.3",
+    "normal: every frame, future enemies and upgrade RNG match v0.6.3",
+    "triple: every frame, future enemies and upgrade RNG match v0.6.3",
+    "dense: every frame, future enemies and upgrade RNG match v0.6.3",
+    "dense/pressure/point: every frame, future enemies and upgrade RNG match v0.6.3",
+    "propagation/shards/echo: every frame, future enemies and upgrade RNG match v0.6.3",
+    "return/chain: every frame, future enemies and upgrade RNG match v0.6.3",
+    "short: every frame, future enemies and upgrade RNG match v0.6.3"
+  ],
+  "limits": "Player copy is excluded from announced text and card metadata. All combat state and future RNG are compared; full runs are in balance-verification.json."
+}
