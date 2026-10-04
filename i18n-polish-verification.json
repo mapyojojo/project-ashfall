@@ -1,0 +1,353 @@
+{
+  "version": "0.8.0",
+  "date": "2026-10-04T13:17:03.022Z",
+  "baseBranch": "work/v0.8-i18n-refactor",
+  "baseCommit": "34b7d41071e14035894bb3bfa0f358a5c79e1a6e",
+  "keyCount": 291,
+  "changedKeys": 19,
+  "changes": [
+    {
+      "key": "upgrade.ricochet.name",
+      "before": "Passing Ash",
+      "after": "Ash Relay"
+    },
+    {
+      "key": "upgrade.ricochet.desc",
+      "before": "Shots jump to a nearby enemy and briefly adjust their path. Spread Ash Marks to moving targets.",
+      "after": "On hit, shots jump to a nearby enemy and briefly adjust their path. Spread Ash Marks to moving targets."
+    },
+    {
+      "key": "upgrade.ricochet.stage.2",
+      "before": "Jump to up to 2 foes / Guided path",
+      "after": "Up to 2 foes / Guided path"
+    },
+    {
+      "key": "upgrade.ricochet.stage.3",
+      "before": "Jump to up to 3 foes / Guided path",
+      "after": "Up to 3 foes / Guided path"
+    },
+    {
+      "key": "upgrade.propagation.desc",
+      "before": "Hitting an enemy with full Ash Marks shares ash with nearby enemies. Prime more of the crowd.",
+      "after": "Hitting an enemy at its ash limit spreads ash to nearby enemies. Prime more of the crowd."
+    },
+    {
+      "key": "upgrade.width.stage.1",
+      "before": "Reach +40 / Collect width +6 · Blast width +14",
+      "after": "Reach +40 / Collection width +6 · Blast width +14"
+    },
+    {
+      "key": "upgrade.width.stage.2",
+      "before": "Reach +80 / Collect width +12 · Blast width +28",
+      "after": "Reach +80 / Collection width +12 · Blast width +28"
+    },
+    {
+      "key": "upgrade.width.stage.3",
+      "before": "Reach +120 / Collect width +18 · Blast width +42",
+      "after": "Reach +120 / Collection width +18 · Blast width +42"
+    },
+    {
+      "key": "upgrade.frost.desc",
+      "before": "Ash Stitch blasts slow enemies they hit. Hold tough foes in place for your next priming shots and attack.",
+      "after": "Ash Stitch blasts slow enemies they hit. Keep tough foes in reach for your next priming shots and stitch."
+    },
+    {
+      "key": "upgrade.pressure.desc",
+      "before": "Collect at least 6 fresh ash from one enemy to boost the blast against it. Stack more ash on Guardians and the Furnace for heavier hits.",
+      "after": "Collect at least 6 fresh ash from one enemy to boost the blast against it. Stack ash on Ash Guardians and the Furnace for stronger hits."
+    },
+    {
+      "key": "upgrade.point.name",
+      "before": "Point Pierce",
+      "after": "Pinpoint Pierce"
+    },
+    {
+      "key": "upgrade.point.desc",
+      "before": "A Dense Stitch collecting at least 6 fresh ash from one enemy adds blasts on that target. Focus your follow-up on a tough foe.",
+      "after": "Collect at least 6 fresh ash from one enemy with Dense Stitch to trigger extra blasts on that target. Focus your follow-up on a tough foe."
+    },
+    {
+      "key": "upgrade.fast.name",
+      "before": "Early Stitch",
+      "after": "Quick Stitch"
+    },
+    {
+      "key": "upgrade.regen.desc",
+      "before": "After a stitch that uses ash, recover health slowly for a short time. Keep stitching to sustain recovery while attacking.",
+      "after": "Recover health over time for a short while after a stitch that uses ash. Keep stitching to sustain recovery."
+    },
+    {
+      "key": "upgrade.heal.name",
+      "before": "Breath in Danger",
+      "after": "Second Wind"
+    },
+    {
+      "key": "upgrade.ember.desc",
+      "before": "Raises Ash Stitch power and heals when taken. Keep strengthening your hit after other upgrades are complete.",
+      "after": "Raises Ash Stitch power and heals when taken. Keep strengthening your stitch after other upgrades are maxed out."
+    },
+    {
+      "key": "synergy.pierce",
+      "before": "Prime deep and sideways with your ricochets",
+      "after": "Prime foes ahead and to the side with your ricochets"
+    },
+    {
+      "key": "help.step.4",
+      "before": "<b>04 — Grow with Embers</b>Blue Embers give experience. Level up to choose an upgrade. Spread marks crowds, Focus stacks ash on tough foes, and Flow keeps stitches coming. Mix them to shape your build.",
+      "after": "<b>04 — Grow with Embers</b>Blue Embers give experience. Level up to choose an upgrade. Spread primes crowds, Focus stacks ash on tough foes, and Flow keeps stitches coming. Mix them to shape your build."
+    },
+    {
+      "key": "title.record",
+      "before": "Ember Sigils {marks} · Best {best} · Furnace wins {wins}{next}",
+      "after": "Ember Sigils {marks} · Best {best} · Furnaces destroyed {wins}{next}"
+    }
+  ],
+  "protectedFileHashes": {
+    "i18n/ja.js": "ccd099efea9b8e7e668462a6ec0adedece0b80173d883b4b929c2a15a1b57bfd",
+    "game.js": "756bd599f5f8dadf9124651616a8e02db70f62e6bc5d33a6b1c5f735394540be",
+    "upgrades.js": "c809856053f24eb5acc9d209569c09c7bbddeaf3d9b47dd9e19933c3fe7dab58",
+    "relics.js": "a8d8318c1d26293c4b9e8d8433fd73c8cfe7c6cbe8ecde1a9311b63a04d5c3f2",
+    "storage.js": "99a8428336767ddb48e0c3bc4699eeada978315c99fa01828f73c1dacd64ef39",
+    "input.js": "6bb9b97898b77b2ebe87728ff797d71b89a788dc908626689ed39702e9207530",
+    "audio.js": "4455112430117b62bf925a74cfd211cffec25d9de86565cea916a518a8c53a7f",
+    "ui.js": "4c6ad53ca2a68fe7c90d006d7e67dc893eeb37a869d8dd158f8fa9037831f270",
+    "i18n.js": "deafd9c9b3fc9ef176246b3f91d09705ef97ddcd64898f0e4b624e961ddb1fe6",
+    "index.html": "5562a9428b569a00ed68809fd3139c32d08b0d7274dd84a0779f7b84616d0358",
+    "style.css": "ecd9c206eea829c8f6c6313af95c1689e506a45277a6f2343e9db7c95dcd5912",
+    "version.js": "f49100854e451536dd0c26c59f4215641df010b9e379063173b2925a0aae6b0b",
+    "package.json": "10d85b772741b2ffca17a475222f8827a999cbf0afd32775acc111606f3c9771",
+    "README.md": "e7339c237fa11c419ff35d5a92cfc81e33c0ac0e06c0a530d1e564c5b7e60c38"
+  },
+  "englishSHA256": "6b89c36d301d8bed6e8152d25b22c18fe81bd2fca6702583062540db9691d843",
+  "keysInterpolationAndNumericTokensUnchanged": true,
+  "unavailableHistoricalSHAs": [
+    "028ca08",
+    "b3f9265eef10ada6c728feb85896a235814c71d9"
+  ],
+  "historicalBaselines": {
+    "timing": {
+      "ref": "v0.6-playable^{/Align dense stitch feedback and blast-front hit timing}",
+      "commit": "fe41ebd99cbbc4424dc99edb727ae92798e59f0d"
+    },
+    "visuals": {
+      "ref": "v0.6-playable",
+      "commit": "5efa9a5ca41805e44a916800a8d3009623fdbf55"
+    }
+  },
+  "testCounts": {
+    "v071": 140,
+    "v08BeforeFix": 139,
+    "historicalSkipped": {
+      "feedback": 3,
+      "chain": 9,
+      "public": 8
+    },
+    "newI18n": 19,
+    "afterFix": 159
+  },
+  "validations": {
+    "unit": {
+      "command": "npm test",
+      "passed": 159,
+      "skipped": 0,
+      "suites": {
+        "smoke": 67,
+        "clarity": 6,
+        "builds": 19,
+        "feedback": 9,
+        "timing": 13,
+        "chainParity": 9,
+        "public": 10,
+        "fullscreenPause": 7,
+        "i18n": 5,
+        "v071Parity": 14
+      }
+    },
+    "balance": {
+      "command": "npm run test:balance",
+      "runs": 20,
+      "baselineSeeds": 6,
+      "japaneseSeeds": 6,
+      "englishSeeds": 6,
+      "restrictedControls": 2,
+      "exactV071Parity": true
+    },
+    "i18nBrowser": {
+      "command": "npm run test:i18n:browser",
+      "browser": "Edg/154.0.4258.53",
+      "passed": 5,
+      "layoutChecks": 102,
+      "runtimeErrors": 0
+    },
+    "normalBrowser": {
+      "command": "npm run test:browser",
+      "browser": "Edg/154.0.4258.53",
+      "passed": [
+        "normal build starts with consistent player terminology",
+        "title/help navigation",
+        "three relic choices show locked costs, selection, persistence and actual loadout",
+        "player click activates local audio",
+        "enemy-free automatic shots precede the safe encounter; reflex click cannot waste the first stitch",
+        "real shots create visible ash before any kill",
+        "left click overrides held WASD, harvests ash and reaches preview endpoint",
+        "opening cycle completes within first minute without state injection",
+        "pause/resume stops game time",
+        "preparation defaults on and can be paused",
+        "actual keyboard/mouse input: 420.1 seconds, goal-reached, target 420",
+        "natural upgrade choices through number keys",
+        "natural damage is dominated by ash stitch",
+        "title/restart reset cycle statistics",
+        "existing final boss transition",
+        "victory screen",
+        "death and restart",
+        "1024x640 relic selection panel and Escape navigation",
+        "1024x640 title/upgrade layout",
+        "compact coach and route HUD",
+        "dense existing-enemy/shard rendering",
+        "all selectable card ranks, real acquisition, staged explanations, moving ricochet and action-derived result records",
+        "separate rendered harvest, windup, traveling front and final blast phases",
+        "rendered landing protection, bonus stitch, reverse echo, branch and contagion",
+        "v0.6 dense, propagation, bounded shards, short routes and capped chain scenes",
+        "landing wards preserve existing and newly created boss ground warnings and damage",
+        "truthful intro readiness and compact cards with live synergy hints",
+        "direct file startup with truthful introduction availability",
+        "zero JavaScript runtime exceptions"
+      ],
+      "naturalInput": {
+        "goalSeconds": 420,
+        "wallSeconds": 442.381,
+        "upgradesChosen": 12,
+        "outcome": "goal-reached",
+        "time": 420.05010000008247,
+        "hp": 123,
+        "kills": 877,
+        "level": 13,
+        "bosses": 2,
+        "poweredLeaps": 261,
+        "denseLeaps": 40,
+        "chainLeaps": 0,
+        "shardsFired": 0,
+        "comboLeaps": 29,
+        "bonusLeaps": 22,
+        "maxStitchTargets": 4,
+        "bulletsCleared": 151,
+        "upgrades": {
+          "pierce": 2,
+          "echo": 1,
+          "ricochet": 1,
+          "quick": 2,
+          "short": 1,
+          "propagation": 2,
+          "heal": 1,
+          "vital": 1,
+          "frost": 1
+        },
+        "damageTotals": {
+          "bullet": 2260.9325463999826,
+          "stitch": 47943.532526357594
+        },
+        "stitchDamageShare": 0.9549655086828754,
+        "onboarding": {
+          "stage": 2,
+          "introduced": true,
+          "disabled": false,
+          "firstSeed": 1.6165999999999987,
+          "firstLeap": 2.966599999999996,
+          "firstKill": 3.1665999999999963,
+          "completeAt": 3.1665999999999963
+        }
+      },
+      "runtimeErrors": 0
+    },
+    "feedbackBrowser": {
+      "command": "npm run test:feedback",
+      "browser": "Edg/154.0.4258.53",
+      "passedGroups": 3,
+      "baseline": "v0.6-playable^{/Align dense stitch feedback and blast-front hit timing}",
+      "runtimeErrors": 0
+    },
+    "publicBrowser": {
+      "command": "npm run test:public",
+      "browser": "Edg/154.0.4258.53",
+      "passed": [
+        "shared version, title sound state and fullscreen enter/exit work through real clicks",
+        "title, help and loadout are readable and navigable at 1024x640",
+        "title fullscreen start and paused fullscreen OFF/ON preserve the run, frozen time, sound and synchronized labels",
+        "actual playing fullscreen exit automatically pauses; Escape is not cancelled and never resumes that pause",
+        "native fullscreen exits preserve help, result and upgrade choices; acquisition still works",
+        "pause sound button and M keep both labels synchronized; help preserves paused time and returns to pause",
+        "copy-heavy cards, unchanged result counters and retry/title navigation fit at 1024x640",
+        "offline file entry loads the release script and starts without a server",
+        "zero browser runtime exceptions"
+      ],
+      "fullscreen": {
+        "pauseToggle": {
+          "runPreserved": true,
+          "timePreserved": true,
+          "soundPreserved": true,
+          "audioContextState": "running"
+        },
+        "escapeProbe": {
+          "fullscreen": true,
+          "state": "playing",
+          "event": {
+            "defaultPrevented": false
+          }
+        },
+        "nativeEscapeExitObserved": false,
+        "playingExit": {
+          "paused": true,
+          "timeFrozen": true,
+          "runPreserved": true,
+          "escapeDidNotResume": true
+        },
+        "nonPlayingExit": {
+          "titlePreserved": true,
+          "helpPreserved": true,
+          "resultPreserved": true,
+          "upgradeChoicesPreserved": true
+        }
+      },
+      "runtimeErrors": 0
+    },
+    "cards": {
+      "browser": "Edg/154.0.4258.53",
+      "width": 1024,
+      "height": 640,
+      "captures": [
+        {
+          "file": "v0.8.0-polish-en-1024-names.png",
+          "ids": [
+            "fast",
+            "point",
+            "heal"
+          ],
+          "names": [
+            "Quick Stitch",
+            "Pinpoint Pierce",
+            "Second Wind"
+          ],
+          "overflow": [],
+          "clipped": []
+        },
+        {
+          "file": "v0.8.0-polish-en-1024-relay.png",
+          "ids": [
+            "ricochet",
+            "width",
+            "frost"
+          ],
+          "names": [
+            "Ash Relay",
+            "Long Needle",
+            "Binding White Ash"
+          ],
+          "overflow": [],
+          "clipped": []
+        }
+      ],
+      "limits": "Deterministic UI fixtures; full all-card and Japanese/English switching checks are recorded in i18n-ui-verification.json."
+    },
+    "limits": "Headless Edge/CDP fixtures and real input; physical Escape, other browser engines and native-speaker human playtests remain manual. First browser attempt ran before page initialization; retry after startup passed."
+  }
+}

@@ -1,14 +1,14 @@
 const {engine}=require('./harness.cjs');
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..'),releaseVersion=require('../version.js').version,baseline='b3f9265eef10ada6c728feb85896a235814c71d9';
+const root=path.resolve(__dirname,'..'),releaseVersion=require('../version.js').version,baseline='1058b3b1b7d1b884da9b3e24551b843a9d19cb41';
 const preferences={
  weave:['pierce','ricochet','propagation','quick','scatter','shards','ward','width','heal','chain','vital','echo','fast','regen','heavy','frost','rapid','magnet','dense','pressure','point'],
  dense:['heavy','dense','pressure','point','rapid','echo','frost','heal','fast','quick','vital','regen','magnet','propagation','pierce','ricochet','scatter','width','ward','shards','chain'],
  flow:['short','fast','quick','chain','regen','propagation','ricochet','pierce','shards','heal','ward','heavy','dense','pressure','vital','echo','point','rapid','magnet','scatter'],
  gun:['scatter','ricochet','rapid','pierce','heavy','vital','quick','width','regen','magnet']
 };
-function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,catalogSource=null,version=releaseVersion}) {
- const a=engine({intro:true,source,catalogSource});a.seed(seed);a.mouse.active=true;a.run.player.autoFire=mode!=='leap-only';
+function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,catalogSource=null,version=releaseVersion,language='ja'}) {
+ const a=engine({intro:true,source,catalogSource,language});a.seed(seed);a.mouse.active=true;a.run.player.autoFire=mode!=='leap-only';
  const events=[];let nextPlan=0,nextSample=0;
  for(let tick=0;tick<limit*30+1000&&a.state!=='result'&&a.run.time<limit;tick++) {
   if(a.state==='upgrade'){
@@ -61,15 +61,17 @@ function simulate({mode='cycle',build='weave',seed=4721,limit=900,source=null,ca
 }
 const results=[];
 let source=null,catalogSource=null;
-try{source=require('node:child_process').execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:game.js`],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();catalogSource=require('node:child_process').execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:upgrades.js`],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();}catch{source=null;console.log('Local v0.6.3 baseline unavailable; comparison skipped.');}
-if(source)for(const [build,seed] of [['weave',4721],['dense',9481],['flow',20261001],['weave',8606],['dense',6606],['flow',4606]])results.push(simulate({build,seed,source,catalogSource,version:'0.6.3 baseline'}));
+try{source=require('node:child_process').execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:game.js`],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();catalogSource=require('node:child_process').execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:upgrades.js`],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();}catch(error){throw new Error('Required v0.7.1 baseline unavailable',{cause:error});}
+if(source)for(const [build,seed] of [['weave',4721],['dense',9481],['flow',20261001],['weave',8606],['dense',6606],['flow',4606]])results.push(simulate({build,seed,source,catalogSource,version:'0.7.1 baseline'}));
 results.push(simulate({mode:'shoot-only',limit:300}));
 results.push(simulate({mode:'leap-only',limit:300}));
 for(const [build,seed] of [['weave',4721],['dense',9481],['flow',20261001],['weave',8606],['dense',6606],['flow',4606]])results.push(simulate({build,seed}));
+for(const [build,seed] of [['weave',4721],['dense',9481],['flow',20261001],['weave',8606],['dense',6606],['flow',4606]])results.push(simulate({build,seed,language:'en',version:releaseVersion+' en'}));
 const cycles=results.filter(r=>r.version===releaseVersion&&r.mode==='cycle');
 assert.ok(results.filter(r=>r.version===releaseVersion&&r.mode!=='cycle').every(r=>r.kills===0));
 const parity=[];
-if(source)for(const r of cycles){const before=results.find(q=>q.version==='0.6.3 baseline'&&q.seed===r.seed&&q.build===r.build),normalize=q=>JSON.parse(JSON.stringify({...q,version:undefined}));assert.deepEqual(normalize(r),normalize(before),`v0.6.3 combat results and samples: ${r.build}/${r.seed}`);parity.push({build:r.build,seed:r.seed,matched:true});}
+if(source)for(const r of cycles){const before=results.find(q=>q.version==='0.7.1 baseline'&&q.seed===r.seed&&q.build===r.build),normalize=q=>JSON.parse(JSON.stringify({...q,version:undefined}));assert.deepEqual(normalize(r),normalize(before),`v0.7.1 combat results and samples: ${r.build}/${r.seed}`);parity.push({build:r.build,seed:r.seed,matched:true});}
+for(const r of results.filter(r=>r.version===releaseVersion+' en')){const before=cycles.find(q=>q.seed===r.seed&&q.build===r.build),normalize=q=>JSON.parse(JSON.stringify({...q,version:undefined}));assert.deepEqual(normalize(r),normalize(before),'English six-seed parity '+r.seed);parity.push({build:r.build,seed:r.seed,language:'en',matched:true});}
 assert.ok(cycles.every(r=>r.firstStitchKill!==null&&r.firstStitchKill<60));
 assert.ok(cycles.every(r=>r.stitchDamageShare>=.85));
 assert.ok(cycles.some(r=>r.time>=300&&r.kills>=150),'At least one natural five-minute cycle must remain playable.');
@@ -82,5 +84,5 @@ assert.ok(cycles.every(r=>r.remaining.length>=5),'Late runs must still have seve
 assert.ok(cycles.find(r=>r.build==='dense').denseLeaps>10,'Concentration must earn actual dense successes.');
 assert.ok(cycles.find(r=>r.build==='flow').poweredLeaps>100,'Continuous route must keep cycling.');
 assert.ok(new Set(cycles.map(r=>JSON.stringify(Object.keys(r.upgrades).sort()))).size>=3,'Strategies must result in different builds.');
-fs.writeFileSync(path.join(root,'balance-verification.json'),JSON.stringify({version:releaseVersion,date:new Date().toISOString(),baseline,eligibleAttackUpgrades:eligibleAttack,parity,method:'deterministic accelerated simulation; matched v0.6.3/v0.7 planners and catalogs and 6 seeds; all combat results, upgrades, damage totals and minute samples asserted identical; normal HP/damage/XP; exact route knowledge; no injected fuel/XP/invulnerability or balancing changes; not human playtests',upgradesSHA256:require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'upgrades.js'))).digest('hex'),sourceSHA256:require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'game.js'))).digest('hex'),results},null,2));
+fs.writeFileSync(path.join(root,'balance-verification.json'),JSON.stringify({version:releaseVersion,date:new Date().toISOString(),baseline,eligibleAttackUpgrades:eligibleAttack,parity,method:'deterministic accelerated simulation; matched v0.7.1/v0.8 planners and catalogs and 6 seeds in Japanese and English; all combat results, upgrades, damage totals and minute samples asserted identical; normal HP/damage/XP; exact route knowledge; no injected fuel/XP/invulnerability or balancing changes; not human playtests',upgradesSHA256:require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'upgrades.js'))).digest('hex'),sourceSHA256:require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'game.js'))).digest('hex'),results},null,2));
 console.log('Core-loop balance assertions passed. These are bots, not human playtests.');
