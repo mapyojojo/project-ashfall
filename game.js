@@ -7,18 +7,14 @@
   const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
   const ARENA = 1560, HALF = ARENA / 2, END_TIME = 720;
   let W = 1280, H = 720, dpr = 1, state = 'title', run = null, last = 0, ambient = 0;
-  let soundOn = true, audio = null, seed = 0, frame = 0;
-  let fullscreenActive = !!document.fullscreenElement;
+  let seed = 0, frame = 0;
+  const {t}=globalThis.AshfallI18n;
+  const sfx=globalThis.AshfallAudio.create({feedbackSpec});
+  const {tone,initAudio,stitchNodeSound,blastSound}=sfx;
+  const ui=globalThis.AshfallUI.create({getRun:()=>run,getMeta:()=>meta,sfx,clamp,timeText,introBlocked,showStitchHelp,predictLeap,denseSpec,selectRelic,chooseUpgrade});
   const keys = new Set(), mouse = { x: 900, y: 360, down: false, active: false };
-  let meta = { marks: 0, best: 0, wins: 0, runs: 0, relic: 0 };
-  try { Object.assign(meta, JSON.parse(localStorage.getItem('ashfall.v1')) || {}); } catch {}
-  const relics = [
-    { name: '旅人の護符', need: 0, detail: '最大耐久 +10', apply: p => { p.maxHp += 10; p.hp += 10; } },
-    { name: '灰織りの針', need: 5, detail: '灰紋の回収幅 +6 / 着地の消弾範囲 +20', apply: p => { p.collectWidth += 6;p.wardBoost+=20; } },
-    // Reserve the old satellite index so saved equipment 3 never changes identity.
-    { retired: true },
-    { name: '割れた銃身', need: 25, detail: '仕込み弾 +1 / 射撃間隔 +12%', apply: p => { p.shots++; p.fireRate *= 1.12; } }
-  ];
+  let meta = globalThis.AshfallStorage.loadMeta();
+  const {relics}=globalThis.AshfallRelics;
   function rng() { seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5; return (seed >>> 0) / 4294967296; }
   const random = (a, b) => a + rng() * (b - a);
   const pick = a => a[Math.floor(rng() * a.length)];
@@ -28,43 +24,27 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   addEventListener('resize', resize); resize();
-  function tone(freq, duration, shape = 'sine', volume = .05, slide = 1) {
-    if (!soundOn || !audio || audio.state !== 'running') return;
-    const now = audio.currentTime, osc = audio.createOscillator(), gain = audio.createGain();
-    osc.type = shape; osc.frequency.setValueAtTime(freq, now); osc.frequency.exponentialRampToValueAtTime(Math.max(20, freq * slide), now + duration);
-    gain.gain.setValueAtTime(volume, now); gain.gain.exponentialRampToValueAtTime(.0001, now + duration);
-    osc.connect(gain); gain.connect(audio.destination); osc.start(now); osc.stop(now + duration);
-  }
-  function initAudio() { try { audio ||= new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch {} }
-  function updateSoundLabels() { $('soundButton').textContent = `音声 ${soundOn ? 'ON' : 'OFF'}`; $('pauseSound').textContent = `音声 ${soundOn ? 'ON' : 'OFF'} [M]`; }
-  function toggleSound() { soundOn = !soundOn; updateSoundLabels(); if (soundOn) initAudio(); }
-  function updateFullscreenLabels() {
-    const label = document.fullscreenElement ? '全画面を解除' : '全画面にする';
-    $('fullscreenButton').textContent = $('pauseFullscreen').textContent = label;
-  }
+
+  function updateSoundLabels(...args) { return ui.updateSoundLabels(...args); }
+  function toggleSound() { sfx.toggle(); updateSoundLabels(); }
+  function updateFullscreenLabels(...args) { return ui.updateFullscreenLabels(...args); }
   async function toggleFullscreen() {
     try {
       if (document.fullscreenElement) await document.exitFullscreen?.();
       else await document.documentElement.requestFullscreen?.();
     } catch { /* A denied or unavailable browser action leaves the current screen intact. */ }
   }
-  function screen(id) { ['title','help','relics','upgrade','pause','result'].forEach(s => { $(s).hidden = s !== id; }); $('hud').hidden = !run || id === 'title' || (id === 'help' && !run); }
-  function saveMeta() { try { localStorage.setItem('ashfall.v1', JSON.stringify(meta)); } catch {} }
+  function screen(...args) { return ui.screen(...args); }
+  function saveMeta() { globalThis.AshfallStorage.saveMeta(meta); }
   function titleRecord() {
     meta.relic = clamp(Number(meta.relic) || 0, 0, 3);
     if (relics[meta.relic].retired || meta.marks < relics[meta.relic].need) { meta.relic = 0; saveMeta(); }
-    const next = relics.find(r => !r.retired && r.need > meta.marks);
-    $('recordText').textContent = meta.runs ? `残火印 ${meta.marks} · 最長 ${timeText(meta.best)} · 炉心破壊 ${meta.wins} 回${next ? ` · ${next.need}印で「${next.name}」解放` : ' · 全装備解放'}` : '12分の戦闘 + 最終ボス / 1ラン約12〜16分';
-    $('relicButton').textContent = `持ち込み：${relics[meta.relic].name} / 装備を選ぶ`;
+    ui.titleRecord();
   }
   function showRelics() {
     state='relics';screen('relics');renderRelics();
   }
-  function renderRelics() {
-    $('relicMarks').textContent=`残火印 ${meta.marks} / 装備は1つ持ち込める`;
-    $('relicChoices').innerHTML=relics.map((r,i)=>{if(r.retired)return '';const unlocked=meta.marks>=r.need;return `<button class="relic-card ${i===meta.relic?'selected':''}" data-relic="${i}" aria-pressed="${i===meta.relic}" ${unlocked?'':'disabled'}><b>${r.name}</b><p>${r.detail}</p><span>${!unlocked?`未解放 · 残火印 ${r.need} が必要`:i===meta.relic?'選択中':'解放済み · 選択する'}</span></button>`;}).join('');
-    $('relicChoices').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>selectRelic(Number(b.dataset.relic))));
-  }
+  function renderRelics(...args) { return ui.renderRelics(...args); }
   function selectRelic(index) {
     if(!relics[index]||relics[index].retired||meta.marks<relics[index].need)return;
     meta.relic=index;saveMeta();titleRecord();renderRelics();
@@ -118,26 +98,12 @@
     const marks = run.time >= 30 ? Math.floor(run.time / 75) + run.bosses * 2 + (win ? 6 : 1) : 0;
     const before = meta.marks; meta.marks += marks; meta.runs++; meta.best = Math.max(meta.best, run.time); if (win) meta.wins++;
     saveMeta(); screen('result');
-    $('resultEyebrow').textContent = win ? 'THE FURNACE FALLS SILENT' : 'THE FIRE FADES';
-    $('resultTitle').textContent = win ? '炉心は、沈黙した。' : '灰へ還る。';
-    $('resultCopy').textContent = win ? '仕込み、見極め、突破した。炉に小さな夜明けが戻る。' : '撃って灰を仕込み、群れを灰縫いで断つ。次は、その経路を変えてみよう。';
-    $('resultCopy').textContent += ` 生存時間 ${timeText(run.time)}。`;
-    $('resultStats').innerHTML = `<div><strong>${run.maxStitchTargets}<small>体</small></strong><span>最大同時灰縫い</span><small>1回で灰紋を回収した敵数の最大</small></div><div><strong>${run.comboLeaps}<small>回</small></strong><span>三重縫い</span><small>灰紋のある敵を3体以上縫った回数</small></div><div><strong>${run.bonusLeaps}<small>回</small></strong><span>返し縫い</span><small>三重縫いから追加で縫った回数</small></div><div><strong>${run.bulletsCleared}<small>発</small></strong><span>消した敵弾</span><small>経路と着地で消した飛翔弾の合計</small></div>`;
-    $('resultBuild').innerHTML = `<div class="build-summary"><p>密縫い ${run.denseLeaps}回 / 連環縫い ${run.chainLeaps}回</p><small>密縫い：新しい灰紋を1〜2体から合計6灰以上回収<br>連環縫い：返し縫いから、さらに追加で縫った回数</small></div>`+(buildChips() || '<span class="chip">ラン内の強化なし</span>');
-    const unlocked = relics.filter(r => !r.retired && r.need > before && r.need <= meta.marks);
-    $('metaText').textContent = `残火印 +${marks} / 合計 ${meta.marks}。${unlocked.map(r => '「'+r.name+'」解放！').join(' ')}`;
+    ui.renderResult({win,marks,before});
     tone(win ? 440 : 160, .6, 'triangle', .1, win ? 2 : .3);
   }
   const {UPGRADES,families,eligible,weight,synergyNote:catalogSynergy}=globalThis.AshfallUpgrades;
-  const UPGRADE_STAGES=Object.fromEntries(UPGRADES.map(u=>[u.id,u.stages]));
-  function upgradeCard(u,index) {
-    const current=run.player.upgrades[u.id]||0,next=current+1;
-    const stages=u.max<=3?UPGRADE_STAGES[u.id].map((detail,i)=>{
-      const level=i+1,status=level<=current?'owned':level===next?'next':'locked',label=status==='owned'?'✓ 取得済み':status==='next'?'＋ 次のLv':'未取得';
-      return `<span class="upgrade-stage ${status}" data-level="${level}" data-status="${status}"><span class="stage-label">Lv${level} · ${label}</span><span class="stage-detail">${detail}</span></span>`;
-    }).join(''):'<span class="upgrade-stage next"><span class="stage-label">＋ 今回取得</span><span class="stage-detail">威力 ×1.08 / 取得時20回復</span></span>';
-    return `<button class="upgrade-card" data-card="${index}" data-current="${current}" data-next="${next}"><span class="family-tag ${u.family}">${families[u.family]}</span><span class="category">${u.cat}</span><span class="number">0${index+1}</span><h3>${u.name}</h3><span class="rank">現在 Lv${current} → <b>取得後 Lv${next}</b></span><p>${u.desc}</p><span class="upgrade-stages" aria-label="各段階の効果。数値はこの強化単独の累計">${stages}</span>${u.excludes?`<small class="upgrade-rule">「${UPGRADES.find(v=>v.id===u.excludes).name}」と同時取得不可</small>`:''}${synergyNote(u.id)?`<small class="synergy-note">${synergyNote(u.id)}</small>`:''}</button>`;
-  }
+
+  function upgradeCard(...args) { return ui.upgradeCard(...args); }
   function rollUpgrades() {
     const p = run.player;
     const available = UPGRADES.filter(u => (p.upgrades[u.id]||0)<u.max && eligible(u,p));
@@ -148,9 +114,7 @@
     while(cards.length<Math.min(3,available.length))cards.push(weightedPick(available.filter(u=>!cards.includes(u))));
     for(let i=cards.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]];}
     run.cards = cards; state = 'upgrade'; mouse.down = false; keys.clear(); screen('upgrade');
-    $('upgradeSub').textContent = `Lv ${p.level} · 耐久 ${Math.ceil(p.hp)} / ${p.maxHp} · 戦闘は一時停止中。各Lvの数値はこの強化の累計。`;
-    $('upgradeCards').innerHTML = cards.map(upgradeCard).join('');
-    $('upgradeCards').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>chooseUpgrade(Number(b.dataset.card))));
+    ui.renderUpgrades();
     tone(620,.15,'triangle',.06,1.5);
   }
   function chooseUpgrade(index) {
@@ -167,28 +131,11 @@
       p.xp-=p.xpNeed;p.level++;p.xpNeed=Math.round(14+Math.pow(p.level,1.45)*9);run.pending++;
     }
   }
-  function buildChips() {return Object.entries(run.player.upgrades).map(([id,n])=>{const u=UPGRADES.find(u=>u.id===id);return `<span class="chip ${u.family}"><span class="family-label">${families[u.family]}</span>${u.name} ${n}</span>`;}).join('');}
-  function updateBuild() { $('buildChips').innerHTML=buildChips(); }
+  function buildChips(...args) { return ui.buildChips(...args); }
+  function updateBuild(...args) { return ui.updateBuild(...args); }
   function upgradeGain(id) {return UPGRADES.find(u=>u.id===id).gain;}
   function synergyNote(id) {return catalogSynergy(id,run.player);}
-  function updateHud() {
-    const p=run.player;
-    $('hpText').textContent=`${Math.ceil(p.hp)} / ${p.maxHp}`;$('hpBar').style.width=`${p.hp/p.maxHp*100}%`;
-    $('xpBar').style.width=`${p.xp/p.xpNeed*100}%`;$('levelText').textContent=`LV ${p.level}`;
-    $('timeText').textContent=timeText(run.time);$('phaseText').textContent=run.finalSpawned?'炉心 / 最終決戦':run.time<240?'灰の庭':run.time<480?'燃える回廊':'炉心への道';
-    $('dashBar').style.width=`${introBlocked()?0:p.bonusStitch?100:clamp(1-p.dashTimer/p.dashCycle,0,1)*100}%`;$('dashText').textContent=introBlocked()?'仕込み':p.bonusStitch?(p.bonusStitch.depth===2?'連環縫い':'返し縫い'):p.dashTimer<=0?'READY':`${p.dashTimer.toFixed(1)}s`;
-    $('killText').textContent=run.kills;$('announcement').style.opacity=clamp(run.announceTimer,0,1);
-    const preview=predictLeap();
-    $('primeText').textContent=p.autoFire?'自動射撃 ON [F]':'自動射撃 OFF [F]';
-    const dense=denseSpec(preview.targets,preview.ash),bonus=p.bonusStitch;
-    $('routeText').textContent=bonus?(bonus.depth===2?'連環縫い：最後の1回':'返し縫い：あと1回 / 2秒以内'):preview.targets>=3?'三重縫い：広い消弾':dense.success?'密縫い：濃い少数へ炸裂':preview.ash?`灰紋 ${preview.targets}体 / ${preview.ash}灰`:'橙の灰紋を経路へ重ねる';$('routeText').dataset.combo=String(preview.targets>=3);
-    const lesson=run.onboarding;
-    $('coach').hidden=!showStitchHelp();$('routeText').hidden=!showStitchHelp();
-    $('coach').dataset.stage=String(lesson.stage);
-    $('coachHint').textContent=lesson.stage===0?(run.time<1.6?'射撃は自動 / カーソルで敵を狙う':'敵を狙って、橙の灰紋を付けよう'):lesson.stage===1?'灰紋のある敵を経路へ → 左クリック':'また狙って仕込もう → 次の灰縫いへ';
-    const boss=run.boss&&!run.boss.dead?run.boss:null;$('bossHud').hidden=!boss;
-    if(boss){$('bossName').textContent=boss.type==='boss'?'炉心 / THE LAST FURNACE':'灰の番人';$('bossHp').textContent=`${Math.ceil(boss.hp/boss.maxHp*100)}%`;$('bossBar').style.width=`${boss.hp/boss.maxHp*100}%`;}
-  }
+  function updateHud(...args) { return ui.updateHud(...args); }
   function particle(x,y,color,n=8,speed=110,size=3) {
     for(let i=0;i<n&&run.particles.length<650;i++){const a=random(0,TAU),s=random(speed*.25,speed);run.particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,color,life:random(.18,.5),max:.5,size:random(size*.4,size)});}
   }
@@ -206,7 +153,7 @@
     e.ash=Math.min(ashLimit(e),e.ash+amount);e.ashLife=p.ashDuration;e.seedCooldown=.065;e.seedFlash=.12;
     if(e.ash>before){
       run.seededHits++;particle(e.x,e.y,'#cd9c68',2,35,2);
-      if(run.onboarding.firstSeed===null){run.onboarding.firstSeed=run.time;run.onboarding.stage=1;floating(e.x,e.y-e.r-26,'灰紋','#ffc584');tone(480,.12,'triangle',.035,1.25);}
+      if(run.onboarding.firstSeed===null){run.onboarding.firstSeed=run.time;run.onboarding.stage=1;floating(e.x,e.y-e.r-26,t('term.mark'),'#ffc584');tone(480,.12,'triangle',.035,1.25);}
     }
     const rank=p.upgrades.propagation||0;
     if(spread&&rank&&e.ash>=ashLimit(e)&&!(e.spreadCooldown>0)){
@@ -275,7 +222,7 @@
       run.orbs.push({x:e.x,y:e.y,value:xp,life:75,pull:false});
       if(boss||rng()<.032)run.pickups.push({x:e.x,y:e.y,life:25,heal:boss?30:12});
       if(e.type==='splitter')for(let i=0;i<3;i++)spawnEnemy('mite',e.x+random(-24,24),e.y+random(-24,24));
-      if(boss){run.bosses++;run.shake=14;tone(75,.5,'sawtooth',.12,.2);if(e.type==='boss')finish(true);else {run.breather=4;announce('番人を撃破 / 次の群れまで、残火を回収');}}
+      if(boss){run.bosses++;run.shake=14;tone(75,.5,'sawtooth',.12,.2);if(e.type==='boss')finish(true);else {run.breather=4;announce(t('notice.guardianDown'));}}
       else if(frame%3===0)tone(random(160,240),.045,'triangle',.018,.4);
       if(source==='stitch'&&run.onboarding.firstKill===null){run.onboarding.firstKill=run.time;run.onboarding.completeAt=run.time;run.onboarding.stage=2;run.spawnTimer=3;for(const o of run.enemies)if(o.intro)o.wake=Math.min(o.wake,1);}
     }
@@ -302,9 +249,9 @@
   }
   function spawnWave(dt) {
     if(!run.onboarding.disabled&&run.onboarding.firstKill===null&&run.time<20)return;
-    if(run.time>=END_TIME&&!run.finalSpawned){run.finalSpawned=true;run.enemies.forEach(e=>e.dead=true);run.hostile=[];run.hazards=[];spawnEnemy('boss',0,-280);announce('炉心、覚醒 / 灰紋を刻み、灰縫いで断て。',5);tone(80,.8,'sawtooth',.1,1.3);}
+    if(run.time>=END_TIME&&!run.finalSpawned){run.finalSpawned=true;run.enemies.forEach(e=>e.dead=true);run.hostile=[];run.hazards=[];spawnEnemy('boss',0,-280);announce(t('notice.furnace'),5);tone(80,.8,'sawtooth',.1,1.3);}
     const wave=Math.min(3,Math.floor(run.time/180));
-    if(wave>run.eliteWave&&!run.finalSpawned){run.eliteWave=wave;spawnEnemy('elite');announce('灰の番人 / 接近と環状弾に注意',4);}
+    if(wave>run.eliteWave&&!run.finalSpawned){run.eliteWave=wave;spawnEnemy('elite');announce(t('notice.guardian'),4);}
     if(run.breather>0)return;
     run.spawnTimer-=dt;
     const maxEnemies=run.finalSpawned?35:run.time<180?45:75;
@@ -348,8 +295,8 @@
     if(count)p.dashTimer=Math.max(.65,p.dashTimer-Math.min(1.65,count*.075+danger*.14));
     const combo=leap.targets.size>=3,dense=denseSpec(leap.targets.size,leap.freshAsh),fast=p.upgrades.fast||0;
     if(fast&&leap.freshAsh)p.dashTimer=Math.max(.40,p.dashTimer-Math.min(fast===1?.55:.90,leap.freshAsh*(fast===1?.045:.075)));
-    if(combo){run.comboLeaps++;p.dashTimer=Math.max(fast?.40:.65,p.dashTimer-.35);floating(p.x,p.y-42,showStitchHelp()?'三重縫い · 広い消弾':'三重縫い','#87e2d3');}
-    if(dense.success){run.denseLeaps++;floating(p.x,p.y-42,`密縫い${dense.multiplier>1?' · 威力 +'+Math.round((dense.multiplier-1)*100)+'%':''}`,'#ffc584');}
+    if(combo){run.comboLeaps++;p.dashTimer=Math.max(fast?.40:.65,p.dashTimer-.35);floating(p.x,p.y-42,showStitchHelp()?t('guide.triple'):t('term.triple'),'#87e2d3');}
+    if(dense.success){run.denseLeaps++;floating(p.x,p.y-42,t('notice.densePower',{bonus:dense.multiplier>1?t('notice.powerBonus',{percent:Math.round((dense.multiplier-1)*100)}):''}),'#ffc584');}
     const feedback=combo?'triple':dense.success?'dense':'normal';
     Object.assign(run.lastLeap,{combo,dense:dense.success,feedback});
     if((combo||dense.success)&&p.stitchHeal){p.hp=Math.min(p.maxHp,p.hp+p.stitchHeal);floating(p.x,p.y-64,`+${p.stitchHeal}`,'#87e2d3');}
@@ -514,41 +461,7 @@
       blastSound(feedback,echo,s.feedbackMultiplier);
     }else if(index%3===0)stitchNodeSound(feedback,index,echo);
   }
-  function stitchNodeSound(kind,index,echo=false) {
-    if(kind==='normal'||echo){tone(kind==='triple'?280+index*12:90+index*9,.09,'triangle',.025,kind==='triple'?1.4:.35);return;}
-    // The same falling chain motif, compressed for dense and opened by a second voice for triple.
-    tone((90+index*9)*(kind==='dense'?.78:1),kind==='dense'?.06:.09,'triangle',.018,.35);
-    if(kind==='triple')tone(280+index*12,.09,'triangle',.012,1.4);
-  }
-  function blastSound(kind='normal',echo=false,multiplier=1) {
-    const f=feedbackSpec(kind,multiplier);
-    if(kind==='dense'&&!echo){
-      if(!soundOn||!audio||audio.state!=='running')return;
-      // Keep the ordinary falling motif beneath the short, compressed stroke.
-      tone(72,.14,'sine',.045,.38);tone(140,.07,'triangle',.025,.3);
-      const now=audio.currentTime,osc=audio.createOscillator(),shape=audio.createWaveShaper(),gain=audio.createGain();
-      osc.type='triangle';osc.frequency.setValueAtTime(f.bass,now);osc.frequency.exponentialRampToValueAtTime(f.bass*f.slide,now+.065);
-      shape.curve=Float32Array.from({length:128},(_,i)=>Math.tanh((i/127*2-1)*2.5)/Math.tanh(2.5));shape.oversample='2x';
-      const peak=.14+f.strength*.016;gain.gain.setValueAtTime(0,now);gain.gain.linearRampToValueAtTime(peak,now+f.attack);gain.gain.setValueAtTime(peak*.8,now+.008);gain.gain.exponentialRampToValueAtTime(.0001,now+f.soundDuration);
-      osc.connect(shape);shape.connect(gain);gain.connect(audio.destination);osc.start(now);osc.stop(now+f.soundDuration);
-      const length=Math.floor(audio.sampleRate*f.noiseDuration),buffer=audio.createBuffer(1,length,audio.sampleRate),data=buffer.getChannelData(0);
-      for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,4);
-      const noise=audio.createBufferSource(),filter=audio.createBiquadFilter(),transient=audio.createGain();
-      noise.buffer=buffer;filter.type='bandpass';filter.frequency.value=750;filter.Q.value=.8;
-      transient.gain.setValueAtTime(f.noise,now);transient.gain.exponentialRampToValueAtTime(.0001,now+f.noiseDuration);
-      noise.connect(filter);filter.connect(transient);transient.connect(audio.destination);noise.start(now);return;
-    }
-    if(kind==='triple'&&!echo){tone(72,.25,'sine',.07,.38);tone(140,.12,'triangle',.035,.3);}
-    tone(echo?100:f.bass,kind==='dense'?.26:.32,'sine',echo?.08:kind==='dense'?.13+f.strength*.025:kind==='triple'?.035:.14,echo?.38:f.slide);
-    tone(kind==='triple'?420:kind==='dense'?185:140,kind==='dense'?.10:.17,'triangle',echo?.035:kind==='triple'?.025:.07,kind==='triple'?1.65:.3);
-    if(!soundOn||!audio||audio.state!=='running')return;
-    const length=Math.floor(audio.sampleRate*.22),buffer=audio.createBuffer(1,length,audio.sampleRate),data=buffer.getChannelData(0);
-    // Sound uses a separate random source, so audio settings never alter gameplay.
-    for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,3);
-    const noise=audio.createBufferSource(),filter=audio.createBiquadFilter(),gain=audio.createGain();
-    noise.buffer=buffer;filter.type=kind==='triple'?'bandpass':'lowpass';filter.frequency.value=kind==='triple'?1500:kind==='dense'?480:700;gain.gain.value=echo?.06:f.noise;
-    noise.connect(filter);filter.connect(gain);gain.connect(audio.destination);noise.start();
-  }
+
   function frontCrossing(s,e,fromTimer,toTimer,delay=0,width=s.width) {
     const dt=fromTimer-toTimer;if(dt<=0)return null;
     const begin=Math.max(0,(fromTimer+delay)/dt),end=Math.min(1,(fromTimer+delay+.28)/dt);
@@ -619,7 +532,7 @@
       const pops=rank===1?1:2;
       while(s.pointPops<pops&&s.timer<=-(.42+s.pointPops*.22)&&!e.dead){s.pointPops++;
         hurtEnemy(e,lineDamage(s,e,rank===1?.45:.60),'stitch');if(p.stitchSlow)e.slow=p.stitchSlow;
-        run.impacts.push({x:e.x,y:e.y,life:.32,max:.32,point:true,feedback:'point'});particle(e.x,e.y,'#ffe4c2',14,220,5);blastSound('normal');run.shake=Math.max(run.shake,8);floating(e.x,e.y-e.r-18,'一点穿ち','#ffc584');
+        run.impacts.push({x:e.x,y:e.y,life:.32,max:.32,point:true,feedback:'point'});particle(e.x,e.y,'#ffe4c2',14,220,5);blastSound('normal');run.shake=Math.max(run.shake,8);floating(e.x,e.y-e.r-18,t('upgrade.point.name'),'#ffc584');
       }
     }
     run.stitches=run.stitches.filter(s=>s.life>0);
@@ -715,8 +628,8 @@
     ctx.save();circle(p.x,p.y,29,null,'#a8c9bc30',2);ctx.beginPath();ctx.arc(p.x,p.y,29,-Math.PI/2,-Math.PI/2+TAU*progress);ctx.strokeStyle=ready?col:'#b39c7a';ctx.lineWidth=ready?2.5:2;ctx.stroke();
     if(p.readyFlash>0){ctx.globalAlpha=p.readyFlash/.4;circle(p.x,p.y,29+(1-p.readyFlash/.4)*14,null,col,2);}
     ctx.globalAlpha=1;
-    if(p.bonusStitch){ctx.beginPath();ctx.arc(p.x,p.y,35,-Math.PI/2,-Math.PI/2+TAU*p.bonusStitch.life/2);ctx.strokeStyle='#93eed4';ctx.lineWidth=2;ctx.stroke();ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillStyle='#b5f5e5';ctx.fillText('もう1回',p.x,p.y+49);}
-    if(!run.onboarding.disabled&&run.time<1.6){ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#c8d8ca';ctx.fillText('自動仕込み',p.x,p.y-48);}
+    if(p.bonusStitch){ctx.beginPath();ctx.arc(p.x,p.y,35,-Math.PI/2,-Math.PI/2+TAU*p.bonusStitch.life/2);ctx.strokeStyle='#93eed4';ctx.lineWidth=2;ctx.stroke();ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillStyle='#b5f5e5';ctx.fillText(t('guide.onceMore'),p.x,p.y+49);}
+    if(!run.onboarding.disabled&&run.time<1.6){ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#c8d8ca';ctx.fillText(t('guide.autoPrime'),p.x,p.y-48);}
     ctx.restore();
   }
   function drawLeapGuide() {
@@ -732,10 +645,10 @@
     circle(r.bx,r.by,p.r+7,col+'18',col,2);circle(r.bx,r.by,4,col);
     if(fuel&&ready&&p.dashTime<=0){ctx.setLineDash([3,8]);circle(r.bx,r.by,wardSpec(fuel,r.targets).radius,null,r.targets>=3?'#93eed444':'#9ee5dc22',1);ctx.setLineDash([]);}
     for(const e of run.enemies)if(e.ash&&!e.dead&&segmentDistance(e.x,e.y,r.ax,r.ay,r.bx,r.by)<p.collectWidth+e.r){circle(e.x,e.y,e.r+12,null,col,2);line(e.x,e.y-e.r,e.x,e.y-e.r-6,col,2);}
-    if(p.dashTime<=0&&showStitchHelp()){ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle=col;ctx.fillText(ready?(fuel?(r.targets>=3?'三重縫い · 広い消弾':p.bonusStitch?(p.bonusStitch.depth===2?'連環縫い · 最後の1回':'返し縫い · 左クリック'):dense.success?'密縫い · 集中炸裂':'灰縫い · 着地で消弾'):'着地点'):'灰縫い · 準備中',r.bx,r.by-27);}
-    if(!showStitchHelp()&&p.dashTime<=0&&(dense.success||r.targets>=3||p.bonusStitch)){ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillStyle=col;ctx.fillText(p.bonusStitch?(p.bonusStitch.depth===2?'連環縫い':'返し縫い'):r.targets>=3?'三重縫い':'密縫い',r.bx,r.by-27);}
+    if(p.dashTime<=0&&showStitchHelp()){ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle=col;ctx.fillText(ready?(fuel?(r.targets>=3?t('guide.triple'):p.bonusStitch?(p.bonusStitch.depth===2?t('guide.chain'):t('guide.return')):dense.success?t('guide.dense'):t('guide.stitch')):t('guide.landing')):t('guide.wait'),r.bx,r.by-27);}
+    if(!showStitchHelp()&&p.dashTime<=0&&(dense.success||r.targets>=3||p.bonusStitch)){ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillStyle=col;ctx.fillText(p.bonusStitch?(p.bonusStitch.depth===2?t('term.chain'):t('term.return')):r.targets>=3?t('term.triple'):t('term.dense'),r.bx,r.by-27);}
     ctx.restore();
-    if(showStitchHelp()&&run.onboarding.firstSeed===null&&run.time<12){const e=run.enemies.find(e=>!e.dead);if(e){circle(e.x,e.y,e.r+12,null,'#a9c0bb66',1);ctx.fillStyle='#a9c0bb';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('カーソルを重ねて仕込む',e.x,e.y-e.r-22);}}
+    if(showStitchHelp()&&run.onboarding.firstSeed===null&&run.time<12){const e=run.enemies.find(e=>!e.dead);if(e){circle(e.x,e.y,e.r+12,null,'#a9c0bb66',1);ctx.fillStyle='#a9c0bb';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText(t('guide.aim'),e.x,e.y-e.r-22);}}
   }
   function drawStitches() {
     ctx.save();ctx.lineCap='round';
@@ -849,45 +762,22 @@
     if(run&&run.hitStop>0&&state==='playing')run.hitStop=Math.max(0,run.hitStop-dt);else update(dt);
     if(run)drawGame();else drawTitle();requestAnimationFrame(loop);
   }
-  const playingKeyCodes=new Set(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','KeyF','KeyP','Digit1','Digit2','Digit3']);
-  addEventListener('keydown',e=>{
-    if(playingKeyCodes.has(e.code))e.preventDefault();
-    if(e.repeat)return;
-    if(e.code==='KeyM'){toggleSound();return;}
-    if(e.code==='Escape'||e.code==='KeyP'){
-      if(e.code==='Escape'&&document.fullscreenElement)return;
-      if(state==='relics'){state='title';screen('title');}
-      else if(state==='help'){state=run?'paused':'title';screen(run?'pause':'title');}
-      // Escape pauses but never resumes, including after the browser exits fullscreen.
-      else if(e.code==='KeyP'||state==='playing')pause();
-      return;
-    }
-    if(state==='upgrade'&&['Digit1','Digit2','Digit3'].includes(e.code)){chooseUpgrade(Number(e.code.slice(-1))-1);return;}
-    if(state==='playing'){keys.add(e.code);if(e.code==='Space')run.leapRequested=true;if(e.code==='KeyF'){run.player.autoFire=!run.player.autoFire;announce(`自動射撃 ${run.player.autoFire?'ON':'OFF'}`,1.5);}}
-  });
-  addEventListener('keyup',e=>keys.delete(e.code));
-  canvas.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;mouse.active=true;});
-  canvas.addEventListener('mousedown',e=>{if(e.button===0&&state==='playing'){mouse.down=true;mouse.x=e.clientX;mouse.y=e.clientY;mouse.active=true;run.leapRequested=true;initAudio();}});
-  addEventListener('mouseup',()=>{mouse.down=false;});canvas.addEventListener('contextmenu',e=>e.preventDefault());
-  addEventListener('blur',()=>{keys.clear();mouse.down=false;if(state==='playing')pause();});
-  document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='playing')pause();last=performance.now();});
-  document.addEventListener('fullscreenchange',()=>{
-    const active = !!document.fullscreenElement;
-    if(fullscreenActive&&!active&&state==='playing')pause();
-    fullscreenActive=active;updateFullscreenLabels();
-  });
+  globalThis.AshfallInput.install({canvas,keys,mouse,getState:()=>state,getRun:()=>run,pause,chooseUpgrade,toggleSound,initAudio,announce,
+    closeOverlay(){state=state==='relics'?'title':run?'paused':'title';screen(state==='paused'?'pause':'title');},resetClock(){last=performance.now();},updateFullscreenLabels});
   $('startButton').onclick=start;$('restartButton').onclick=start;$('titleButton').onclick=goTitle;$('quitButton').onclick=goTitle;
   $('pauseButton').onclick=pause;$('resumeButton').onclick=resume;$('soundButton').onclick=toggleSound;$('pauseSound').onclick=toggleSound;
   $('helpButton').onclick=$('pauseHelp').onclick=()=>{state='help';screen('help');};$('closeHelp').onclick=()=>{state=run?'paused':'title';screen(run?'pause':'title');};
   $('fullscreenButton').onclick=$('pauseFullscreen').onclick=toggleFullscreen;
   $('relicButton').onclick=showRelics;$('closeRelics').onclick=()=>{state='title';screen('title');};
   $('versionLabel').textContent=`v${globalThis.AshfallRelease.version}`;
-  updateSoundLabels();updateFullscreenLabels();titleRecord();requestAnimationFrame(loop);
+  $('languageJa').onclick=()=>globalThis.AshfallI18n.setLanguage('ja');$('languageEn').onclick=()=>globalThis.AshfallI18n.setLanguage('en');
+  globalThis.AshfallI18n.subscribe(()=>ui.refresh());
+  titleRecord();ui.refresh();requestAnimationFrame(loop);
   // Explicit test mode exposes mechanics for deterministic verification, never used in normal play.
   if(new URLSearchParams(location.search).has('test'))window.AshfallTest={
     start,update,spawnEnemy,hurtEnemy,hurtPlayer,startDash,endDash,seedEnemy,predictLeap,stitchDamage,addXp,chooseUpgrade,rollUpgrades,finish,goTitle,pause,resume,
-    segmentDistance,UPGRADES,TYPES,keys,mouse,drawGame,updateHud,wardSpec,denseSpec,pressureMultiplier,lineDamage,feedbackSpec,blastSound,stitchNodeSound,frontCrossing,weight,eligible,scatterShards,assistedAngle,showRelics,selectRelic,showStitchHelp,upgradeCard,
-    get run(){return run;},get state(){return state;},get meta(){return meta;},get audioState(){return audio?.state;},seed(v){seed=v||1;},
+    segmentDistance,UPGRADES,TYPES,keys,mouse,drawGame,drawTitle,updateHud,wardSpec,denseSpec,pressureMultiplier,lineDamage,feedbackSpec,blastSound,stitchNodeSound,frontCrossing,weight,eligible,scatterShards,assistedAngle,showRelics,selectRelic,showStitchHelp,upgradeCard,
+    get run(){return run;},get state(){return state;},get meta(){return meta;},get audioState(){return sfx.state;},seed(v){seed=v||1;},
     step(seconds){for(let t=0;t<seconds;t+=1/60)update(Math.min(1/60,seconds-t));},
     apply(id){const u=UPGRADES.find(u=>u.id===id);if(!u)throw new Error(id);u.apply(run.player);run.player.upgrades[id]=(run.player.upgrades[id]||0)+1;updateBuild();updateHud();}
   };

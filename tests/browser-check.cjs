@@ -14,7 +14,7 @@ const out=path.resolve(__dirname,'..'),imageDir=path.join(out,'docs','screenshot
  const passed=name=>{checks.push(name);console.log('PASS',name);};
  try{
   await send('Runtime.enable');await send('Page.enable');await send('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
-  await send('Page.navigate',{url:'http://localhost:4173/'});await wait(500);
+  await send('Page.navigate',{url:'http://localhost:4173/'});await wait(500);await evaluate("AshfallI18n.setLanguage('ja')");
   assert.equal(await evaluate('typeof AshfallTest'),'undefined');assert.ok(await evaluate("document.getElementById('versionLabel').textContent==='v'+AshfallRelease.version"));assert.equal(await evaluate("document.body.textContent.includes('リープ')"),false);await shot('title.png');passed('normal build starts with consistent player terminology');
   await send('Page.navigate',{url:'http://localhost:4173/?test'});await wait(400);await click('helpButton');assert.equal(await evaluate('AshfallTest.state'),'help');await click('closeHelp');passed('title/help navigation');
   // Explicit meta setup checks selection; natural combat below starts with the default relic.

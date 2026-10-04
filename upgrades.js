@@ -1,54 +1,61 @@
-/* Plain script so both offline file startup and the VM harness use the same catalog. */
+/* Combat catalog: stable IDs, effects and weights; display getters resolve the active locale. */
 (() => {
   'use strict';
-  const families = { spread:'拡散', dense:'濃縮', flow:'連続', common:'共通' };
-  const definitions = [
-    ['scatter','扇に蒔く灰','spread',3,'仕込み / 扇状配置','仕込み弾が増え、扇状に広がる。横に並ぶ敵へ灰紋を配り、群れをまとめて縫いやすくする。',p=>{p.shots+=2;p.spread+=.025;},['弾 +2 / 扇状に配置','弾 +4 / 扇の幅も拡大','弾 +6 / さらに広い扇'],'弾が扇状に広がる'],
-    ['pierce','灰の串','spread',3,'仕込み / 直線配置','仕込み弾が敵を貫通し、弾速も上がる。奥の敵まで灰紋を付け、一直線にまとめて縫いやすくする。',p=>{p.pierce+=2;p.bulletSpeed*=1.08;},['2体貫通 / 弾速 +8%','4体貫通 / 弾速 +17%','6体貫通 / 弾速 +26%'],'灰紋が敵列を貫く'],
-    ['ricochet','隣へ渡す灰','spread',3,'仕込み / 跳弾','命中した弾が近くの敵へ跳び、短く軌道を補正する。動く敵にも灰紋を広げやすい。',p=>p.bounce++,['隣の1体へ / 軌道補正','最大2体へ / 軌道補正','最大3体へ / 軌道補正'],'跳弾が動く敵へ灰を渡す'],
-    ['propagation','灰の伝播','spread',3,'仕込み / 伝播','灰紋が上限まで溜まった敵への命中で、近くの敵へ灰を分け与える。複数の敵へ仕込みを広げやすくなる。',()=>{},['周囲2体へ1灰 / 範囲145・間隔0.8秒','周囲3体へ1灰 / 範囲145・間隔0.8秒','周囲4体へ1灰 / 範囲145・間隔0.8秒'],'灰紋が満ちた敵から周囲へ灰を渡す'],
-    ['width','長い縫い針','spread',3,'灰縫い / 長い経路','灰縫いの距離と、灰紋を回収する幅・炸裂の幅が広がる。奥まで続く敵群をまとめて縫いやすくする。',p=>{p.dashDistance+=40;p.collectWidth+=6;p.stitchWidth+=14;},['距離 +40 / 回収幅 +6・炸裂幅 +14','距離 +80 / 回収幅 +12・炸裂幅 +28','距離 +120 / 回収幅 +18・炸裂幅 +42'],'灰縫いが遠く・広くなる'],
-    ['ward','広がる灰幕','spread',2,'着地 / 消弾','灰紋を回収した着地の消弾範囲が広がり、長く続く。飛んでくる敵弾を消して、次の仕込みを狙いやすくする。',p=>{p.wardBoost+=25;p.wardDuration+=.15;},['消弾半径 +25 / 持続 +0.15秒','消弾半径 +50 / 持続 +0.30秒'],'着地の消弾が広く・長くなる'],
-    ['shards','飛び散る残灰','spread',2,'炸裂 / 次の仕込み','灰縫いの経路上から小さな灰弾が飛び、灰紋に空きのある敵へ灰を付ける。次に縫う敵への仕込みを助ける。',()=>{},['3か所から各2発・最大6発 / 範囲180','3か所から各3発・最大9発 / 範囲220'],'炸裂が次の敵へ仕込む'],
-    ['rapid','細い灰雨','dense',3,'仕込み / 集中射撃','自動射撃の間隔が短くなる。同じ敵へ素早く灰紋を積み、濃い一撃を準備しやすくする。',p=>p.fireRate*=.82,['間隔倍率 ×0.82 / 最短0.10秒','間隔倍率 ×0.67 / 最短0.10秒','間隔倍率 ×0.55 / 最短0.10秒'],'仕込みの間隔が短くなる'],
-    ['heavy','濃灰の刻印','dense',3,'仕込み / 灰量','1命中で付く灰紋と、敵に蓄えられる灰の上限が増える。少数の敵へ濃く仕込み、高火力の灰縫いを狙いやすくする。',p=>{p.ashPerHit++;p.ashCap+=2;},['命中の灰 +1 / 上限 +2','命中の灰 +2 / 上限 +4','命中の灰 +3 / 上限 +6'],'一体へ濃く灰を積める'],
-    ['frost','留める白灰','dense',2,'炸裂 / 足止め','灰縫いの炸裂が当たった敵を減速させる。強敵の動きを抑え、次の仕込みや攻撃を狙いやすくする。',p=>p.stitchSlow+=1.4,['炸裂時1.4秒の減速','炸裂時2.8秒の減速'],'炸裂した強敵を留める'],
-    ['echo','二重の縫い目','dense',2,'灰縫い / 再炸裂','灰縫いの経路が、少し遅れて終点から始点へ再び炸裂する。経路上の敵へ追い打ちを狙える。',p=>p.stitchEcho++,['0.5秒後に逆向きの再炸裂 / 威力75%','0.5秒後に再炸裂 / 威力100%・幅1.35倍'],'軌跡全体が逆向きに再炸裂'],
-    ['dense','密縫いの極意','dense',3,'灰縫い / 少数集中','密縫いに成功したときの威力が増す。少数の強敵へ灰を集めるほど、大きな一撃を狙える。',()=>{},['1体 +35% / 2体 +20%','1体 +55% / 2体 +30%','1体 +75% / 2体 +40%'],'少数へ濃く縫うと高火力'],
-    ['pressure','灰圧','dense',3,'灰縫い / 一体の灰量','1体から新しく回収した灰が6灰以上になると、その敵への炸裂が強くなる。多くの灰を蓄えられる番人や炉心への一撃を伸ばす。',()=>{},['その敵の6灰 +15% / 9灰 +25% / 12灰 +35%','その敵の6灰 +30% / 9灰 +50% / 12灰 +70%','その敵の6灰 +45% / 9灰 +75% / 12灰 +105%'],'積んだ灰が単体火力に変わる'],
-    ['point','一点穿ち','dense',2,'密縫い / 集中爆発','1体から新しい灰紋を6灰以上回収した密縫いで、その敵に追加炸裂する。狙った強敵へ集中して追い打ちをかける。',()=>{},['対象へ追加1回 / 本撃の45%','対象へ追加2回 / 各60%'],'一体への密縫いに集中爆発'],
-    ['quick','返し縫い','flow',3,'灰縫い / 追加攻撃','三重縫い後、灰を半分引き継いで2秒以内にもう1回縫える。普段の待機も短くなり、移動速度も上がって攻撃を続けやすい。',p=>{p.dashCd*=.86;p.speed*=1.04;},['返し縫いを解放 / 待機 −14%・移動速度 +4%','待機 −26% / 移動速度 +8%','待機 −36% / 移動速度 +12%'],'三重縫いで返し縫い'],
-    ['fast','早縫い','flow',2,'灰縫い / 待機短縮','灰縫いで新しく回収した灰の量に応じて、次の待機が短くなる。仕込みを回収し続けると、次の攻撃を早く出せる。',()=>{},['1灰につき −0.045秒 / 最大0.55秒','1灰につき −0.075秒 / 最大0.90秒'],'回収した灰で次の灰縫いが早まる'],
-    ['short','短針','flow',2,'灰縫い / 短い経路','灰縫いの距離と移動時間、基礎の待機が短くなる。近くの敵を小刻みに縫い、次の攻撃へ素早くつなげる。',p=>{const next=(p.upgrades.short||0)+1;p.dashDistance*=next===1?.8:.65/.8;p.dashCd*=next===1?.75:.6/.75;p.dashDuration=next===1?.14:.12;},['距離 −20% / 基礎待機 −25% / 移動0.14秒','距離 −35% / 基礎待機 −40% / 移動0.12秒'],'短い経路を繰り返し縫う'],
-    ['chain','連環縫い','flow',2,'返し縫い / 最後の1回','返し縫いで必要な数の敵から新しい灰紋を回収すると、さらに1回縫える。通常・返し縫い・連環縫いの3回をつないで攻め続ける。',()=>{},['返し縫いで新規3体 / 灰50%・上限9を引き継ぐ','返し縫いで新規2体 / 灰65%・上限12を引き継ぐ'],'返し縫いから最後の1回へ'],
-    ['regen','火種の余韻','flow',2,'余韻 / 継続回復','灰を使った灰縫いの後、しばらく耐久が少しずつ回復する。灰縫いを続けると回復を維持し、攻撃しながら立て直せる。',p=>p.regen+=.5,['灰縫い後4秒間 / 毎秒0.5回復','灰縫い後4秒間 / 毎秒1.0回復'],'灰縫いの余韻で回復'],
-    ['heal','危地の息継ぎ','common',2,'成功 / 回復','三重縫いか密縫いに成功すると、着地で耐久が回復する。群れをまとめる攻撃や少数への濃い仕込みで、消耗を立て直せる。',p=>p.stitchHeal+=4,['三重縫い・密縫いで4回復','三重縫い・密縫いで8回復'],'多数でも濃い少数でも回復'],
-    ['vital','消えない心臓','common',3,'余韻 / 耐久','最大耐久が増え、取得時に耐久も回復する。消耗をその場で立て直し、次の被弾に備えられる。',p=>{p.maxHp+=20;p.hp=Math.min(p.maxHp,p.hp+30);},['最大耐久 +20 / 取得時30回復','最大耐久 +40 / 取得時30回復','最大耐久 +60 / 取得時30回復'],'耐久と回復が増える'],
-    ['magnet','残火の呼び声','common',2,'余韻 / 残火回収','青い残火を遠くから回収でき、移動速度も上がる。経験値を集めながら、次に縫う位置へ動きやすくする。',p=>{p.magnet+=60;p.speed*=1.04;},['残火回収距離 +60 / 移動速度 +4%','残火回収距離 +120 / 移動速度 +8%'],'残火を遠くから回収']
+  const {t}=globalThis.AshfallI18n;
+  const families=Object.fromEntries(['spread','dense','flow','common'].map(id=>[id,null]));
+  for(const id of Object.keys(families))Object.defineProperty(families,id,{enumerable:true,get:()=>t('family.'+id)});
+  function display(u) {
+    for (const field of ['name','cat','desc','gain']) { u[field+'Key']='upgrade.'+u.id+'.'+field; Object.defineProperty(u,field,{enumerable:true,get:()=>t(u[field+'Key'])}); }
+    Object.defineProperty(u,'stages',{enumerable:true,get:()=>Array.from({length:u.max<=3?u.max:0},(_,i)=>t('upgrade.'+u.id+'.stage.'+(i+1)))});
+    return u;
+  }
+  const definitions=[
+    ['scatter','spread',3,p=>{p.shots+=2;p.spread+=.025;}],
+    ['pierce','spread',3,p=>{p.pierce+=2;p.bulletSpeed*=1.08;}],
+    ['ricochet','spread',3,p=>p.bounce++],
+    ['propagation','spread',3,()=>{}],
+    ['width','spread',3,p=>{p.dashDistance+=40;p.collectWidth+=6;p.stitchWidth+=14;}],
+    ['ward','spread',2,p=>{p.wardBoost+=25;p.wardDuration+=.15;}],
+    ['shards','spread',2,()=>{}],
+    ['rapid','dense',3,p=>p.fireRate*=.82],
+    ['heavy','dense',3,p=>{p.ashPerHit++;p.ashCap+=2;}],
+    ['frost','dense',2,p=>p.stitchSlow+=1.4],
+    ['echo','dense',2,p=>p.stitchEcho++],
+    ['dense','dense',3,()=>{}],
+    ['pressure','dense',3,()=>{}],
+    ['point','dense',2,()=>{}],
+    ['quick','flow',3,p=>{p.dashCd*=.86;p.speed*=1.04;}],
+    ['fast','flow',2,()=>{}],
+    ['short','flow',2,p=>{const next=(p.upgrades.short||0)+1;p.dashDistance*=next===1?.8:.65/.8;p.dashCd*=next===1?.75:.6/.75;p.dashDuration=next===1?.14:.12;}],
+    ['chain','flow',2,()=>{}],
+    ['regen','flow',2,p=>p.regen+=.5],
+    ['heal','common',2,p=>p.stitchHeal+=4],
+    ['vital','common',3,p=>{p.maxHp+=20;p.hp=Math.min(p.maxHp,p.hp+30);}],
+    ['magnet','common',2,p=>{p.magnet+=60;p.speed*=1.04;}]
   ];
-  const UPGRADES = definitions.map(([id,name,family,max,cat,desc,apply,stages,gain])=>({id,name,family,max,cat,desc,apply,stages,gain}));
+  const UPGRADES=definitions.map(([id,family,max,apply])=>display({id,family,max,apply}));
   const byId = id => UPGRADES.find(u=>u.id===id);
   byId('width').excludes='short';byId('short').excludes='width';
   byId('chain').requires=p=>!!p.upgrades.quick;
   const eligible = (u,p) => !(u.excludes&&p.upgrades[u.excludes])&&(!u.requires||u.requires(p));
-  UPGRADES.push({id:'ember',name:'尽きない残火',family:'common',cat:'余韻 / 最終強化',max:999,desc:'灰縫いの威力が増し、取得時に耐久が回復する。ほかの強化を育てきった後も、一撃を伸ばせる。',gain:'灰縫いの威力が増す',stages:[],requires:p=>UPGRADES.filter(u=>u.id!=='ember'&&eligible(u,p)).every(u=>(p.upgrades[u.id]||0)>=u.max),apply:p=>{p.stitchPower*=1.08;p.hp=Math.min(p.maxHp,p.hp+20);}});
+  UPGRADES.push(display({id:'ember',family:'common',max:999,requires:p=>UPGRADES.filter(u=>u.id!=='ember'&&eligible(u,p)).every(u=>(p.upgrades[u.id]||0)>=u.max),apply:p=>{p.stitchPower*=1.08;p.hp=Math.min(p.maxHp,p.hp+20);}}));
   function weight(u,p) {
     if(u.family==='common')return 1;
     const ranks=UPGRADES.filter(v=>v.family===u.family).reduce((n,v)=>n+(p.upgrades[v.id]||0),0);
     return 1+Math.min(.25,ranks*.05);
   }
   function synergyNote(id,p) {
-    if(id==='ricochet'&&p.pierce)return '今の貫通弾に、横への枝が付く';
-    if(id==='pierce'&&p.bounce)return '今の跳弾と両立し、奥と横へ仕込む';
-    if(id==='propagation'&&(p.shots>1||p.pierce||p.bounce))return '広い仕込みから、周囲にも灰紋が広がる';
-    if(id==='heavy'&&(p.upgrades.dense||p.upgrades.pressure||p.upgrades.point))return '一体へ積んだ灰を、集中火力へ';
-    if(['dense','pressure','point'].includes(id)&&p.upgrades.heavy)return '濃灰の刻印で積んだ灰を、高火力へ';
-    if(id==='quick'&&(p.shots>1||p.pierce||p.upgrades.propagation))return '灰紋を配る力を、もう1回の攻撃へ';
-    if(id==='shards'&&p.upgrades.quick)return '追加攻撃の炸裂も、次の仕込みになる';
-    if(id==='chain')return '返し縫いで新しい灰紋を狙うと、最後の1回へ';
-    if(id==='echo'&&p.upgrades.quick)return '追加の灰縫いも、逆向きに再炸裂';
-    if(id==='heal'&&(p.upgrades.quick||p.upgrades.dense))return '狙った成功を回復につなげる';
-    if(id==='fast'&&p.upgrades.short)return '短い灰縫いで回収して、次を早める';
+    if(id==='ricochet'&&p.pierce)return t('synergy.ricochet');
+    if(id==='pierce'&&p.bounce)return t('synergy.pierce');
+    if(id==='propagation'&&(p.shots>1||p.pierce||p.bounce))return t('synergy.propagation');
+    if(id==='heavy'&&(p.upgrades.dense||p.upgrades.pressure||p.upgrades.point))return t('synergy.heavy');
+    if(['dense','pressure','point'].includes(id)&&p.upgrades.heavy)return t('synergy.focus');
+    if(id==='quick'&&(p.shots>1||p.pierce||p.upgrades.propagation))return t('synergy.quick');
+    if(id==='shards'&&p.upgrades.quick)return t('synergy.shards');
+    if(id==='chain')return t('synergy.chain');
+    if(id==='echo'&&p.upgrades.quick)return t('synergy.echo');
+    if(id==='heal'&&(p.upgrades.quick||p.upgrades.dense))return t('synergy.heal');
+    if(id==='fast'&&p.upgrades.short)return t('synergy.fast');
     return '';
   }
   globalThis.AshfallUpgrades={UPGRADES,families,eligible,weight,synergyNote};

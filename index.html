@@ -4,45 +4,54 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10171b">
-  <title>Project Ashfall — 灰を縫え、火を生きろ。</title>
+  <title data-i18n="ui.pageTitle"></title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <canvas id="game" aria-label="Project Ashfall ゲーム画面"></canvas>
+  <canvas id="game" data-i18n-aria="ui.canvas"></canvas>
   <div id="hud" hidden>
     <div class="topbar">
       <div class="identity"><span class="eyebrow">PROJECT</span><strong>ASHFALL</strong></div>
-      <div class="health-block"><div class="meter-label"><span>耐久</span><span id="hpText"></span></div><div class="bar"><i id="hpBar"></i></div></div>
-      <div class="clock"><strong id="timeText">00:00</strong><span id="phaseText">灰の庭</span></div>
-      <button id="pauseButton" class="small-button" title="一時停止 [Esc]">Ⅱ</button>
+      <div class="health-block"><div class="meter-label"><span data-i18n="hud.health"></span><span id="hpText"></span></div><div class="bar"><i id="hpBar"></i></div></div>
+      <div class="clock"><strong id="timeText">00:00</strong><span id="phaseText"></span></div>
+      <button id="pauseButton" class="small-button" data-i18n-title="ui.pauseHint" data-i18n-aria="ui.pauseHint">Ⅱ</button>
     </div>
     <div class="xp"><i id="xpBar"></i><span id="levelText">LV 1</span></div>
     <div id="bossHud" hidden><div class="meter-label"><span id="bossName"></span><span id="bossHp"></span></div><div class="bar boss"><i id="bossBar"></i></div></div>
     <div id="announcement"></div>
     <div class="bottom-hud">
-      <div class="dash-widget"><span class="key">左クリック</span><div><b>灰縫い</b><div class="bar dash"><i id="dashBar"></i></div></div><span id="dashText">READY</span></div>
+      <div class="dash-widget"><span class="key" data-i18n="hud.leftClick"></span><div><b data-i18n="term.stitch"></b><div class="bar dash"><i id="dashBar"></i></div></div><span id="dashText">READY</span></div>
       <div id="buildChips"></div>
-      <div class="kills"><span id="killText">0</span> 討伐</div>
+      <div class="kills"><span id="killText">0</span> <span data-i18n="hud.kills"></span></div>
     </div>
-    <div id="coach"><span class="eyebrow">仕込み → 灰縫い → 炸裂</span><div class="cycle-steps"><span class="step prime">① 狙う</span><i>→</i><span class="step mark">② 灰紋</span><i>→</i><span class="step leap">③ 灰縫い</span></div><b id="coachHint">カーソルを敵へ：自動射撃で灰紋を付ける</b><small>灰紋のある敵を経路へ / ○ が着地点</small></div>
-    <div class="route-status"><span id="primeText">仕込み：自動</span><span id="routeText">灰紋のある敵を横切る</span></div>
-    <div id="hint">WASD / 矢印 移動 · カーソル 狙う · 射撃は自動 · 左クリック 灰縫い · P ポーズ</div>
+    <div id="coach"><span class="eyebrow" data-i18n="hud.cycle"></span><div class="cycle-steps"><span class="step prime" data-i18n="coach.aim"></span><i>→</i><span class="step mark" data-i18n="coach.mark"></span><i>→</i><span class="step leap" data-i18n="coach.stitch"></span></div><b id="coachHint"></b><small data-i18n="coach.route"></small></div>
+    <div class="route-status"><span id="primeText"></span><span id="routeText"></span></div>
+    <div id="hint" data-i18n="hud.controls"></div>
   </div>
   <main id="title" class="screen">
-    <div class="title-copy"><span class="eyebrow accent">STITCH TO SURVIVE</span><h1>ASH<span>FALL</span><em>PROJECT</em></h1><p class="tagline">撃って仕込め。縫って断て。</p><p class="intro">カーソルで狙う。射撃は自動。<br>敵に付いた灰紋を経路に入れて、<br>左クリックの灰縫いで、まとめて炸裂。</p>
-    <button id="startButton" class="primary">ゲーム開始 <span>→</span></button>
-    <div class="title-actions"><button id="helpButton" class="text-button">操作と灰縫い</button><button id="soundButton" class="text-button">音声 ON</button><button id="fullscreenButton" class="text-button">全画面にする</button></div>
-    <button id="relicButton" class="text-button">持ち込み：旅人の護符 / 装備を選ぶ</button><div class="record" id="recordText">12分の戦闘 + 最終ボス / 1ラン約12〜16分</div></div>
-    <div class="title-aside"><span class="vertical">THE FURNACE REMEMBERS</span><div class="mechanic-note"><span class="eyebrow">仕込み → 灰縫い → 炸裂</span><p>狙う → 自動射撃で灰紋を付ける<br>左クリック → 灰紋のある敵を縫う<br><b>3体以上で三重縫い。1〜2体に6灰以上で密縫い。</b></p></div></div>
-    <footer>PC / キーボード + マウス <span><span id="versionLabel"></span> / 開発中の試作版</span></footer>
+    <div class="title-copy"><span class="eyebrow accent">STITCH TO SURVIVE</span><h1>ASH<span>FALL</span><em>PROJECT</em></h1><p class="tagline" data-i18n="title.tagline"></p><p class="intro" data-i18n-html="title.intro"></p>
+  <div id="languageChoice" class="language-choice" role="group" data-i18n-aria="ui.language"><button id="languageJa" data-i18n="language.ja" aria-pressed="true"></button><button id="languageEn" data-i18n="language.en" aria-pressed="false"></button></div>
+    <button id="startButton" class="primary" data-i18n-html="ui.start"></button>
+    <div class="title-actions"><button id="helpButton" class="text-button" data-i18n="ui.help"></button><button id="soundButton" class="text-button"></button><button id="fullscreenButton" class="text-button"></button></div>
+    <button id="relicButton" class="text-button"></button><div class="record" id="recordText"></div></div>
+    <div class="title-aside"><span class="vertical">THE FURNACE REMEMBERS</span><div class="mechanic-note"><span class="eyebrow" data-i18n="hud.cycle"></span><p data-i18n-html="title.mechanic"></p></div></div>
+    <footer><span data-i18n="title.platform"></span> <span><span id="versionLabel"></span> / <span data-i18n="title.prototype"></span></span></footer>
   </main>
-  <section id="help" class="screen overlay" hidden><div class="panel help-panel"><span class="eyebrow accent">FIELD MANUAL</span><h2>操作と灰縫い</h2><div class="help-grid"><p><b>01 — 狙って仕込む</b>射撃は自動。カーソルを敵へ向けると、命中で橙の「灰紋」が付く。これが灰縫いの仕込みになる。</p><p><b>02 — 灰紋を縫う</b>灰紋のある敵を経路に入れ、左クリック。○まで直進して灰を回収し、軌跡を炸裂させる。自機のリングが一周すると次の灰縫いを使える。</p><p><b>03 — 三重縫い / 密縫い</b>三重縫い：灰紋のある敵を3体以上まとめて縫うと、広い消弾と待機短縮。密縫い：新しい灰紋を1〜2体から合計6灰以上回収すると、強化で少数への高火力を狙える。</p><p><b>04 — 残火で強化する</b>青い「残火」は経験値。集めてLvが上がると強化を1つ選べる。拡散は群れへ、濃縮は強敵へ、連続は何度も縫う方向。組み合わせて育てられる。</p></div><p class="muted">灰紋は10秒で薄れ始める。灰縫い中は無敵。灰を回収した着地の円で、飛んでくる敵弾を消せる。地面の予告・範囲攻撃は残る。<br>WASD / 矢印 移動 · SPACE 灰縫い · F 自動射撃 ON/OFF · P ポーズ / 再開 · Esc 全画面解除 / ポーズ · M 音声 ON/OFF · 1〜3 強化選択。途中セーブなし。<br>音声・全画面はタイトルとポーズ画面で切替。全画面解除で自動ポーズ。再開はPか「戦闘へ戻る」。</p><button id="closeHelp" class="primary">戻る</button></div></section>
-  <section id="relics" class="screen overlay" hidden><div class="panel relic-panel"><span class="eyebrow accent">TAKE ONE EMBER</span><h2>持ち込み装備を選ぶ</h2><p id="relicMarks" class="muted"></p><div id="relicChoices"></div><p class="muted">選んだ1つの効果が、次のランの開始時から付く。残火印はランの成果で増え、必要数に届くと装備が解放される。選んでも消費しない。</p><button id="closeRelics" class="primary">この装備でタイトルへ</button></div></section>
-  <section id="upgrade" class="screen overlay" hidden><div class="upgrade-panel"><span class="eyebrow accent">THE FIRE CHANGES YOU</span><h2>強化を1つ選ぶ</h2><p id="upgradeSub" class="muted">戦闘は一時停止中。強化はこのランで有効。</p><div id="upgradeCards"></div><p class="muted keyboard-note">クリック または 1 / 2 / 3 で選択</p></div></section>
-  <section id="pause" class="screen overlay" hidden><div class="panel"><span class="eyebrow accent">A MOMENT IN THE ASH</span><h2>一時停止中</h2><button id="resumeButton" class="primary">戦闘へ戻る</button><button id="pauseSound" class="secondary">音声 ON [M]</button><button id="pauseFullscreen" class="secondary">全画面にする</button><button id="pauseHelp" class="text-button">操作と灰縫い</button><button id="quitButton" class="text-button">タイトルへ戻る（このランを終了）</button></div></section>
-  <section id="result" class="screen overlay" hidden><div class="panel result-panel"><span class="eyebrow accent" id="resultEyebrow">THE FIRE FADES</span><h2 id="resultTitle">灰へ還る。</h2><p id="resultCopy" class="muted"></p><div id="resultStats"></div><div id="resultBuild"></div><p class="muted" id="metaText"></p><button id="restartButton" class="primary">再挑戦 <span>↻</span></button><button id="titleButton" class="text-button">タイトルへ戻る</button></div></section>
+  <section id="help" class="screen overlay" hidden><div class="panel help-panel"><span class="eyebrow accent">FIELD MANUAL</span><h2 data-i18n="ui.help"></h2><div class="help-grid"><p data-i18n-html="help.step.1"></p><p data-i18n-html="help.step.2"></p><p data-i18n-html="help.step.3"></p><p data-i18n-html="help.step.4"></p></div><p class="muted" data-i18n-html="help.details"></p><button id="closeHelp" class="primary" data-i18n="ui.back"></button></div></section>
+  <section id="relics" class="screen overlay" hidden><div class="panel relic-panel"><span class="eyebrow accent">TAKE ONE EMBER</span><h2 data-i18n="relic.title"></h2><p id="relicMarks" class="muted"></p><div id="relicChoices"></div><p class="muted" data-i18n="relic.explanation"></p><button id="closeRelics" class="primary" data-i18n="relic.close"></button></div></section>
+  <section id="upgrade" class="screen overlay" hidden><div class="upgrade-panel"><span class="eyebrow accent">THE FIRE CHANGES YOU</span><h2 data-i18n="upgrade.title"></h2><p id="upgradeSub" class="muted"></p><div id="upgradeCards"></div><p class="muted keyboard-note" data-i18n="upgrade.controls"></p></div></section>
+  <section id="pause" class="screen overlay" hidden><div class="panel"><span class="eyebrow accent">A MOMENT IN THE ASH</span><h2 data-i18n="pause.title"></h2><button id="resumeButton" class="primary" data-i18n="ui.resume"></button><button id="pauseSound" class="secondary"></button><button id="pauseFullscreen" class="secondary"></button><button id="pauseHelp" class="text-button" data-i18n="ui.help"></button><button id="quitButton" class="text-button" data-i18n="ui.quit"></button></div></section>
+  <section id="result" class="screen overlay" hidden><div class="panel result-panel"><span class="eyebrow accent" id="resultEyebrow">THE FIRE FADES</span><h2 id="resultTitle"></h2><p id="resultCopy" class="muted"></p><div id="resultStats"></div><div id="resultBuild"></div><p class="muted" id="metaText"></p><button id="restartButton" class="primary" data-i18n-html="ui.retry"></button><button id="titleButton" class="text-button" data-i18n="ui.title"></button></div></section>
   <script src="version.js"></script>
+  <script src="storage.js"></script>
+  <script src="i18n/ja.js"></script>
+  <script src="i18n/en.js"></script>
+  <script src="i18n.js"></script>
   <script src="upgrades.js"></script>
+  <script src="relics.js"></script>
+  <script src="audio.js"></script>
+  <script src="ui.js"></script>
+  <script src="input.js"></script>
   <script src="game.js"></script>
 </body>
 </html>

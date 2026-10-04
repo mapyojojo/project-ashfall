@@ -18,7 +18,7 @@ const root=path.resolve(__dirname,'..');
  const panelFits=selector=>evaluate(`(()=>{const e=document.querySelector(${JSON.stringify(selector)}),r=e.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight&&e.scrollWidth<=e.clientWidth+1;})()`);
  try{
   await send('Runtime.enable');await send('Page.enable');await send('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
-  await send('Page.navigate',{url:'http://localhost:4173/'});await wait(400);
+  await send('Page.navigate',{url:'http://localhost:4173/'});await wait(400);await evaluate("AshfallI18n.setLanguage('ja')");
   assert.equal(await evaluate('typeof AshfallTest'),'undefined');
   assert.equal(await copyOf('#versionLabel'),`v${version}`);copy.title=await copyOf('#title');await shot('title');
   await click('#soundButton');assert.equal(await copyOf('#soundButton'),'音声 OFF');await click('#soundButton');assert.equal(await copyOf('#soundButton'),'音声 ON');

@@ -1,3 +1,4 @@
+const {combatSource}=require('./combat-source.cjs');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
 const {engine}=require('./harness.cjs');
 const root=path.resolve(__dirname,'..'),baseline='028ca08';
@@ -75,7 +76,7 @@ test('normal chain drawing and sound commands are unchanged at start, middle and
 });
 test('front crossing, damage, landing, combat loop and upgrade definitions are unchanged',()=>{
  const before=engine({source}),after=engine();
- for(const key of ['frontCrossing','lineDamage','stitchDamage','denseSpec','pressureMultiplier','wardSpec','endDash','update','scatterShards','weight','eligible'])assert.equal(after[key].toString(),before[key].toString(),key);
+ for(const key of ['frontCrossing','lineDamage','stitchDamage','denseSpec','pressureMultiplier','wardSpec','endDash','update','scatterShards','weight','eligible'])assert.equal(combatSource(after[key]),combatSource(before[key]),key);
  const old=cp.execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:upgrades.js`],{cwd:root}).toString();
  const oldCatalog=engine({source,catalogSource:old});
  const combatCatalog=a=>Array.from(a.UPGRADES,u=>({id:u.id,name:u.name,family:u.family,max:u.max,excludes:u.excludes,requires:u.requires?.toString(),apply:u.apply.toString()}));

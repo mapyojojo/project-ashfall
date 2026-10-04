@@ -19,6 +19,7 @@ pnpm-debug.log*
 /coverage/
 /playwright-report/
 /test-results/
+/.browser-v08/
 *.tmp
 *.bak
 

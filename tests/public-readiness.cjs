@@ -1,3 +1,4 @@
+const {combatSource}=require('./combat-source.cjs');
 const assert = require('node:assert/strict');
 const fs = require('node:fs'), path = require('node:path'), cp = require('node:child_process');
 const { engine } = require('./harness.cjs');
@@ -24,7 +25,7 @@ test('offline entry uses the shared release version without fetching metadata', 
   const a = engine(), html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   assert.equal(a.elements.get('versionLabel').textContent, `v${version}`);
   const scripts = [...html.matchAll(/<script src="([^"]+)"/g)].map(m => m[1]);
-  assert.deepEqual(scripts, ['version.js', 'upgrades.js', 'game.js']);
+  assert.deepEqual(scripts, ['version.js','storage.js','i18n/ja.js','i18n/en.js','i18n.js','upgrades.js','relics.js','audio.js','ui.js','input.js','game.js']);
   for (const file of scripts) assert.ok(fs.existsSync(path.join(root, file)));
 });
 let source, catalogSource;
@@ -40,7 +41,7 @@ if (source) {
     assert.deepEqual(catalog(after), expectedCatalog);
     assert.equal(JSON.stringify(after.TYPES), JSON.stringify(before.TYPES));
     for (const key of ['update','spawnEnemy','hurtEnemy','hurtPlayer','startDash','endDash','seedEnemy','predictLeap','stitchDamage','denseSpec','pressureMultiplier','wardSpec','frontCrossing','lineDamage','addXp','scatterShards','assistedAngle','weight','eligible'])
-      assert.equal(after[key].toString(), before[key].toString(), key);
+      assert.equal(combatSource(after[key]), combatSource(before[key]), key);
   });
   const snapshot = a => JSON.stringify({ state:a.state, meta:a.meta, run:a.run }, (key,value) => {
     // These fields contain player copy, with no combat behavior. All other run state is compared.
