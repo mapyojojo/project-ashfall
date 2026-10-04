@@ -62,7 +62,8 @@ test('triple dissolve light is capped separately and cannot clear ground attacks
 
 // Audit protected numerical values against v0.6.2; feedback changes must preserve combat timing.
 // A source archive can run the mechanics above without a local Git history.
-const root=path.resolve(__dirname,'..'),baseline='028ca08';
+// Find the v0.6.2 phase within the release tag's ancestry; author rewrites change commit SHAs.
+const root=path.resolve(__dirname,'..'),baseline='v0.6-playable^{/Align dense stitch feedback and blast-front hit timing}';
 let source;
 try{source=require('node:child_process').execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:game.js`],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();}catch{}
 if(source){

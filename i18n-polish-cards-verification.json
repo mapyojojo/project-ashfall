@@ -1,0 +1,38 @@
+{
+  "browser": "Edg/154.0.4258.53",
+  "width": 1024,
+  "height": 640,
+  "captures": [
+    {
+      "file": "v0.8.0-polish-en-1024-names.png",
+      "ids": [
+        "fast",
+        "point",
+        "heal"
+      ],
+      "names": [
+        "Quick Stitch",
+        "Pinpoint Pierce",
+        "Second Wind"
+      ],
+      "overflow": [],
+      "clipped": []
+    },
+    {
+      "file": "v0.8.0-polish-en-1024-relay.png",
+      "ids": [
+        "ricochet",
+        "width",
+        "frost"
+      ],
+      "names": [
+        "Ash Relay",
+        "Long Needle",
+        "Binding White Ash"
+      ],
+      "overflow": [],
+      "clipped": []
+    }
+  ],
+  "limits": "Deterministic UI fixtures; full all-card and Japanese/English switching checks are recorded in i18n-ui-verification.json."
+}

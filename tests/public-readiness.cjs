@@ -3,7 +3,8 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs'), path = require('node:path'), cp = require('node:child_process');
 const { engine } = require('./harness.cjs');
 const { version } = require('../version.js');
-const root = path.resolve(__dirname, '..'), baseline = 'b3f9265eef10ada6c728feb85896a235814c71d9';
+// The v0.6 release tag contains the v0.6.3 combat baseline without pinning a rewritten SHA.
+const root = path.resolve(__dirname, '..'), baseline = 'v0.6-playable';
 let passed = 0;
 const checks = [];
 function test(name, fn) { fn(); passed++; checks.push(name); console.log('PASS', name); }

@@ -1,7 +1,8 @@
 const {combatSource}=require('./combat-source.cjs');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
 const {engine}=require('./harness.cjs');
-const root=path.resolve(__dirname,'..'),baseline='028ca08';
+// The release tag includes v0.6.3 visuals; compare against its v0.6.2 timing phase.
+const root=path.resolve(__dirname,'..'),baseline='v0.6-playable^{/Align dense stitch feedback and blast-front hit timing}';
 let source;
 try{source=cp.execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'show',`${baseline}:game.js`],{cwd:root,stdio:['ignore','pipe','ignore']}).toString();}catch{}
 if(!source){console.log('SKIP repository-only chain parity: v0.6.2 baseline unavailable.');process.exit(0);}
