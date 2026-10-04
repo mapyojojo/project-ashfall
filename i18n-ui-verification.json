@@ -1,0 +1,744 @@
+{
+  "version": "0.8.0",
+  "browser": "Edg/154.0.4258.53",
+  "checks": [
+    "browser default, real title language click, reload persistence and unchanged v0.7.1 save bytes",
+    "all screens and all 23 upgrades fit in Japanese, English and Japanese again at 1440x900 and 1024x640",
+    "English fullscreen enter/exit, auto-pause, Escape, P and mute labels preserve control behavior",
+    "offline file entry loads all modules, starts in English and saves a switch back to Japanese",
+    "zero browser runtime exceptions"
+  ],
+  "layouts": [
+    {
+      "screen": "title",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "help",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "loadout",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "hud",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "pause",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "pause-help",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "upgrades",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-0",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-3",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-6",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-9",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-12",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-15",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-18",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-21",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "result",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "victory",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "title",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "help",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "loadout",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "hud",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "pause",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "pause-help",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "upgrades",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-0",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-3",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-6",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-9",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-12",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-15",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-18",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-21",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "result",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "victory",
+      "language": "en",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "title",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "help",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "loadout",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "hud",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "pause",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "pause-help",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "upgrades",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-0",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-3",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-6",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-9",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-12",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-15",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-18",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-21",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "result",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "victory",
+      "language": "ja",
+      "width": 1440,
+      "height": 900,
+      "scrollable": false
+    },
+    {
+      "screen": "title",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "help",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "loadout",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "hud",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "pause",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "pause-help",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "upgrades",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-0",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-3",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-6",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-9",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-12",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-15",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-18",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-21",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "result",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": true
+    },
+    {
+      "screen": "victory",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": true
+    },
+    {
+      "screen": "title",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "help",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": true
+    },
+    {
+      "screen": "loadout",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "hud",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "pause",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "pause-help",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": true
+    },
+    {
+      "screen": "upgrades",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-0",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-3",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-6",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-9",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-12",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-15",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-18",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-21",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "result",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": true
+    },
+    {
+      "screen": "victory",
+      "language": "en",
+      "width": 1024,
+      "height": 640,
+      "scrollable": true
+    },
+    {
+      "screen": "title",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "help",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "loadout",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "hud",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "pause",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "pause-help",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "upgrades",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-0",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-3",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-6",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-9",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-12",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-15",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-18",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "all-cards-21",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": false
+    },
+    {
+      "screen": "result",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": true
+    },
+    {
+      "screen": "victory",
+      "language": "ja",
+      "width": 1024,
+      "height": 640,
+      "scrollable": true
+    }
+  ],
+  "runtimeErrors": 0,
+  "limits": "Deterministic UI fixtures and actual input. Panels may scroll vertically; all descendants are checked for horizontal clipping. Physical Escape, other engines and human English review remain manual checks.",
+  "artifactHashes": {
+    "version.js": "f49100854e451536dd0c26c59f4215641df010b9e379063173b2925a0aae6b0b",
+    "storage.js": "99a8428336767ddb48e0c3bc4699eeada978315c99fa01828f73c1dacd64ef39",
+    "i18n/ja.js": "ccd099efea9b8e7e668462a6ec0adedece0b80173d883b4b929c2a15a1b57bfd",
+    "i18n/en.js": "f525404d7946bdded223ef6f4a188c4893833fdfb14589f078d57869ca5f0eac",
+    "i18n.js": "deafd9c9b3fc9ef176246b3f91d09705ef97ddcd64898f0e4b624e961ddb1fe6",
+    "upgrades.js": "c809856053f24eb5acc9d209569c09c7bbddeaf3d9b47dd9e19933c3fe7dab58",
+    "relics.js": "a8d8318c1d26293c4b9e8d8433fd73c8cfe7c6cbe8ecde1a9311b63a04d5c3f2",
+    "audio.js": "4455112430117b62bf925a74cfd211cffec25d9de86565cea916a518a8c53a7f",
+    "ui.js": "4c6ad53ca2a68fe7c90d006d7e67dc893eeb37a869d8dd158f8fa9037831f270",
+    "input.js": "6bb9b97898b77b2ebe87728ff797d71b89a788dc908626689ed39702e9207530",
+    "game.js": "756bd599f5f8dadf9124651616a8e02db70f62e6bc5d33a6b1c5f735394540be",
+    "index.html": "5562a9428b569a00ed68809fd3139c32d08b0d7274dd84a0779f7b84616d0358",
+    "style.css": "ecd9c206eea829c8f6c6313af95c1689e506a45277a6f2343e9db7c95dcd5912"
+  }
+}

@@ -1,10 +1,10 @@
 {
-  "version": "0.7.1",
-  "date": "2026-10-03T12:07:15.572Z",
+  "version": "0.8.0",
+  "date": "2026-10-04T10:24:52.489Z",
   "baseline": "028ca08",
-  "sourceSHA256": "0b9767f0d2acaa26f8858053b8c74ba00830c00c25583c8945b3ccacbaa9769d",
-  "upgradesSHA256": "58c88ae1e703dd188a8e5d2f57c40c13bf9dc1a029c0bcb2eedf30fe952524ae",
-  "browser": "Edg/154.0.4258.48",
+  "sourceSHA256": "756bd599f5f8dadf9124651616a8e02db70f62e6bc5d33a6b1c5f735394540be",
+  "upgradesSHA256": "c809856053f24eb5acc9d209569c09c7bbddeaf3d9b47dd9e19933c3fe7dab58",
+  "browser": "Edg/154.0.4258.53",
   "runtimeErrors": 0,
   "phases": [
     {
@@ -1697,12 +1697,12 @@
             {
               "method": "setValueAtTime",
               "value": 72,
-              "time": 5.370666666666667
+              "time": 5.390666666666666
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 27.36,
-              "time": 5.690666666666667
+              "time": 5.710666666666667
             }
           ]
         },
@@ -1712,12 +1712,12 @@
             {
               "method": "setValueAtTime",
               "value": 140,
-              "time": 5.370666666666667
+              "time": 5.390666666666666
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 42,
-              "time": 5.540666666666667
+              "time": 5.560666666666666
             }
           ]
         }
@@ -1731,24 +1731,24 @@
           {
             "method": "setValueAtTime",
             "value": 0.14,
-            "time": 5.370666666666667
+            "time": 5.390666666666666
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.690666666666667
+            "time": 5.710666666666667
           }
         ],
         [
           {
             "method": "setValueAtTime",
             "value": 0.07,
-            "time": 5.370666666666667
+            "time": 5.390666666666666
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.540666666666667
+            "time": 5.560666666666666
           }
         ],
         []
@@ -1760,12 +1760,12 @@
             {
               "method": "setValueAtTime",
               "value": 117,
-              "time": 5.370666666666667
+              "time": 5.390666666666666
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 40.949999999999996,
-              "time": 5.460666666666667
+              "time": 5.480666666666666
             }
           ]
         }
@@ -1800,12 +1800,12 @@
             {
               "method": "setValueAtTime",
               "value": 72,
-              "time": 5.36
+              "time": 5.38
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 27.36,
-              "time": 5.61
+              "time": 5.63
             }
           ]
         },
@@ -1815,12 +1815,12 @@
             {
               "method": "setValueAtTime",
               "value": 140,
-              "time": 5.36
+              "time": 5.38
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 42,
-              "time": 5.48
+              "time": 5.5
             }
           ]
         },
@@ -1830,12 +1830,12 @@
             {
               "method": "setValueAtTime",
               "value": 180,
-              "time": 5.36
+              "time": 5.38
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 324,
-              "time": 5.680000000000001
+              "time": 5.7
             }
           ]
         },
@@ -1845,12 +1845,12 @@
             {
               "method": "setValueAtTime",
               "value": 420,
-              "time": 5.36
+              "time": 5.38
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 693,
-              "time": 5.53
+              "time": 5.55
             }
           ]
         }
@@ -1864,48 +1864,48 @@
           {
             "method": "setValueAtTime",
             "value": 0.07,
-            "time": 5.36
+            "time": 5.38
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.61
+            "time": 5.63
           }
         ],
         [
           {
             "method": "setValueAtTime",
             "value": 0.035,
-            "time": 5.36
+            "time": 5.38
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.48
+            "time": 5.5
           }
         ],
         [
           {
             "method": "setValueAtTime",
             "value": 0.035,
-            "time": 5.36
+            "time": 5.38
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.680000000000001
+            "time": 5.7
           }
         ],
         [
           {
             "method": "setValueAtTime",
             "value": 0.025,
-            "time": 5.36
+            "time": 5.38
           },
           {
             "method": "exponentialRampToValueAtTime",
             "value": 0.0001,
-            "time": 5.53
+            "time": 5.55
           }
         ],
         []
@@ -1917,12 +1917,12 @@
             {
               "method": "setValueAtTime",
               "value": 117,
-              "time": 5.370666666666667
+              "time": 5.38
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 40.949999999999996,
-              "time": 5.460666666666667
+              "time": 5.47
             }
           ]
         },
@@ -1932,12 +1932,12 @@
             {
               "method": "setValueAtTime",
               "value": 316,
-              "time": 5.370666666666667
+              "time": 5.38
             },
             {
               "method": "exponentialRampToValueAtTime",
               "value": 442.4,
-              "time": 5.460666666666667
+              "time": 5.47
             }
           ]
         }

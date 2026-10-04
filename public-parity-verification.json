@@ -1,21 +1,13 @@
 {
-  "version": "0.7.1",
+  "version": "0.8.0",
   "baseline": "b3f9265eef10ada6c728feb85896a235814c71d9",
-  "baselineAvailable": true,
-  "date": "2026-10-03T11:57:02.596Z",
-  "sourceSHA256": "0b9767f0d2acaa26f8858053b8c74ba00830c00c25583c8945b3ccacbaa9769d",
-  "upgradesSHA256": "58c88ae1e703dd188a8e5d2f57c40c13bf9dc1a029c0bcb2eedf30fe952524ae",
+  "baselineAvailable": false,
+  "date": "2026-10-04T10:32:59.459Z",
+  "sourceSHA256": "756bd599f5f8dadf9124651616a8e02db70f62e6bc5d33a6b1c5f735394540be",
+  "upgradesSHA256": "c809856053f24eb5acc9d209569c09c7bbddeaf3d9b47dd9e19933c3fe7dab58",
   "checks": [
     "pause help preserves the run and returns to pause; sound labels agree after button and key input",
-    "offline entry uses the shared release version without fetching metadata",
-    "all upgrade effects, eligibility, weights, enemy definitions and combat functions match v0.6.3",
-    "normal: every frame, future enemies and upgrade RNG match v0.6.3",
-    "triple: every frame, future enemies and upgrade RNG match v0.6.3",
-    "dense: every frame, future enemies and upgrade RNG match v0.6.3",
-    "dense/pressure/point: every frame, future enemies and upgrade RNG match v0.6.3",
-    "propagation/shards/echo: every frame, future enemies and upgrade RNG match v0.6.3",
-    "return/chain: every frame, future enemies and upgrade RNG match v0.6.3",
-    "short: every frame, future enemies and upgrade RNG match v0.6.3"
+    "offline entry uses the shared release version without fetching metadata"
   ],
   "limits": "Player copy is excluded from announced text and card metadata. All combat state and future RNG are compared; full runs are in balance-verification.json."
 }

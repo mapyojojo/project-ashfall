@@ -1,3 +1,26 @@
+# v0.8.0 — 日英対応・周辺処理の分離
+
+基準: main / v0.7.1 `1058b3b1b7d1b884da9b3e24551b843a9d19cb41`。作業: `work/v0.8-i18n-refactor`。検証日: 2026-10-04（Asia/Tokyo）。
+
+291組の翻訳、タイトル言語切替と保存、input/UI/audio/storage分離を追加。内部ID・装備番号・既存セーブJSON・戦闘数値と乱数を維持。
+
+| 検証 | 結果 |
+| --- | --- |
+| npm test | 139件成功。旧v0.6系列の比較3グループは元コミット不在でSKIP。v0.7.1比較14件は必須で成功。 |
+| npm run test:balance | 20ラン成功。v0.7.1の6seedとv0.8の日英各6seedが完全一致。射撃のみ/縫いのみも維持。 |
+| npm run test:i18n:browser | 日英・日本語に戻す・全23カード・1440×900/1024×640・旧セーブ・言語保持・file起動・fullscreen/pause成功。横overflow/例外0。 |
+| npm run test:public | 9項目成功。画面遷移・native fullscreen・pause/mute・再挑戦・file起動。 |
+| npm run test:feedback | Canvasとlive Web Audioの3項目成功。数値・filter・音のattack・残留表示の無傷を維持。 |
+| npm run test:browser | 29項目成功。通常入力420.1ゲーム秒、goal-reached、205回の有効灰縫い。例外0。 |
+| node tests/clarity-check.cjs / node tests/hazard-check.cjs | Lv詳細・実取得・導入・地面攻撃と灰縫いの流れ・小画面・file起動が成功。 |
+| 翻訳一覧生成・リンク・ソースハッシュ・git diff --check | 成功。 |
+
+[構造と検証の詳細](docs/V0.8-I18N-VALIDATION.md)、[用語表](docs/V0.8-I18N-GLOSSARY.md)、[全翻訳](docs/V0.8-I18N-REVIEW.md)。日英スクリーンショットはdocs/screenshotsの `v0.8.0-{ja,en}-{1440,1024}-*.png`。
+
+今回の実ブラウザは専用の非表示Edge。Chrome/Firefoxのv0.8追加検証、Safari、英語母語話者のレビューは未実施。itch.io掲載済み英文の全文/URLをこのcheckoutから特定できず、逐語照合は未完了。公開・ページ編集・mainへのmerge・pushは行わない。
+
+---
+
 # v0.7.1 — 公開前バージョン表記の検証結果
 
 基準：main `a03fe4c`。作業：`work/v0.7.1-version`。検証日：2026-10-03（Asia/Tokyo）。公開前バージョンを `v0.7.0` → **v0.7.1** へ更新。mainへのmerge・push・外部公開は行わない。

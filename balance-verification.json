@@ -1,7 +1,7 @@
 {
-  "version": "0.7.1",
-  "date": "2026-10-03T11:57:40.284Z",
-  "baseline": "b3f9265eef10ada6c728feb85896a235814c71d9",
+  "version": "0.8.0",
+  "date": "2026-10-04T10:33:52.496Z",
+  "baseline": "1058b3b1b7d1b884da9b3e24551b843a9d19cb41",
   "eligibleAttackUpgrades": 19,
   "parity": [
     {
@@ -33,14 +33,50 @@
       "build": "flow",
       "seed": 4606,
       "matched": true
+    },
+    {
+      "build": "weave",
+      "seed": 4721,
+      "language": "en",
+      "matched": true
+    },
+    {
+      "build": "dense",
+      "seed": 9481,
+      "language": "en",
+      "matched": true
+    },
+    {
+      "build": "flow",
+      "seed": 20261001,
+      "language": "en",
+      "matched": true
+    },
+    {
+      "build": "weave",
+      "seed": 8606,
+      "language": "en",
+      "matched": true
+    },
+    {
+      "build": "dense",
+      "seed": 6606,
+      "language": "en",
+      "matched": true
+    },
+    {
+      "build": "flow",
+      "seed": 4606,
+      "language": "en",
+      "matched": true
     }
   ],
-  "method": "deterministic accelerated simulation; matched v0.6.3/v0.7 planners and catalogs and 6 seeds; all combat results, upgrades, damage totals and minute samples asserted identical; normal HP/damage/XP; exact route knowledge; no injected fuel/XP/invulnerability or balancing changes; not human playtests",
-  "upgradesSHA256": "58c88ae1e703dd188a8e5d2f57c40c13bf9dc1a029c0bcb2eedf30fe952524ae",
-  "sourceSHA256": "0b9767f0d2acaa26f8858053b8c74ba00830c00c25583c8945b3ccacbaa9769d",
+  "method": "deterministic accelerated simulation; matched v0.7.1/v0.8 planners and catalogs and 6 seeds in Japanese and English; all combat results, upgrades, damage totals and minute samples asserted identical; normal HP/damage/XP; exact route knowledge; no injected fuel/XP/invulnerability or balancing changes; not human playtests",
+  "upgradesSHA256": "c809856053f24eb5acc9d209569c09c7bbddeaf3d9b47dd9e19933c3fe7dab58",
+  "sourceSHA256": "756bd599f5f8dadf9124651616a8e02db70f62e6bc5d33a6b1c5f735394540be",
   "results": [
     {
-      "version": "0.6.3 baseline",
+      "version": "0.7.1 baseline",
       "mode": "cycle",
       "build": "weave",
       "seed": 4721,
@@ -252,7 +288,7 @@
       ]
     },
     {
-      "version": "0.6.3 baseline",
+      "version": "0.7.1 baseline",
       "mode": "cycle",
       "build": "dense",
       "seed": 9481,
@@ -513,7 +549,7 @@
       ]
     },
     {
-      "version": "0.6.3 baseline",
+      "version": "0.7.1 baseline",
       "mode": "cycle",
       "build": "flow",
       "seed": 20261001,
@@ -763,7 +799,7 @@
       ]
     },
     {
-      "version": "0.6.3 baseline",
+      "version": "0.7.1 baseline",
       "mode": "cycle",
       "build": "weave",
       "seed": 8606,
@@ -1017,7 +1053,7 @@
       ]
     },
     {
-      "version": "0.6.3 baseline",
+      "version": "0.7.1 baseline",
       "mode": "cycle",
       "build": "dense",
       "seed": 6606,
@@ -1272,7 +1308,7 @@
       ]
     },
     {
-      "version": "0.6.3 baseline",
+      "version": "0.7.1 baseline",
       "mode": "cycle",
       "build": "flow",
       "seed": 4606,
@@ -1530,7 +1566,7 @@
       ]
     },
     {
-      "version": "0.7.1",
+      "version": "0.8.0",
       "mode": "shoot-only",
       "build": "weave",
       "seed": 4721,
@@ -1738,7 +1774,7 @@
       ]
     },
     {
-      "version": "0.7.1",
+      "version": "0.8.0",
       "mode": "leap-only",
       "build": "weave",
       "seed": 4721,
@@ -1946,7 +1982,7 @@
       ]
     },
     {
-      "version": "0.7.1",
+      "version": "0.8.0",
       "mode": "cycle",
       "build": "weave",
       "seed": 4721,
@@ -2158,7 +2194,7 @@
       ]
     },
     {
-      "version": "0.7.1",
+      "version": "0.8.0",
       "mode": "cycle",
       "build": "dense",
       "seed": 9481,
@@ -2419,7 +2455,7 @@
       ]
     },
     {
-      "version": "0.7.1",
+      "version": "0.8.0",
       "mode": "cycle",
       "build": "flow",
       "seed": 20261001,
@@ -2669,7 +2705,7 @@
       ]
     },
     {
-      "version": "0.7.1",
+      "version": "0.8.0",
       "mode": "cycle",
       "build": "weave",
       "seed": 8606,
@@ -2923,7 +2959,7 @@
       ]
     },
     {
-      "version": "0.7.1",
+      "version": "0.8.0",
       "mode": "cycle",
       "build": "dense",
       "seed": 6606,
@@ -3178,7 +3214,1497 @@
       ]
     },
     {
-      "version": "0.7.1",
+      "version": "0.8.0",
+      "mode": "cycle",
+      "build": "flow",
+      "seed": 4606,
+      "limit": 900,
+      "outcome": "win",
+      "time": 780,
+      "hp": 70,
+      "level": 20,
+      "kills": 2413,
+      "stitchKills": 2413,
+      "bosses": 4,
+      "poweredLeaps": 975,
+      "dryLeaps": 6,
+      "firstSeed": 1.6000000000000016,
+      "firstPoweredLeap": 1.8333333333333357,
+      "firstStitchKill": 2.033333333333336,
+      "upgradesTaken": 19,
+      "denseLeaps": 120,
+      "chainLeaps": 19,
+      "shardsFired": 3222,
+      "comboLeaps": 151,
+      "bonusLeaps": 133,
+      "maxStitchTargets": 6,
+      "bulletsCleared": 885,
+      "stitchDamageShare": 0.9614,
+      "damageTotals": {
+        "bullet": 6406.645911112246,
+        "stitch": 159730.48770000983
+      },
+      "upgrades": {
+        "short": 2,
+        "shards": 1,
+        "quick": 3,
+        "pierce": 2,
+        "fast": 2,
+        "ricochet": 2,
+        "chain": 2,
+        "regen": 2,
+        "heal": 1,
+        "ward": 1,
+        "vital": 1
+      },
+      "remaining": [
+        {
+          "id": "scatter",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "pierce",
+          "level": 2,
+          "max": 3
+        },
+        {
+          "id": "ricochet",
+          "level": 2,
+          "max": 3
+        },
+        {
+          "id": "propagation",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "ward",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "shards",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "rapid",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "heavy",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "frost",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "echo",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "dense",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "pressure",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "point",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "heal",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "vital",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "magnet",
+          "level": 0,
+          "max": 2
+        }
+      ],
+      "unownedAttack": [
+        "scatter",
+        "propagation",
+        "rapid",
+        "heavy",
+        "frost",
+        "echo",
+        "dense",
+        "pressure",
+        "point"
+      ],
+      "families": {
+        "spread": 6,
+        "dense": 0,
+        "flow": 11,
+        "common": 2
+      },
+      "events": [
+        {
+          "time": 0,
+          "hp": 110,
+          "level": 1,
+          "enemies": 0,
+          "kills": 0,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 60,
+          "hp": 110,
+          "level": 3,
+          "enemies": 9,
+          "kills": 31,
+          "poweredLeaps": 23
+        },
+        {
+          "time": 120,
+          "hp": 110,
+          "level": 4,
+          "enemies": 7,
+          "kills": 79,
+          "poweredLeaps": 57
+        },
+        {
+          "time": 180,
+          "hp": 110,
+          "level": 5,
+          "enemies": 13,
+          "kills": 129,
+          "poweredLeaps": 94
+        },
+        {
+          "time": 240,
+          "hp": 110,
+          "level": 7,
+          "enemies": 13,
+          "kills": 199,
+          "poweredLeaps": 140
+        },
+        {
+          "time": 300,
+          "hp": 80,
+          "level": 8,
+          "enemies": 18,
+          "kills": 298,
+          "poweredLeaps": 190
+        },
+        {
+          "time": 360,
+          "hp": 83,
+          "level": 11,
+          "enemies": 33,
+          "kills": 569,
+          "poweredLeaps": 270
+        },
+        {
+          "time": 420,
+          "hp": 65,
+          "level": 13,
+          "enemies": 30,
+          "kills": 863,
+          "poweredLeaps": 376
+        },
+        {
+          "time": 480,
+          "hp": 101,
+          "level": 15,
+          "enemies": 25,
+          "kills": 1144,
+          "poweredLeaps": 483
+        },
+        {
+          "time": 540,
+          "hp": 110,
+          "level": 16,
+          "enemies": 25,
+          "kills": 1475,
+          "poweredLeaps": 597
+        },
+        {
+          "time": 600,
+          "hp": 110,
+          "level": 18,
+          "enemies": 25,
+          "kills": 1766,
+          "poweredLeaps": 712
+        },
+        {
+          "time": 660,
+          "hp": 95,
+          "level": 19,
+          "enemies": 25,
+          "kills": 2066,
+          "poweredLeaps": 814
+        },
+        {
+          "time": 720,
+          "hp": 130,
+          "level": 20,
+          "enemies": 1,
+          "kills": 2393,
+          "poweredLeaps": 926
+        },
+        {
+          "time": 780,
+          "hp": 70,
+          "level": 20,
+          "enemies": 7,
+          "kills": 2412,
+          "poweredLeaps": 975
+        }
+      ]
+    },
+    {
+      "version": "0.8.0 en",
+      "mode": "cycle",
+      "build": "weave",
+      "seed": 4721,
+      "limit": 900,
+      "outcome": "loss",
+      "time": 347,
+      "hp": 0,
+      "level": 11,
+      "kills": 526,
+      "stitchKills": 526,
+      "bosses": 1,
+      "poweredLeaps": 164,
+      "dryLeaps": 2,
+      "firstSeed": 1.6000000000000016,
+      "firstPoweredLeap": 1.8333333333333357,
+      "firstStitchKill": 2.033333333333336,
+      "upgradesTaken": 10,
+      "denseLeaps": 42,
+      "chainLeaps": 0,
+      "shardsFired": 0,
+      "comboLeaps": 31,
+      "bonusLeaps": 0,
+      "maxStitchTargets": 16,
+      "bulletsCleared": 87,
+      "stitchDamageShare": 0.9252,
+      "damageTotals": {
+        "bullet": 2231.4196388888645,
+        "stitch": 27580.84346851882
+      },
+      "upgrades": {
+        "pierce": 1,
+        "width": 2,
+        "ricochet": 3,
+        "propagation": 1,
+        "regen": 1,
+        "scatter": 1,
+        "quick": 1
+      },
+      "remaining": [
+        {
+          "id": "scatter",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "pierce",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "propagation",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "width",
+          "level": 2,
+          "max": 3
+        },
+        {
+          "id": "ward",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "shards",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "rapid",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "heavy",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "frost",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "echo",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "dense",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "pressure",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "point",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "quick",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "fast",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "chain",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "regen",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "heal",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "vital",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "magnet",
+          "level": 0,
+          "max": 2
+        }
+      ],
+      "unownedAttack": [
+        "ward",
+        "shards",
+        "rapid",
+        "heavy",
+        "frost",
+        "echo",
+        "dense",
+        "pressure",
+        "point",
+        "fast",
+        "chain"
+      ],
+      "families": {
+        "spread": 8,
+        "dense": 0,
+        "flow": 2,
+        "common": 0
+      },
+      "events": [
+        {
+          "time": 0,
+          "hp": 110,
+          "level": 1,
+          "enemies": 0,
+          "kills": 0,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 60,
+          "hp": 110,
+          "level": 3,
+          "enemies": 8,
+          "kills": 32,
+          "poweredLeaps": 21
+        },
+        {
+          "time": 120,
+          "hp": 95,
+          "level": 4,
+          "enemies": 9,
+          "kills": 77,
+          "poweredLeaps": 47
+        },
+        {
+          "time": 180,
+          "hp": 89,
+          "level": 5,
+          "enemies": 8,
+          "kills": 134,
+          "poweredLeaps": 74
+        },
+        {
+          "time": 240,
+          "hp": 48,
+          "level": 7,
+          "enemies": 13,
+          "kills": 199,
+          "poweredLeaps": 102
+        },
+        {
+          "time": 300,
+          "hp": 26,
+          "level": 8,
+          "enemies": 10,
+          "kills": 306,
+          "poweredLeaps": 134
+        }
+      ]
+    },
+    {
+      "version": "0.8.0 en",
+      "mode": "cycle",
+      "build": "dense",
+      "seed": 9481,
+      "limit": 900,
+      "outcome": "win",
+      "time": 726,
+      "hp": 113,
+      "level": 20,
+      "kills": 2400,
+      "stitchKills": 2400,
+      "bosses": 4,
+      "poweredLeaps": 446,
+      "dryLeaps": 6,
+      "firstSeed": 1.6000000000000016,
+      "firstPoweredLeap": 1.8333333333333357,
+      "firstStitchKill": 2.033333333333336,
+      "upgradesTaken": 19,
+      "denseLeaps": 339,
+      "chainLeaps": 0,
+      "shardsFired": 0,
+      "comboLeaps": 35,
+      "bonusLeaps": 10,
+      "maxStitchTargets": 7,
+      "bulletsCleared": 559,
+      "stitchDamageShare": 0.9782,
+      "damageTotals": {
+        "bullet": 3638.0192555558374,
+        "stitch": 163167.43963334322
+      },
+      "upgrades": {
+        "heavy": 3,
+        "dense": 3,
+        "vital": 1,
+        "echo": 2,
+        "point": 1,
+        "rapid": 3,
+        "frost": 1,
+        "propagation": 1,
+        "magnet": 1,
+        "pierce": 1,
+        "quick": 1,
+        "regen": 1
+      },
+      "remaining": [
+        {
+          "id": "scatter",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "pierce",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "ricochet",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "propagation",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "width",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "ward",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "shards",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "frost",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "pressure",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "point",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "quick",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "fast",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "short",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "chain",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "regen",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "heal",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "vital",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "magnet",
+          "level": 1,
+          "max": 2
+        }
+      ],
+      "unownedAttack": [
+        "scatter",
+        "ricochet",
+        "width",
+        "ward",
+        "shards",
+        "pressure",
+        "fast",
+        "short",
+        "chain"
+      ],
+      "families": {
+        "spread": 2,
+        "dense": 13,
+        "flow": 2,
+        "common": 2
+      },
+      "events": [
+        {
+          "time": 0,
+          "hp": 110,
+          "level": 1,
+          "enemies": 0,
+          "kills": 0,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 60,
+          "hp": 105,
+          "level": 3,
+          "enemies": 8,
+          "kills": 32,
+          "poweredLeaps": 22
+        },
+        {
+          "time": 120,
+          "hp": 130,
+          "level": 4,
+          "enemies": 8,
+          "kills": 78,
+          "poweredLeaps": 51
+        },
+        {
+          "time": 180,
+          "hp": 130,
+          "level": 5,
+          "enemies": 10,
+          "kills": 132,
+          "poweredLeaps": 82
+        },
+        {
+          "time": 240,
+          "hp": 130,
+          "level": 7,
+          "enemies": 12,
+          "kills": 200,
+          "poweredLeaps": 117
+        },
+        {
+          "time": 300,
+          "hp": 124,
+          "level": 8,
+          "enemies": 11,
+          "kills": 302,
+          "poweredLeaps": 152
+        },
+        {
+          "time": 360,
+          "hp": 112,
+          "level": 11,
+          "enemies": 28,
+          "kills": 585,
+          "poweredLeaps": 189
+        },
+        {
+          "time": 420,
+          "hp": 130,
+          "level": 13,
+          "enemies": 30,
+          "kills": 883,
+          "poweredLeaps": 227
+        },
+        {
+          "time": 480,
+          "hp": 121,
+          "level": 15,
+          "enemies": 25,
+          "kills": 1191,
+          "poweredLeaps": 265
+        },
+        {
+          "time": 540,
+          "hp": 130,
+          "level": 17,
+          "enemies": 25,
+          "kills": 1501,
+          "poweredLeaps": 302
+        },
+        {
+          "time": 600,
+          "hp": 130,
+          "level": 18,
+          "enemies": 31,
+          "kills": 1780,
+          "poweredLeaps": 342
+        },
+        {
+          "time": 660,
+          "hp": 94,
+          "level": 19,
+          "enemies": 29,
+          "kills": 2070,
+          "poweredLeaps": 388
+        },
+        {
+          "time": 720,
+          "hp": 111,
+          "level": 20,
+          "enemies": 2,
+          "kills": 2398,
+          "poweredLeaps": 442
+        }
+      ]
+    },
+    {
+      "version": "0.8.0 en",
+      "mode": "cycle",
+      "build": "flow",
+      "seed": 20261001,
+      "limit": 900,
+      "outcome": "win",
+      "time": 758,
+      "hp": 82,
+      "level": 20,
+      "kills": 2487,
+      "stitchKills": 2487,
+      "bosses": 4,
+      "poweredLeaps": 890,
+      "dryLeaps": 6,
+      "firstSeed": 1.6000000000000016,
+      "firstPoweredLeap": 1.8333333333333357,
+      "firstStitchKill": 2.033333333333336,
+      "upgradesTaken": 19,
+      "denseLeaps": 193,
+      "chainLeaps": 0,
+      "shardsFired": 2678,
+      "comboLeaps": 183,
+      "bonusLeaps": 111,
+      "maxStitchTargets": 8,
+      "bulletsCleared": 894,
+      "stitchDamageShare": 0.9567,
+      "damageTotals": {
+        "bullet": 7316.77198889025,
+        "stitch": 161469.7606777881
+      },
+      "upgrades": {
+        "short": 2,
+        "regen": 2,
+        "vital": 1,
+        "ricochet": 3,
+        "heavy": 1,
+        "shards": 1,
+        "propagation": 3,
+        "fast": 2,
+        "quick": 2,
+        "pierce": 1,
+        "heal": 1
+      },
+      "remaining": [
+        {
+          "id": "scatter",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "pierce",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "ward",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "shards",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "rapid",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "heavy",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "frost",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "echo",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "dense",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "pressure",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "point",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "quick",
+          "level": 2,
+          "max": 3
+        },
+        {
+          "id": "chain",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "heal",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "vital",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "magnet",
+          "level": 0,
+          "max": 2
+        }
+      ],
+      "unownedAttack": [
+        "scatter",
+        "ward",
+        "rapid",
+        "frost",
+        "echo",
+        "dense",
+        "pressure",
+        "point",
+        "chain"
+      ],
+      "families": {
+        "spread": 8,
+        "dense": 1,
+        "flow": 8,
+        "common": 2
+      },
+      "events": [
+        {
+          "time": 0,
+          "hp": 110,
+          "level": 1,
+          "enemies": 0,
+          "kills": 0,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 60,
+          "hp": 110,
+          "level": 3,
+          "enemies": 8,
+          "kills": 32,
+          "poweredLeaps": 20
+        },
+        {
+          "time": 120,
+          "hp": 130,
+          "level": 4,
+          "enemies": 8,
+          "kills": 78,
+          "poweredLeaps": 52
+        },
+        {
+          "time": 180,
+          "hp": 130,
+          "level": 5,
+          "enemies": 10,
+          "kills": 132,
+          "poweredLeaps": 85
+        },
+        {
+          "time": 240,
+          "hp": 117,
+          "level": 7,
+          "enemies": 11,
+          "kills": 201,
+          "poweredLeaps": 126
+        },
+        {
+          "time": 300,
+          "hp": 113,
+          "level": 8,
+          "enemies": 16,
+          "kills": 300,
+          "poweredLeaps": 170
+        },
+        {
+          "time": 360,
+          "hp": 106,
+          "level": 11,
+          "enemies": 41,
+          "kills": 542,
+          "poweredLeaps": 229
+        },
+        {
+          "time": 420,
+          "hp": 107,
+          "level": 13,
+          "enemies": 27,
+          "kills": 892,
+          "poweredLeaps": 312
+        },
+        {
+          "time": 480,
+          "hp": 119,
+          "level": 15,
+          "enemies": 29,
+          "kills": 1241,
+          "poweredLeaps": 418
+        },
+        {
+          "time": 540,
+          "hp": 130,
+          "level": 17,
+          "enemies": 25,
+          "kills": 1579,
+          "poweredLeaps": 529
+        },
+        {
+          "time": 600,
+          "hp": 125,
+          "level": 18,
+          "enemies": 30,
+          "kills": 1856,
+          "poweredLeaps": 629
+        },
+        {
+          "time": 660,
+          "hp": 130,
+          "level": 19,
+          "enemies": 26,
+          "kills": 2148,
+          "poweredLeaps": 738
+        },
+        {
+          "time": 720,
+          "hp": 130,
+          "level": 20,
+          "enemies": 2,
+          "kills": 2471,
+          "poweredLeaps": 854
+        }
+      ]
+    },
+    {
+      "version": "0.8.0 en",
+      "mode": "cycle",
+      "build": "weave",
+      "seed": 8606,
+      "limit": 900,
+      "outcome": "win",
+      "time": 753,
+      "hp": 70,
+      "level": 20,
+      "kills": 2333,
+      "stitchKills": 2333,
+      "bosses": 4,
+      "poweredLeaps": 465,
+      "dryLeaps": 1,
+      "firstSeed": 1.6000000000000016,
+      "firstPoweredLeap": 1.8333333333333357,
+      "firstStitchKill": 2.033333333333336,
+      "upgradesTaken": 19,
+      "denseLeaps": 110,
+      "chainLeaps": 0,
+      "shardsFired": 695,
+      "comboLeaps": 208,
+      "bonusLeaps": 6,
+      "maxStitchTargets": 14,
+      "bulletsCleared": 771,
+      "stitchDamageShare": 0.8961,
+      "damageTotals": {
+        "bullet": 17008.666572216305,
+        "stitch": 146708.05506482307
+      },
+      "upgrades": {
+        "pierce": 3,
+        "ricochet": 3,
+        "scatter": 3,
+        "heal": 1,
+        "propagation": 3,
+        "shards": 1,
+        "width": 2,
+        "frost": 1,
+        "ward": 1,
+        "quick": 1
+      },
+      "remaining": [
+        {
+          "id": "width",
+          "level": 2,
+          "max": 3
+        },
+        {
+          "id": "ward",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "shards",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "rapid",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "heavy",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "frost",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "echo",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "dense",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "pressure",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "point",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "quick",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "fast",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "chain",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "regen",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "heal",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "vital",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "magnet",
+          "level": 0,
+          "max": 2
+        }
+      ],
+      "unownedAttack": [
+        "rapid",
+        "heavy",
+        "echo",
+        "dense",
+        "pressure",
+        "point",
+        "fast",
+        "chain",
+        "regen"
+      ],
+      "families": {
+        "spread": 16,
+        "dense": 1,
+        "flow": 1,
+        "common": 1
+      },
+      "events": [
+        {
+          "time": 0,
+          "hp": 110,
+          "level": 1,
+          "enemies": 0,
+          "kills": 0,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 60,
+          "hp": 110,
+          "level": 3,
+          "enemies": 9,
+          "kills": 31,
+          "poweredLeaps": 19
+        },
+        {
+          "time": 120,
+          "hp": 105,
+          "level": 4,
+          "enemies": 8,
+          "kills": 78,
+          "poweredLeaps": 46
+        },
+        {
+          "time": 180,
+          "hp": 110,
+          "level": 5,
+          "enemies": 8,
+          "kills": 134,
+          "poweredLeaps": 75
+        },
+        {
+          "time": 240,
+          "hp": 110,
+          "level": 7,
+          "enemies": 14,
+          "kills": 198,
+          "poweredLeaps": 104
+        },
+        {
+          "time": 300,
+          "hp": 110,
+          "level": 8,
+          "enemies": 13,
+          "kills": 306,
+          "poweredLeaps": 138
+        },
+        {
+          "time": 360,
+          "hp": 106,
+          "level": 11,
+          "enemies": 33,
+          "kills": 563,
+          "poweredLeaps": 179
+        },
+        {
+          "time": 420,
+          "hp": 110,
+          "level": 13,
+          "enemies": 26,
+          "kills": 885,
+          "poweredLeaps": 223
+        },
+        {
+          "time": 480,
+          "hp": 88,
+          "level": 15,
+          "enemies": 27,
+          "kills": 1163,
+          "poweredLeaps": 266
+        },
+        {
+          "time": 540,
+          "hp": 98,
+          "level": 16,
+          "enemies": 28,
+          "kills": 1457,
+          "poweredLeaps": 309
+        },
+        {
+          "time": 600,
+          "hp": 95,
+          "level": 18,
+          "enemies": 28,
+          "kills": 1727,
+          "poweredLeaps": 353
+        },
+        {
+          "time": 660,
+          "hp": 110,
+          "level": 19,
+          "enemies": 26,
+          "kills": 2029,
+          "poweredLeaps": 397
+        },
+        {
+          "time": 720,
+          "hp": 106,
+          "level": 20,
+          "enemies": 1,
+          "kills": 2312,
+          "poweredLeaps": 439
+        }
+      ]
+    },
+    {
+      "version": "0.8.0 en",
+      "mode": "cycle",
+      "build": "dense",
+      "seed": 6606,
+      "limit": 900,
+      "outcome": "win",
+      "time": 724,
+      "hp": 89,
+      "level": 20,
+      "kills": 2410,
+      "stitchKills": 2410,
+      "bosses": 4,
+      "poweredLeaps": 646,
+      "dryLeaps": 1,
+      "firstSeed": 1.6000000000000016,
+      "firstPoweredLeap": 1.8333333333333357,
+      "firstStitchKill": 2.033333333333336,
+      "upgradesTaken": 19,
+      "denseLeaps": 402,
+      "chainLeaps": 0,
+      "shardsFired": 0,
+      "comboLeaps": 86,
+      "bonusLeaps": 81,
+      "maxStitchTargets": 8,
+      "bulletsCleared": 715,
+      "stitchDamageShare": 0.968,
+      "damageTotals": {
+        "bullet": 5246.575022222884,
+        "stitch": 158775.80342223178
+      },
+      "upgrades": {
+        "heavy": 3,
+        "ricochet": 1,
+        "quick": 2,
+        "pressure": 3,
+        "magnet": 1,
+        "rapid": 3,
+        "frost": 2,
+        "dense": 3,
+        "echo": 1
+      },
+      "remaining": [
+        {
+          "id": "scatter",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "pierce",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "ricochet",
+          "level": 1,
+          "max": 3
+        },
+        {
+          "id": "propagation",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "width",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "ward",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "shards",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "echo",
+          "level": 1,
+          "max": 2
+        },
+        {
+          "id": "point",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "quick",
+          "level": 2,
+          "max": 3
+        },
+        {
+          "id": "fast",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "short",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "chain",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "regen",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "heal",
+          "level": 0,
+          "max": 2
+        },
+        {
+          "id": "vital",
+          "level": 0,
+          "max": 3
+        },
+        {
+          "id": "magnet",
+          "level": 1,
+          "max": 2
+        }
+      ],
+      "unownedAttack": [
+        "scatter",
+        "pierce",
+        "propagation",
+        "width",
+        "ward",
+        "shards",
+        "point",
+        "fast",
+        "short",
+        "chain",
+        "regen"
+      ],
+      "families": {
+        "spread": 1,
+        "dense": 15,
+        "flow": 2,
+        "common": 1
+      },
+      "events": [
+        {
+          "time": 0,
+          "hp": 110,
+          "level": 1,
+          "enemies": 0,
+          "kills": 0,
+          "poweredLeaps": 0
+        },
+        {
+          "time": 60,
+          "hp": 110,
+          "level": 3,
+          "enemies": 8,
+          "kills": 32,
+          "poweredLeaps": 23
+        },
+        {
+          "time": 120,
+          "hp": 110,
+          "level": 4,
+          "enemies": 6,
+          "kills": 80,
+          "poweredLeaps": 55
+        },
+        {
+          "time": 180,
+          "hp": 103,
+          "level": 5,
+          "enemies": 8,
+          "kills": 134,
+          "poweredLeaps": 89
+        },
+        {
+          "time": 240,
+          "hp": 110,
+          "level": 7,
+          "enemies": 16,
+          "kills": 196,
+          "poweredLeaps": 123
+        },
+        {
+          "time": 300,
+          "hp": 93,
+          "level": 8,
+          "enemies": 13,
+          "kills": 291,
+          "poweredLeaps": 164
+        },
+        {
+          "time": 360,
+          "hp": 99,
+          "level": 11,
+          "enemies": 37,
+          "kills": 576,
+          "poweredLeaps": 230
+        },
+        {
+          "time": 420,
+          "hp": 106,
+          "level": 13,
+          "enemies": 36,
+          "kills": 880,
+          "poweredLeaps": 295
+        },
+        {
+          "time": 480,
+          "hp": 91,
+          "level": 15,
+          "enemies": 22,
+          "kills": 1224,
+          "poweredLeaps": 370
+        },
+        {
+          "time": 540,
+          "hp": 41,
+          "level": 16,
+          "enemies": 25,
+          "kills": 1504,
+          "poweredLeaps": 443
+        },
+        {
+          "time": 600,
+          "hp": 39,
+          "level": 18,
+          "enemies": 24,
+          "kills": 1814,
+          "poweredLeaps": 511
+        },
+        {
+          "time": 660,
+          "hp": 71,
+          "level": 19,
+          "enemies": 27,
+          "kills": 2132,
+          "poweredLeaps": 582
+        },
+        {
+          "time": 720,
+          "hp": 89,
+          "level": 20,
+          "enemies": 2,
+          "kills": 2409,
+          "poweredLeaps": 643
+        }
+      ]
+    },
+    {
+      "version": "0.8.0 en",
       "mode": "cycle",
       "build": "flow",
       "seed": 4606,

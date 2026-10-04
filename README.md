@@ -4,9 +4,13 @@
 
 カーソルで敵を狙い、灰紋のある敵を直線の経路へまとめて縫います。青い残火を集めて強化を選び、群れに広げる「拡散」、少数に積む「濃縮」、何度も縫う「連続」を組み合わせて育てます。3・6・9分に番人、12分後に最終ボスの炉心が登場。1ランの目安は約12〜16分です。
 
-公開前バージョンは **v0.7.1** で、現在は**開発中の試作版**です。バージョンはタイトル右下に表示され、[version.js](version.js)で管理しています。
+現在のバージョンは **v0.8.0**、**Japanese / English** 対応の開発中の試作版です。バージョンはタイトル右下に表示され、[version.js](version.js)で管理しています。
 
-![タイトル画面](docs/screenshots/v0.7.1-title.png)
+![English title screen](docs/screenshots/v0.8.0-en-1440-title.png)
+
+タイトルの **日本語 / English** ボタンで言語を切り替えられます。再読み込みは不要で、次回起動にも選択を保存します。初回はブラウザが日本語なら日本語、それ以外は英語です。v0.7.1の残火印・装備・記録はそのまま使えます。
+
+**English quick start:** Select **English** on the title screen, then **Start game**. Move with WASD or arrow keys and aim with the cursor. Auto-fire primes enemies with **Ash Marks**. Left click or press SPACE to **Ash Stitch** through marked foes and blast the path. Gather blue **Embers** to level up. Collect marks from 3+ foes for a **Triple Stitch**, or 6+ fresh ash from 1–2 foes for a **Dense Stitch**. **Return Stitch** and **Chain Stitch** upgrades add follow-ups. **Ember Sigils** unlock your next run's loadout. P pauses or resumes; M toggles sound. Runs take about 12–16 minutes. Extract the ZIP and open index.html; no install or network connection is needed.
 
 ## 遊び始める
 
@@ -61,7 +65,7 @@ Node.jsがある場合は、リポジトリのフォルダで `npm start` を実
 
 ## 動作環境と既知の制限
 
-- PCのキーボードとマウス、HTML Canvas・Web Audio対応ブラウザが必要です。Windows / Microsoft Edgeは詳細検証済み。Chrome・Firefoxは人間が起動・開始・基本操作・灰縫い・おおまかな画面遷移を簡易確認済みで、大きな問題は見つかっていません。Safariは未確認です。
+- PCのキーボードとマウス、HTML Canvas・Web Audio対応ブラウザが必要です。対応対象はMicrosoft Edge / Chrome / Firefoxです。v0.8の日英画面・保存・全画面・ポーズはWindows / Microsoft Edgeで自動検証済み。Chrome・Firefoxの基本操作はv0.7系で人間が簡易確認済みで、v0.8の追加検証は未実施です。Safariは未確認です。Supported browsers: Edge, Chrome and Firefox on desktop. v0.8 Japanese/English UI is verified in Edge; Safari is unverified.
 - 1280×720以上を推奨。1024×640の画面配置も確認済みです。小さい画面では説明パネルをスクロールできます。
 - タッチ・ゲームパッド・途中セーブには対応していません。タイトルへ戻ると進行中のランは終了します。
 - 残火印・記録・装備選択はブラウザ内に保存します。ブラウザ・プロファイル・公開先を変えた場合の引き継ぎ機能はありません。保存が制限される環境では記録が残らない場合があります。
@@ -79,6 +83,10 @@ Node.jsがある場合は、リポジトリのフォルダで `npm start` を実
 - [公開前チェックリスト・配布手順](docs/V0.7-PUBLIC-READINESS.md)
 - [全強化の旧説明・新説明・変更理由](docs/V0.7-UPGRADE-COPY-REVIEW.md)
 - [タイトル・ヘルプ・導入・リザルトの変更全文](docs/V0.7-PLAYER-COPY-REVIEW.md)
+- [v0.8 構造棚卸しと分離方針](docs/V0.8-REFACTOR-PLAN.md)
+- [v0.8 日英用語表](docs/V0.8-I18N-GLOSSARY.md)
+- [v0.8 全翻訳一覧](docs/V0.8-I18N-REVIEW.md)
+- [v0.8 検証・ファイル構成・残した境界](docs/V0.8-I18N-VALIDATION.md)
 - [検証結果と再実行方法](TEST-REPORT.md)
 
-自動テストは `npm test`、通しランとv0.6.3比較は `npm run test:balance`。どちらもNode.jsのみで動作します。ブラウザ回帰の手順は検証結果にまとめています。
+自動テストは `npm test`、v0.7.1との日英6seed比較は `npm run test:balance`。どちらもNode.jsのみで動作します。言語だけの検証は `npm run test:i18n`、実ブラウザ検証は `npm run test:i18n:browser`。辞書は `i18n/ja.js` / `i18n/en.js`、翻訳一覧の再生成は `npm run i18n:review`。ブラウザ準備と回帰の手順は [v0.8検証文書](docs/V0.8-I18N-VALIDATION.md) にまとめています。
