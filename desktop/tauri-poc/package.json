@@ -1,0 +1,13 @@
+{
+  "name": "ashfall-tauri-poc",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "prepare:assets": "node assets.cjs",
+    "build": "node build.cjs",
+    "verify": "node verify.cjs"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.12.1"
+  }
+}
