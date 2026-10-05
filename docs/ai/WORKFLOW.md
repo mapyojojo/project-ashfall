@@ -17,7 +17,7 @@ Markdown + Git + Codex + ChatGPT + 人間で回す。役割の正本は [ROLES.m
 | 9. Producer playtest | Producer / Playtester | 必要な場面を実プレイし、面白さと方向性を判断 |
 | 10. 次スプリント決定 | Producer、Directorが整理 | 今回の結果と残課題を受け、次のScopeを選ぶ |
 
-すでにProducerが目標と実行範囲を指定している依頼は、工程1〜4の成果として扱える。承認済みScopeを実行するための再承認は不要。変更中に見つけたScope外の案はOpen Questionsや次回候補へ残し、勝手に実装しない。
+Producerが明示的に実行を指示したScope、または [plans/current-sprint.md](../../plans/current-sprint.md) のStatusが`ready`でScopeが確定している場合は、工程1〜4の成果として扱い、そのScopeを実装承認済みとする。アイデア、相談、候補、「こういうのも面白そう」の提示だけを実装承認とは扱わない。承認済みScopeを実行するための再承認は不要。変更中に見つけたScope外の案はOpen Questionsや次回候補へ残し、勝手に実装しない。
 
 ## 変更に応じた軽量化
 
@@ -42,7 +42,7 @@ Implementerは着手・変更・検証の進捗をExecution Resultsへ残す。�
 ## 状態と終了
 
 - `draft`：GoalやScopeを整理中。安全な調査は進められる。
-- `ready`：Producerの実行指示またはScope確定があり、実装を始められる。
+- `ready`：Scopeが確定しており、そのScopeを実装承認済みとして扱う。
 - `in-progress`：調査・実装・検証中。
 - `review`：実装結果があり、Required Reviewsに必要なレビュー待ち。
 - `playtest`：必要なレビューを終え、Producerのプレイ判断待ち。

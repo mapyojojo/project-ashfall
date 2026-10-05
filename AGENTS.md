@@ -12,7 +12,7 @@
 
 ## Project
 
-Project Ashfallはブラウザで動くトップダウン・アクションローグライト。現在の基準はv0.8.0、Japanese / English対応。版番号の正本は [version.js](version.js)、現行の遊び方と起動方法は [README.md](README.md)。
+Project Ashfallはブラウザで動くトップダウン・アクションローグライト。Japanese / English対応。現在の版番号の正本は [version.js](version.js)、現行の遊び方と起動方法は [README.md](README.md)。
 
 コアメカニクスは **Ash Stitch / 灰縫い**：auto-fireで敵にAsh Marks / 灰紋を仕込み、プレイヤーが移動・位置取りしてMarked enemiesを縫い、灰を回収して経路に沿って炸裂させる。このコアを明示的な要求なしに変更しない。
 
@@ -28,7 +28,7 @@ Project Ashfallはブラウザで動くトップダウン・アクションロ�
 
 ## Development rules
 
-- Producerが実行を指示したScopeは作業の承認として扱う。承認済み範囲で再確認を繰り返さず、調査・計画・実装・検証・報告まで進める。
+- Producerが明示的に実行を指示したScope、または [plans/current-sprint.md](plans/current-sprint.md) のStatusが`ready`でScopeが確定している場合のScopeは作業の承認として扱う。アイデア、相談、候補、「こういうのも面白そう」の提示だけを実装承認とは扱わない。承認済み範囲で再確認を繰り返さず、調査・計画・実装・検証・報告まで進める。
 - 明示されていないプロダクト要件・ゲームバランス変更を追加しない。新しい要件が必要なら理由と選択肢を記録し、依存しない作業を続ける。プロダクト判断はProducerへ戻す。
 - save format、安定したupgrade ID・relic番号、既存記録の互換性を黙って変えない。現在は途中ラン保存がなく、既存metaと独立した言語設定を保存する。
 - 日本語 / 英語のi18n parityを維持する。キー、補間、表示と挙動の対応、言語切替時の状態・保存への影響を確認する。
@@ -45,4 +45,4 @@ Project Ashfallはブラウザで動くトップダウン・アクションロ�
 
 ドキュメントだけの変更ではフルゲームテストを必須にせず、リンク、文書間の整合、雛形の利用手順、意図しないコード差分を確認する。必要以上の自動化や形式だけのテストを追加しない。
 
-コマンドの正本は [package.json](package.json)、実行環境・基準比較・ブラウザ準備は [TEST-REPORT.md](TEST-REPORT.md) と [v0.8検証文書](docs/V0.8-I18N-VALIDATION.md)。過去版の文書は当時の記録として読み、現行仕様と混同しない。
+コマンドの正本は [package.json](package.json)、実行環境・基準比較・ブラウザ準備は [TEST-REPORT.md](TEST-REPORT.md) と [i18n検証文書](docs/V0.8-I18N-VALIDATION.md)。過去版の文書は当時の記録として読み、現行仕様と混同しない。
