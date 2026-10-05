@@ -4,9 +4,21 @@ Sprint 2、Project Ashfall v0.8.0、実施2026-10-05〜06（Asia/Tokyo）。基�
 
 ## 技術提案と判断の条件
 
-**WebView2 Evergreenを利用できるWindows環境なら、Tauriの実機比較へ条件付き進行可。** 現行ゲーム13ファイルを変更せず利用でき、runtimeを含まないZIPは約1.34 MiB、展開は約5.06 MiB。Electronの約150.65 MiB／367.14 MiBより小さい。WebView2を追加導入できない未導入PCを必須対象にするなら、この構成のまま採用できない。正式採用はProducer判断待ち。
+**終了判断（Producer、2026-10-06）：PoC比較を完了として区切り、ポータブル版の進行・正式採用は一旦保留。次スプリントは開発者向けデバッグUI。** 不具合・未測定・未検証事項は未解決のまま再開時へ繰り越す。終了記録は[スプリント](../plans/current-sprint.md)を参照し、本判断を製品化・配布の承認とは扱わない。
 
-これはImplementerの技術提案。独立QA・人間の操作感・音・実ネットワーク遮断・別PCでの保存互換は未完了。ElectronのQA指摘をTauriの成功で解消したとは扱わない。
+実プレイ前の技術提案は、WebView2 Evergreenを利用できるWindows環境ならTauriの実機比較へ条件付き進行可というものだった。現行ゲーム13ファイルを変更せず利用でき、runtimeを含まないZIPは約1.34 MiB、展開は約5.06 MiB。Electronの約150.65 MiB／367.14 MiBより小さい。WebView2を追加導入できない未導入PCを必須対象にするなら、この構成のまま採用できない。
+
+これは実プレイ前のImplementerの技術提案。2026-10-06の独立QAは完了し、commit後clean checkoutビルドもPASS。その後のProducer実プレイ比較で、Electronの時折のカクつきとTauriのフルスクリーン時のカーソル問題が報告された。現状はどちらも完成版として難があるとの評価で、正式採用は未決定。音・実ネットワーク遮断・別PC保存等の個別確認は残り、ElectronのQA指摘をTauriの成功で解消したとは扱わない。独立QAの詳細と最新の進捗は[スプリント](../plans/current-sprint.md)を参照。
+
+## Producer実プレイ比較とDirector整理（2026-10-06）
+
+| 対象 | Producerが報告した観察 |
+| --- | --- |
+| Electron | ZIP容量が大きい。概ねよく動く印象だが、たまにカクつく |
+| Tauri | ZIP容量が小さい。フルスクリーン時にポーズ中のカーソルがガクガクし、プレイ中は動かないカーソルが画面に残って邪魔になる |
+| 比較評価 | 一長一短あるが、ストレスが少ないのはElectron。完成版として出すにはどちらも難がある |
+
+終了判断前のDirector提案：Game feelとReadabilityを優先し、正式採用を急がず、Tauriのカーソル問題の再現・修正可能性とElectronのカクつきの原因を最小範囲で調べる。同じ場面・条件でブラウザ版と比較する。原因や修正の容易さは未確定で、framework固有の限界とは断定しない。実プレイ環境・成果物の特定、ウィンドウ時との違い、発生頻度、音・保存・終了等の個別シナリオは未報告。その後Producerがポータブル版の進行を一旦保留したため、調査・修正は将来の再開候補として保持する。
 
 ## 版・環境・再利用
 
@@ -77,7 +89,7 @@ WebView2の既存共有インストールディレクトリは903,021,261 bytes 
 
 最初の試行はWindows resource用アイコン不足で失敗し、コードから生成するPoCアイコンで解消した。package工程はCargo metadataの出力がNodeの既定buffer上限を超えて失敗し、上限を明示して解消した。出力をwork内で完成させてからdistへ移すため、失敗途中のものを完成ZIPとして扱わない。旧試行の成果物はworkへ保持した。
 
-最終候補はSprint 1のGit archiveを新規フォルダへ展開し、現在の13ファイルとPoCソースをhash照合して重ねたsource snapshotでビルドした。新しいtargetディレクトリ、offline npm ci、固定Cargo.lockと専用cacheで成功。Rust releaseは約1分56秒、package込み約123秒。これは未コミット候補のfresh-source再現であり、最終コミットのclean checkoutでの再現とは区別する。再現手順はREADMEと `rebuild-source.ps1`。commit後のclean checkout確認は残件。
+Implementerの最終候補はSprint 1のGit archiveを新規フォルダへ展開し、現在の13ファイルとPoCソースをhash照合して重ねたsource snapshotでビルドした。新しいtargetディレクトリ、offline npm ci、固定Cargo.lockと専用cacheで成功。Rust releaseは約1分56秒、package込み約123秒。これは未コミット候補のfresh-source再現。再現手順はREADMEと `rebuild-source.ps1`。その後、独立QAがHEAD `9f68089`のclean checkoutで、ソースoverlayなし・新規target・専用offline cache・locked依存によるビルドを約150.4秒でPASSし、生成した別ZIPの16項目もPASSした。元ZIPとEXE／ZIP hashは異なり、byte単位の再現性は保証しない。[独立ビルド証拠](../work/tauri-poc/qa-review-20261006/clean-build.json)とスプリントの独立QA記録を参照。
 
 EXEはMSVC runtimeを静的リンクする設定。dumpbinで別途VCRUNTIME DLLのimportはないことを確認し、OSのUCRT／system DLLを含む依存は残る。開発時のRust／MSVC／SDK／Node／CLIはプレイヤー向けZIPには含めない。最低OSの保証をこの実機1台から拡張しない。
 
@@ -100,7 +112,7 @@ Rust Windows依存graphのlicense表記・同梱LICENSE／NOTICE本文を `THIRD
 | Tauri配布ZIP | PASS、16項目。通常起動、埋込みhash、日英、Canvas／Web Audio、WASD／矢印／照準／SPACE／クリック、ポーズ、保存、native close、二重起動、移動、同一版置換、拒否を確認 |
 | 初回profile容量比較 | Tauri測定成功、Electronタイトルwindow未到達により全体FAIL。Electronは初回profile未測定、旧fixture容量と区別 |
 | 実ネットワーク遮断・別PC・native disk拒否 | 未実施。適切なクリーンPC／別PCを用意していない。現在の環境やprofile ACLを変更して代替しない |
-| 独立QA／Producer実機比較 | 未実施、必要。自己確認を独立レビュー・人間プレイの代わりにしない |
+| 独立QA／Producer実機比較 | 2026-10-06、独立QA完了、Producer比較報告あり。QAの新規必須修正指摘なし。後続の実プレイではTauriカーソル問題・Electronカクつきが報告され、正式採用は未決定。個別シナリオを全完了とは扱わない |
 
 最初のブラウザ実行は150ms fullscreen待機でFAIL。待機をコピーで延長した再実行がPASS。Tauri verifierの最初のfullscreen直後クリック、通知API検証式、profileコピーによる中断も旧証拠に保持し、待機・検証式・コピー処理を修正した。ゲームコードを期待値へ合わせていない。最終ZIPのSHA256に対応する実行結果を判断に使う。
 
