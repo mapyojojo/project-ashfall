@@ -26,7 +26,9 @@ draft
 
 - [AGENTS.md](../AGENTS.md) の共通ルールを適用する。
 - <保護する挙動・保存互換・日英・性能など、今回固有の制約>
-- Git: <作業branch。commitの要否。明示されなければmainへのmerge・push・公開をしない>
+- Git: <作業branch。レビュー用コミットを禁止する場合や、その他の今回固有の例外はここへ明記>
+- Implementerは承認済みScopeの実装と検証が完了したら、明示的に禁止されていない限りレビュー用コミットを自律的に作成してよい。生成物・Git除外対象・無関係な既存変更は含めない。
+- mainへのmerge・push・tag・外部公開は、レビュー用コミットとは別にProducerの明示指示が必要。
 
 ## Deliverables
 
