@@ -1,0 +1,14 @@
+{
+  "name": "ashfall-portable-poc",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Isolated Windows feasibility experiment; not a release.",
+  "main": "main.cjs",
+  "scripts": {
+    "runtime": "install-electron",
+    "build": "node build.cjs"
+  },
+  "devDependencies": {
+    "electron": "44.5.1"
+  }
+}
