@@ -94,6 +94,8 @@ Windows PowerShell 5.1以降で、リポジトリのルートから実行しま�
 
 ## 開発・公開準備の資料
 
+- [AI開発の共通ルールと役割・ワークフロー](AGENTS.md)
+- [現在のスプリント](plans/current-sprint.md) / [次回の開始手順と雛形](plans/README.md)
 - [公開前チェックリスト・配布手順](docs/V0.7-PUBLIC-READINESS.md)
 - [全強化の旧説明・新説明・変更理由](docs/V0.7-UPGRADE-COPY-REVIEW.md)
 - [タイトル・ヘルプ・導入・リザルトの変更全文](docs/V0.7-PLAYER-COPY-REVIEW.md)
