@@ -15,6 +15,7 @@ pnpm-debug.log*
 .vscode/
 
 # Scratch files and generated test artifacts
+/dist/
 /work/
 /coverage/
 /playwright-report/

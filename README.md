@@ -14,9 +14,23 @@
 
 ## 遊び始める
 
-ZIPを使う場合は、まずすべてのファイルを同じフォルダへ展開します。Windowsは **Start.batをダブルクリック**。ほかのPCでは **index.htmlをブラウザで開く**と起動できます。タイトルの「ゲーム開始」を押してください。ゲームの起動にインストールや外部通信は必要ありません。
+ZIPを使う場合は、まずすべてのファイルを同じフォルダへ展開し、**index.htmlをブラウザで開く**と起動できます。WindowsでStart.batを同梱した配布では、それをダブルクリックしても起動できます。タイトルの「ゲーム開始」を押してください。ゲームの起動にインストールや外部通信は必要ありません。
 
 Node.jsがある場合は、リポジトリのフォルダで `npm start` を実行し、[localhost:4173](http://localhost:4173)を開いても遊べます。サーバーの終了はCtrl+Cです。
+
+## itch.io公開ZIPの生成
+
+Windows PowerShell 5.1以降で、リポジトリのルートから実行します。Node.jsやnpm installは不要です。
+
+```powershell
+.\scripts\build-itch.ps1
+```
+
+`version.js` の版番号を使い、`dist/project-ashfall-v<version>-itch.zip` を生成します。`index.html` がZIPルートに入り、HTMLのローカル参照とCSSのimport/urlから必要な実行時ファイルを集めます。日英辞書も含まれ、開発文書・テスト・検証JSON・サーバーは同梱しません。生成内容を検証してから同名ZIPを置き換えます。`dist/` はGit管理対象外です。
+
+生成後に出力フォルダを開く場合は `.\scripts\build-itch.ps1 -OpenFolder` を使います。実行ポリシーで拒否される環境では `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-itch.ps1` で、この実行だけ許可できます。展開して `index.html` を開けば、ローカルでも起動できます。itch.ioへのアップロード・公開は手動です。
+
+配布スクリプトの回帰検証は `powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\build-itch.ps1`。構成・バージョン・置き換え・欠落ファイル時の動作を確認します。
 
 ## 操作
 
