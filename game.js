@@ -844,7 +844,7 @@
   $('versionLabel').textContent=`v${globalThis.AshfallRelease.version}`;
   $('languageJa').onclick=()=>globalThis.AshfallI18n.setLanguage('ja');$('languageEn').onclick=()=>globalThis.AshfallI18n.setLanguage('en');
   globalThis.AshfallI18n.subscribe(()=>{ui.refresh();debugUI?.refresh();});
-  titleRecord();ui.refresh();requestAnimationFrame(loop);
+  titleRecord();ui.refresh();debugUI?.refresh();requestAnimationFrame(loop);
   // Explicit test mode exposes mechanics for deterministic verification, never used in normal play.
   if(new URLSearchParams(location.search).has('test'))window.AshfallTest={
     debug:debugEnabled?{open:openDebug,close:closeDebug,act:debugAct,snapshot:debugSnapshot}:undefined,

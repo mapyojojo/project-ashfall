@@ -4,7 +4,7 @@
 
 review
 
-Implementer実装と実行可能な自己検証を完了。Producerの追加指示により、隔離checkoutの実装commit `703d2981455a953ffa443eeb4a4eb342a6958124` を元リポジトリ `D:/develop/project-ashfall` の専用branch `codex/developer-debug-ui` へ反映した。現在の実装と起動手順はこのリポジトリのコード・READMEを参照する。実ブラウザ確認・独立QA・Producer Playtestは未完了。mainへは統合していない。
+Implementer実装を元リポジトリの専用branch `codex/developer-debug-ui` へ反映済み。独立QAのP2「デバッグ起動直後のタイトルに開発モード表示がない」をScope内で修正し、HTTP／直接file／展開ZIPの起動直後の日英表示、debugブラウザテストの全ケースと関連回帰をImplementerが確認した。独立QAの原記録を保持し、修正後の独立再確認とProducer Playtestを待つ。mainへは統合していない。
 
 2026-10-06（Asia/Tokyo）、Producerが次スプリントを開発者向けデバッグUIとし、任意のアップグレード付与・時間送り・ボス呼び出し・敵スポーン・無敵化の5機能を指定。時間送りは経過時刻だけを進める方式と回答した。Directorが操作・保存・検証条件を整理し、Implementerへ引き継ぐScopeを本計画に確定した。readyは下記Scopeの実装承認として扱う。今回のDirectorへの依頼は計画記載までで、実装は未着手。
 
@@ -108,6 +108,26 @@ Producerが指定した5機能をDirectorが以下の動作として具体化し
 - 反映ファイル：`README.md`、`debug-ui.js`、`game.js`、`i18n/ja.js`、`i18n/en.js`、`index.html`、`input.js`、`package.json`、`style.css`、`tests/build-itch.ps1`、`tests/combat-source.cjs`、`tests/debug-browser.cjs`、`tests/debug.cjs`、`tests/harness.cjs`、`tests/i18n.cjs`、`tests/public-readiness.cjs`。これらに本計画の反映先・検証結果追記を加えた17ファイルをレビュー用コミットにまとめる。
 - 元リポジトリでの再検証：`npm test` は179項目PASS（デバッグ10項目を含む）。`git diff --check`、元リポジトリのREADME／本計画のローカルリンク、変更ファイルの一致を確認。新規証拠は `work/debug-ui-import/npm-test.txt`、`source-parity.json` と今回生成した比較JSON。既存の追跡検証JSONは検証前のbytesへ戻し、元のZIP・画像・検証記録を上書きしていない。配布テストは同一ソースでの隔離checkoutの6項目PASSを引き継ぎ、この反映作業では再実行していない。
 - 反映後の確認先：起動と5操作は本リポジトリの [README](../README.md#開発者向けデバッグ--developer-debug)。HTTPは `http://localhost:4173/?debug`、直接fileは本リポジトリの `index.html?debug`。Reviewerへ渡す対象は元リポジトリの基準commitから `codex/developer-debug-ui` のHEADまで。実ブラウザ検証は今回追加実施しておらず、前回の未確認事項と独立QA／Producer Playtest待ちは継続する。
+
+### P2修正と自己検証（Implementer、2026-10-06、Asia/Tokyo）
+
+- 着手状態：`codex/developer-debug-ui`、HEAD `19312ea97a45c426bc58d1551355217b2903db99`（独立QA記録コミット）、clean、登録worktreeは元リポジトリ1件。既存QA本文と証拠を保持して作業した。
+- 原因と修正：debug UIのcreate後、起動時の表示更新が通常UIだけで、debug UIの初回refreshが言語切替やラン開始まで呼ばれなかった。`game.js` の初期化で `ui.refresh()` の直後に `debugUI?.refresh()` を1回呼ぶ。通常起動ではdebug UIを作成しないため、この追加呼出しは無効。戦闘・保存・言語設定・ラン状態を変更する処理は追加していない。
+- 回帰テスト：`tests/debug-browser.cjs` の既存assert／後続操作を維持し、各起動方式でja／enを起動前の保存済み設定として用意してから `?debug` を開く。起動後はクリック・キー・言語変更APIを一切呼ばず、タイトル表示・言語・test API不在・バッジのhiddenと実際の画面内可視性・正確な日英文言・無効な入口・閉じたパネル・通常metaのbytes／言語設定不変を確認。通常再読込時の入口非表示と空の状態説明も追加した。期待値の緩和・assert削除・ケースのskipは行っていない。
+- 実行環境：Windows PowerShell、Node.js v22.23.1、専用headless Edge `154.0.4258.53` / CDP 9223、HTTP 4173。今回専用Edgeの起動は権限承認を受けて成功した。既存profileは使わず、今回の専用profileを `work/debug-title-fix-20261006/browser-profile` に作成した。
+
+| 今回の自己検証 | 結果 |
+| --- | --- |
+| `npm test` | **PASS：179項目**。通常戦闘・状態／保存・日英parity・デバッグ10項目を含む。 |
+| `npm run test:debug:browser`（`ASHFALL_DEBUG_PACKAGED_DIR` 指定） | **PASS：全10ケース、例外0**。HTTP／ソース直接file／展開ZIPのJA／EN起動直後6条件、3方式×日英×3サイズの18パネル条件、全5操作・保存・ボス／勝敗／リトライ／通常再読込・native fullscreen退出／blur／visibilityを既存テストの全ケースで確認。fullscreen実行結果もtrue。 |
+| `npm run test:public` | **PASS：9項目、例外0**。通常起動、実入力・画面遷移、native fullscreen／退出・ポーズ、HTTP／直接fileの回帰。 |
+| `npm run test:i18n:browser` | **PASS：5項目、例外0**。日英切替・保存、全23強化・全画面の1440×900／1024×640、HTTP／fileの回帰。 |
+| `tests/build-itch.ps1` と展開ZIP確認 | **PASS：6項目**。修正後ソース14ファイルをSHA-256一致で新しい作業領域へコピーして実行。生成ZIPを新規展開し、展開14ファイルのhash一致と上記debugブラウザテスト全ケースを確認。元のdist／ZIPは保護した。 |
+| 構文、`git diff --check`、文書リンク、既存記録保護 | **PASS**。既存の独立QA本文をそのまま保持し、QA証拠・dist・画像・追跡検証JSONの1617ファイルが検証前hashと一致。 |
+
+- 証拠：[今回の修正検証領域](../work/debug-title-fix-20261006/) の `test.txt`、`test-debug-browser.txt`、`test-public.txt`、`test-i18n-browser.txt`、`packaging.txt`、`runtime-hashes.json`、`final-check.txt`。`generated/work/debug-browser/report.json` に起動直後6条件・全ケース・ブラウザ版・例外数、同ディレクトリに起動直後6枚／パネル18枚のPNGを保存した。HTTP起動のJA／ENタイトル画像も目視確認した。既存QAのFAIL記録・画像・比較JSONを新結果で上書きせず、検証の出力先だけを新規領域へ振り向けた。
+- 未確認・次の担当：この修正検証はImplementerの自己確認で、独立再レビューの完了ではない。P2修正後の独立QA再確認とProducer Playtestが残る。確認したブラウザは上記Edgeのみ。Chrome／Firefox／Safari、headedの物理Esc／長押し／OSフォーカス移動・実タブ非表示、長時間の自然入力、音の聴感、QA準備の有用性・操作感は未検証。debugブラウザテストは描画ループを止めたfixtureとCDP入力であり、面白さを保証しない。既存QAの未確認事項を消していない。
+- 変更対象は `game.js`、`tests/debug-browser.cjs`、本計画の3ファイルのみ。修正と上記自己検証をレビュー用コミットにまとめる。既存独立QA記録コミットは履歴に保持し、mainの基準HEAD・worktree構成は変更しない。merge／push／tag／外部公開は行わない。
 
 ## Review Results
 
