@@ -223,6 +223,31 @@ Producerが指定した5機能をDirectorが以下の動作として具体化し
 - **証拠・Git状態**：新規証拠は [今回の独立再QA領域](../work/qa-debug-title-recheck-20261006/) の `test.txt`、`test-debug-browser.txt`、`test-public.txt`、`test-i18n-browser.txt`、`packaging.txt`、`generated/work/debug-browser/report.json` と初期6枚／パネル18枚のPNG。検証JSON・画像の出力だけを新規領域へ振り向け、実装／テストのassert・既存記録・ZIPを変更していない。追跡変更は本Review Resultsへの追記のみ、未ステージ・未コミット。branch・HEAD・worktree構成は開始時と同じ。実装・修正・merge・push・tag・公開は行っていない。
 - **追記後確認**：`git diff --check`、本計画／READMEのローカルリンク39件、現ソース／展開版14ファイルのhash一致、既存証拠1617ファイルのhash維持、本計画の追記以外の不変を確認しPASS（`final-check.txt`）。今回起動した専用ブラウザとHTTPサーバーは終了した。
 
+### 公開ZIPのモード無効化・独立QAレビュー（2026-10-06、Asia/Tokyo）
+
+- **Reviewer**：Codex、QA / Engineering Reviewer。Implementerの追加Scope実装・自己検証とは独立して実施。実装・テストの修正は行わず、本Review Resultsへ結果を追記する。過去のQA・Producer報告は保持した。
+- **Target**：追加Scope承認 `dc8feb1` → 実装HEAD `5b185b92ba8d162805f084efdd07b1e4f9cb4285` の10ファイル差分と、今回そのソースから生成・展開した新規公開ZIP。main基準は `fda91afc6024e3bad677a5874ded6200402530c9`。開始時は `codex/developer-debug-ui`、HEAD `5b185b9`、clean、登録worktreeは元リポジトリ1件。
+- **Evidence**：現行AGENTS・本計画の追加Scope／Constraints／DoD・QA Guide、差分、ゲームの両入口と保存／5操作のガード、ZIP生成／内容監査／失敗時保護、新旧テストとREADME、Implementer証拠を確認。公開game.jsではIIFE内のprivate constだけをfalseへ固定し、debug有効化とtest API公開の両方を停止する。debug UIをcreateしないためハンドラを接続せず、無敵・debug保存抑制も無効。ホスト名・親ページ・URLや上書き可能なグローバル設定での判定はない。公開変換は生成物だけに適用され、通常ゲームの数値・保存キー／format・ID／relic番号に変更はない。旧展開ZIPでdebug可能だったテストは、新しい公開用16条件の検証へ分離され、開発用の既存assertは保持されている。
+
+| 今回実行した独立検証 | 結果 |
+| --- | --- |
+| `npm test`（`ASHFALL_PUBLIC_DIR` に今回の展開版を指定） | **PASS：190項目**。従来179項目と公開用モード11件。公開モード検証は推定の文字列変換ではなく今回の実展開game.jsを読み込み、通常／debug／test／両指定×日英でAPI／操作ハンドラ不在、通常の保存／装備補正・新ラン／ポーズ／タイトル・言語保存を確認。開発用両モード、戦闘／将来乱数・保存互換／拒否・日英の回帰もPASS。 |
+| `tests/build-itch.ps1`（現ソースとhash一致の新規コピー上） | **PASS：9項目**。同梱14ファイルと公開変換の正確なbytes、version／参照探索／既存出力置換、宣言欠落／重複・debug／test入口ガード欠落・game.js非同梱で生成FAIL／旧ZIP維持、欠落ファイル／経路逸脱時保護、正本runtime不変を確認。元dist／ZIPを上書きせず、新規ZIPを別領域へ展開した。 |
+| `npm run test:public:package`（今回の新規展開版） | **PASS：全16条件、ブラウザ例外0**。HTTP／file×通常／debug／test／test&debug×JA／EN。操作前のAPI不在・バッジ／入口／パネル非表示、全5操作ハンドラ不在と有効な値でのprogrammatic click無効、通常の装備補正／選択保存・開始／時計／ポーズ／再開・言語切替／再読込を確認。両指定4条件ではnative fullscreen／退出、通常戦闘での被弾／敗北・成績保存／未知フィールド維持・リトライも確認。公開HTTPのJA／ENタイトル画像を目視確認した。 |
+| `npm run test:debug:browser` | **PASS：全7ケース、ブラウザ例外0、fullscreen=true**。開発用HTTP／fileの日英起動直後4条件、日英×3サイズ×2方式の12パネル条件、既存5操作・入力隔離／保存・ボス／結果／リトライ・全画面／blur／visibilityを確認。公開版をdebug用検証へ混ぜていない。 |
+| `npm run test:public` / `npm run test:i18n:browser` | **PASS：9項目／5項目、ブラウザ例外0**。開発用ソースの通常画面・実クリック／キー／全画面／保存、日英・全23強化・1440×900／1024×640、HTTP／fileの回帰。 |
+
+- **実行環境と初回失敗の切り分け**：Windows PowerShell、Node.js v22.23.1、専用headless Edge `154.0.4258.53` / CDP 9223、HTTP 4173。初回の専用profileでは拡張機能インストール用ページ・同期画面が自動で開き、公開ブラウザ検証はHTTPの6条件後にstartup timeout、後続のdebug／通常／i18nも初期化待ち・未定義エラーでFAILとなった。HTTPのHTML取得は200で、後から対象ページのi18n初期化完了も確認した。これらをPASSとして数えず、初回ログを保存した。拡張機能・同期を無効にした別の専用profileへ切り替え、ソース・生成物・テストのassertを変更せずブラウザ4コマンドだけを再実行し、上記すべてPASS。再実行時は対象ページ1件で拡張機能ページがないことも記録した。個々の拡張機能が失敗原因だったとは断定しない。
+- **Verdict：重大な懸念なし**。公開ZIPでdebug／testを無効に固定する追加Scopeは、生成物の内容と通常動作を含めて独立確認済み。開発用両モードを維持し、今回の差分に追加の不具合は見つからなかった。
+- **Bugs found**：なし。前回P2の初期表示修正も開発用起動回帰で維持されている。
+- **Regression risks**：追加の必須修正なし。公開用処理は1か所のフラグ置換へ限定され、guard欠落時は生成を止める。13ファイルはソースとbyte一致、game.jsは指定の1置換以外byte一致を確認するため、公開向け変換の変更を検出できる。初回の失敗から、ブラウザ検証は拡張機能・同期のない専用環境で行い、ページ初期化失敗をゲームの結論と混同しないことが必要。
+- **Browser/save/i18n concerns**：上記Edgeで公開版の全URL条件でもdebug保存抑制に入らず、装備補正／選択・成績・未知フィールドと独立言語設定を通常どおり保存することを確認。debug UIのhiddenだけに依存した保護ではなく、API／ハンドラの不在と有効値による実行試行も確認した。保存拒否の確認はVMに限る。初回ブラウザ失敗と再実行PASSは別の記録として残した。
+- **Untested areas**：実itch.ioへのアップロード／iframe上の実行、Chrome／Firefox／Safari、headedの物理入力・OSフォーカス／実タブ切替、ブラウザ設定による実保存拒否、公開版の自然な長時間プレイ／勝利、音の聴感は今回未検証。公開ブラウザ検証は既存描画コールバックを捕捉して通常戦闘を進めるfixtureとCDP入力を使い、test APIやdebugヘルパーを使っていないが、人間プレイではない。Producerの既存10項目PASSは開発用UIの報告として保持し、実itch確認へ流用しない。
+- **Required tests**：追加Scopeに対する必須ローカル自動検証の不足なし。実itch環境の確認は公開作業が別途承認された際の確認項目として残す。ホスト依存の有効化処理がないことは今回のソース・生成物監査で確認済み。
+- **Release recommendation：技術面で進行可**。今回の公開ZIP無効化について独立QAは完了。Producerの最終判断・Sprint全体のDone記録、mainへのmerge／push／tag／外部公開は本レビューの権限で実施・承認しない。
+- **証拠・Git状態**：新規証拠は [今回の公開ZIP独立QA領域](../work/qa-public-modes-20261006/) の `test.txt`、`packaging.txt`、今回のZIP（`package-source/dist/`）と展開版（`unpacked/`）、初回の `test-public-package.txt`／`test-debug-browser.txt`／`test-public.txt`／`test-i18n-browser.txt`。再実行PASSは `attempt2/` 内の同名ログ、`generated/work/public-package-browser/report.json`／PNG、`generated/work/debug-browser/report.json`／PNG、`browser-targets.json`。検証JSON・画像の出力だけを新規領域へ振り向け、既存QA／Implementer証拠・ZIPを保護した。追跡変更は本Review Resultsへの追記のみ、未ステージ・未コミット。branch・HEAD・worktree構成は開始時と同じ。コード／テストの修正・merge・push・tag・外部公開は行っていない。
+- **追記後確認**：`git diff --check`、本計画／READMEのローカルリンク43件、正本／生成コピー14ファイルのhash不変、展開13ファイルの正本一致とgame.jsの正確な公開変換、既存証拠3716ファイルのhash維持、本計画の追記以外の不変を確認しPASS（`final-check.txt`）。今回起動した専用ブラウザとHTTPサーバーは終了した。
+
 ## Decisions
 
 - Producer（実プレイ報告、2026-10-06）：提示された10項目はすべてPASS。目的の場面をすぐ用意できた。強化プルダウンの理解しづらさは開発者向けとして許容。itch.io上でデバッグモードが使えないことを条件に問題なし。
