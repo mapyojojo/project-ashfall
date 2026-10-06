@@ -6,7 +6,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 $projectRoot = [IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot))
 $buildScript = Join-Path $projectRoot 'scripts/build-itch.ps1'
 $fixtureRoot = Join-Path $projectRoot ('work/itch-build-test-' + [Guid]::NewGuid().ToString('N'))
-$expected = @('index.html','style.css','version.js','storage.js','i18n/ja.js','i18n/en.js','i18n.js','upgrades.js','relics.js','audio.js','ui.js','input.js','game.js')
+$expected = @('index.html','style.css','version.js','storage.js','i18n/ja.js','i18n/en.js','i18n.js','upgrades.js','relics.js','audio.js','ui.js','input.js','debug-ui.js','game.js')
 $version = [regex]::Match([IO.File]::ReadAllText((Join-Path $projectRoot 'version.js')), 'version\s*:\s*[''"]([^''"]+)[''"]').Groups[1].Value
 $passed = 0
 
@@ -54,7 +54,7 @@ try {
     Assert-That ($result.ExitCode -eq 0) $result.Output
     $zip = Join-Path $projectRoot "dist/project-ashfall-v$version-itch.zip"
     Assert-Archive $zip $projectRoot $expected
-    Pass 'current version, exact 13 runtime files, root entry, content hashes and no development files'
+    Pass 'current version, exact 14 runtime files, root entry, content hashes and no development files'
 
     # Exercise an existing output and independence from the caller's working directory.
     $result = Invoke-Build $buildScript $fixtureRoot

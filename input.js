@@ -6,6 +6,7 @@
   let fullscreenActive=!!document.fullscreenElement;
   const playingKeyCodes=new Set(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','KeyF','KeyP','Digit1','Digit2','Digit3']);
   addEventListener('keydown',e=>{
+    if(getState()==='debug')return;
     if(playingKeyCodes.has(e.code))e.preventDefault();
     if(e.repeat)return;
     if(e.code==='KeyM'){toggleSound();return;}

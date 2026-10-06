@@ -26,7 +26,7 @@ test('offline entry uses the shared release version without fetching metadata', 
   const a = engine(), html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   assert.equal(a.elements.get('versionLabel').textContent, `v${version}`);
   const scripts = [...html.matchAll(/<script src="([^"]+)"/g)].map(m => m[1]);
-  assert.deepEqual(scripts, ['version.js','storage.js','i18n/ja.js','i18n/en.js','i18n.js','upgrades.js','relics.js','audio.js','ui.js','input.js','game.js']);
+  assert.deepEqual(scripts, ['version.js','storage.js','i18n/ja.js','i18n/en.js','i18n.js','upgrades.js','relics.js','audio.js','ui.js','input.js','debug-ui.js','game.js']);
   for (const file of scripts) assert.ok(fs.existsSync(path.join(root, file)));
 });
 let source, catalogSource;

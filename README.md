@@ -92,6 +92,24 @@ Windows PowerShell 5.1以降で、リポジトリのルートから実行しま�
 
 ソースコードはGitHubで参照目的で公開する方針です。**現時点ではオープンソースライセンスを設定していません。** 再利用・改変・再配布・商用利用などの許諾方針は今後検討します。初回公開時はLICENSEファイルを追加せず、将来のライセンス設定は未定です。決定事項とクレジットの確認事項は [ライセンスとクレジットの準備](docs/V0.7-LICENSE-AND-CREDITS.md) に記録しています。
 
+## 開発者向けデバッグ / Developer debug
+
+ブラウザ版のURLに `?debug` を付けます。HTTPなら `http://localhost:4173/?debug`、オフラインならブラウザのアドレス欄で `file:///D:/.../index.html?debug` のように指定してください。通常起動には入口も操作もありません。タイトル・ラン・結果の右上に「開発デバッグ」と無敵状態を表示します。自動検証用の `?test` APIとは別の機能です。
+
+ラン開始後、右上の「デバッグを開く」をクリックします。戦闘は停止します。閉じてもポーズを維持し、Pか「戦闘へ戻る」で再開します。パネル内のキーはゲームへ伝わりません。Escでもパネルを閉じられます（全画面中はブラウザの退出を優先）。強化カード選択中、結果、ランなしでは操作できず、理由を表示します。
+
+- **強化**：全23種から選び、1ランクずつ付与。通常の上限・前提・排他条件を守ります。連環縫いは先に返し縫いを付与してください。尽きない残火には取得可能な通常強化の最大ランクが必要です。XP・レベル・保留カードを消費せず、取得数とHUD／ビルドへ反映します。
+- **経過時刻**：正の秒数だけ進め、上限は最終ボス出現時刻の12:00。飛ばした移動・攻撃・被弾・XP・回復・クールダウンは再現しません。再開後に現在時刻で出現判定を行い、中間のwaveを全部再演しません。時刻変更だけでは勝利や報酬を確定しません。
+- **ボス**：守護者か最終ボスを呼び出します。生存中のボス類がいれば拒否します。手動の守護者は次の予定枠を消費し、生存中に時刻を飛ばしても守護者を重ねません。最終ボスは通常と同じ移行（既存敵・敵弾・地面攻撃の整理）と撃破終了を使います。呼出しで時計は進みません。
+- **敵**：ボス類を除く全6種を、1回1〜25体、生存敵の合計100体まで追加できます。現在時刻の能力を使い、自機の周辺160〜230の距離をアリーナ内へ収めて配置します。100体はデバッグ追加の上限で、戦闘中の通常生成・分裂等のルールは維持します。
+- **無敵**：ON中は敵接触・敵弾・地面攻撃によるHP減少を防ぎます。移動・射撃・灰縫い・回復は通常どおりです。OFFで通常の被弾へ戻り、新ラン・リトライではOFFになります。
+
+デバッグ起動中の成績・残火印・解放・装備変更はセッション内だけです。開始、結果、リトライ、タイトル復帰、装備補正を含め、通常metaへ書き戻しません。再読込ではデバッグの取得強化・設定・成果を持ち越しません。言語設定だけは通常どおり保存します。通常ランへ戻すには、URLから `debug` を外して再読込してください。デバッグの勝利や強さは通常のバランス評価と区別してください。
+
+Append `?debug` to the HTTP or offline file URL. Start a run and click **Open debug panel**. Combat stops; closing leaves the run paused. Resume with P or the usual resume button. The panel grants one upgrade rank with normal prerequisites and exclusions, advances elapsed time only (up to 12:00), summons an existing guardian/final boss, spawns 1–25 regular enemies per action (100 living enemies total), and toggles invincibility. Skipped combat and cooldowns are not simulated. Scheduled spawns are checked after resuming; manual guardians occupy the next scheduled slot, and the final boss uses the normal encounter transition. Invincibility resets on a new run/retry. Records, sigils, unlocks and loadout changes stay in this session; language preferences still persist. Reload without `debug` for a normal run. The `?test` automation API is separate.
+
+自己確認：`npm test` にデバッグ境界10件を含みます。実ブラウザは専用CDPプロファイルで `npm run test:debug:browser` を実行します。HTTP／file、日英、1440×900／1024×640／640×480のパネル、実キー／クリック、保存・ボス遷移を確認する手順です。接続先は `ASHFALL_CDP_PORT`（既定9223）。展開したZIPも確認する場合は `ASHFALL_DEBUG_PACKAGED_DIR` に展開先を指定します。新規証拠は `work/debug-browser/` に出力します。ブラウザ準備は [既存の手順](docs/V0.8-I18N-VALIDATION.md#ブラウザ検証の再実行) を参照。今回の実行結果・未確認事項は [現在のスプリント](plans/current-sprint.md) に記録しています。
+
 ## 開発・公開準備の資料
 
 - [AI開発の共通ルールと役割・ワークフロー](AGENTS.md)

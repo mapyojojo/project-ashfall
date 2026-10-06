@@ -6,6 +6,8 @@
   const TAU = Math.PI * 2, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
   const ARENA = 1560, HALF = ARENA / 2, END_TIME = 720;
+  const debugEnabled = new URLSearchParams(location.search).has('debug');
+  let debugUI = null, debugInvincible = false;
   let W = 1280, H = 720, dpr = 1, state = 'title', run = null, last = 0, ambient = 0;
   let seed = 0, frame = 0;
   const {t}=globalThis.AshfallI18n;
@@ -34,8 +36,8 @@
       else await document.documentElement.requestFullscreen?.();
     } catch { /* A denied or unavailable browser action leaves the current screen intact. */ }
   }
-  function screen(...args) { return ui.screen(...args); }
-  function saveMeta() { globalThis.AshfallStorage.saveMeta(meta); }
+  function screen(...args) { const result=ui.screen(...args);debugUI?.refresh();return result; }
+  function saveMeta() { if(!debugEnabled)globalThis.AshfallStorage.saveMeta(meta); }
   function titleRecord() {
     meta.relic = clamp(Number(meta.relic) || 0, 0, 3);
     if (relics[meta.relic].retired || meta.marks < relics[meta.relic].need) { meta.relic = 0; saveMeta(); }
@@ -59,6 +61,7 @@
       xp: 0, level: 1, xpNeed: 14, autoFire: true, upgrades: {}, walk: 0 };
   }
   function start() {
+    debugInvincible = false;
     initAudio(); keys.clear(); mouse.down = false;
     seed = ((Date.now() ^ 0x6d2b79f5) >>> 0) || 1;
     run = { time: 0, player: newPlayer(), enemies: [], bullets: [], hostile: [], orbs: [],
@@ -119,12 +122,13 @@
   }
   function chooseUpgrade(index) {
     if(state!=='upgrade' || !run.cards[index])return;
-    const p=run.player,u=run.cards[index]; if(!eligible(u,p)||(p.upgrades[u.id]||0)>=u.max)return;u.apply(p);p.upgrades[u.id]=(p.upgrades[u.id]||0)+1;
-    run.upgradesTaken++;run.pending--;state='playing';screen(null);keys.clear();
+    const p=run.player,u=run.cards[index]; if(!eligible(u,p)||(p.upgrades[u.id]||0)>=u.max)return;grantUpgrade(u);
+    run.pending--;state='playing';screen(null);keys.clear();
     announce(`${u.name} / ${upgradeGain(u.id)}`,3);floating(p.x,p.y-55,u.name,'#96ead8');
     updateBuild(); updateHud();
     if(run.pending>0)rollUpgrades();
   }
+  function grantUpgrade(u) { const p=run.player;u.apply(p);p.upgrades[u.id]=(p.upgrades[u.id]||0)+1;run.upgradesTaken++; }
   function addXp(n) {
     const p=run.player;p.xp+=n;
     while(p.xp>=p.xpNeed) {
@@ -201,6 +205,7 @@
     for(const h of run.hazards)if(h.timer>0&&segmentDistance(h.x,h.y,ax,ay,bx,by)<h.r+p.r)l.hazards.add(h);
   }
   function hurtPlayer(dmg) {
+    if(debugEnabled&&debugInvincible)return;
     const p=run.player;if(p.invuln>0||p.dashTime>0)return;
     p.hp=Math.max(0,p.hp-dmg*(.5+.5*clamp((run.time-120)/120,0,1)));p.invuln=.85;run.flash=.2;run.shake=Math.max(run.shake,7);
     particle(p.x,p.y,'#f97964',12,140);tone(90,.16,'sawtooth',.065,.5);
@@ -247,11 +252,14 @@
       ash:0,ashLife:0,seedCooldown:0,seedFlash:0,spreadCooldown:0,stitchHold:0,wake:0};
     run.enemies.push(e);if(type==='boss'||type==='elite')run.boss=e;return e;
   }
+  function spawnFinalBoss() {
+    run.finalSpawned=true;run.enemies.forEach(e=>e.dead=true);run.hostile=[];run.hazards=[];spawnEnemy('boss',0,-280);announce(t('notice.furnace'),5);tone(80,.8,'sawtooth',.1,1.3);
+  }
   function spawnWave(dt) {
     if(!run.onboarding.disabled&&run.onboarding.firstKill===null&&run.time<20)return;
-    if(run.time>=END_TIME&&!run.finalSpawned){run.finalSpawned=true;run.enemies.forEach(e=>e.dead=true);run.hostile=[];run.hazards=[];spawnEnemy('boss',0,-280);announce(t('notice.furnace'),5);tone(80,.8,'sawtooth',.1,1.3);}
+    if(run.time>=END_TIME&&!run.finalSpawned)spawnFinalBoss();
     const wave=Math.min(3,Math.floor(run.time/180));
-    if(wave>run.eliteWave&&!run.finalSpawned){run.eliteWave=wave;spawnEnemy('elite');announce(t('notice.guardian'),4);}
+    if(wave>run.eliteWave&&!run.finalSpawned){run.eliteWave=wave;if(!debugEnabled||!liveBoss()){spawnEnemy('elite');announce(t('notice.guardian'),4);}}
     if(run.breather>0)return;
     run.spawnTimer-=dt;
     const maxEnemies=run.finalSpawned?35:run.time<180?45:75;
@@ -762,6 +770,70 @@
     if(run&&run.hitStop>0&&state==='playing')run.hitStop=Math.max(0,run.hitStop-dt);else update(dt);
     if(run)drawGame();else drawTitle();requestAnimationFrame(loop);
   }
+  function liveBoss() { return run.enemies.some(e=>!e.dead&&(e.type==='elite'||e.type==='boss')); }
+  const DEBUG_BATCH_LIMIT=25, DEBUG_ENEMY_LIMIT=100;
+  function debugReason() {
+    if(!run)return 'debug.noRun';
+    if(run.ended)return 'debug.ended';
+    if(run.pending>0||state==='upgrade')return 'debug.pending';
+    if(state!=='debug')return 'debug.pauseFirst';
+    return null;
+  }
+  function debugSnapshot() {
+    const p=run?.player;
+    return {open:state==='debug',canOpen:!!run&&!run.ended&&['playing','paused'].includes(state),reason:debugReason(),time:timeText(run?.time||0),invincible:debugInvincible,
+      batchLimit:DEBUG_BATCH_LIMIT,enemyLimit:DEBUG_ENEMY_LIMIT,
+      enemies:Object.keys(TYPES).filter(id=>!['elite','boss'].includes(id)),bosses:['elite','boss'],
+      upgrades:UPGRADES.map(u=>{const rank=p?.upgrades[u.id]||0;
+        const reason=!p?null:rank>=u.max?'debug.max':u.excludes&&p.upgrades[u.excludes]?'debug.excludes':!eligible(u,p)?'debug.requires':null;
+        return {id:u.id,name:u.name,rank,max:u.max,desc:u.desc,effect:u.stages[rank]||u.gain,reason,params:{name:UPGRADES.find(v=>v.id===u.excludes)?.name||''}};
+      })};
+  }
+  function clearDebugInput() {keys.clear();mouse.down=false;if(run)run.leapRequested=false;last=performance.now();}
+  function openDebug() {
+    if(!debugEnabled||!run||run.ended||!['playing','paused'].includes(state))return;
+    clearDebugInput();state='debug';screen(null);$('debugUpgrade').focus?.({preventScroll:true});$('debugPanel').querySelector?.('.debug-panel')?.scrollTo(0,0);
+  }
+  function closeDebug() {
+    if(!debugEnabled||state!=='debug')return;
+    clearDebugInput();state='paused';screen('pause');$('resumeButton').focus?.();
+  }
+  function debugAct(action,value) {
+    if(!debugEnabled)return {key:'debug.disabled'};
+    const reason=debugReason();if(reason)return {key:reason};
+    const invalid=()=>({key:'debug.invalid'});
+    if(action==='grant') {
+      const u=UPGRADES.find(u=>u.id===value);if(!u)return invalid();
+      const rule=debugSnapshot().upgrades.find(v=>v.id===value);if(rule.reason)return {key:rule.reason,params:rule.params};
+      grantUpgrade(u);updateBuild();updateHud();
+    } else if(action==='advance') {
+      const seconds=typeof value==='number'?value:typeof value==='string'&&value.trim()?Number(value):NaN;
+      if(!Number.isFinite(seconds)||seconds<=0)return invalid();
+      if(run.time>=END_TIME)return {key:'debug.timeMax'};
+      run.time=Math.min(END_TIME,run.time+seconds);updateHud();
+    } else if(action==='boss') {
+      if(!['elite','boss'].includes(value))return invalid();
+      if(liveBoss())return {key:'debug.bossAlive'};
+      if(run.finalSpawned)return {key:'debug.finalStarted'};
+      if(value==='boss')spawnFinalBoss();
+      else {
+        // A manual guardian occupies the next scheduled slot; time itself is unchanged.
+        run.eliteWave=Math.max(run.eliteWave,Math.min(3,Math.floor(run.time/180)+1));
+        const p=run.player;spawnEnemy('elite',clamp(p.x+220,-HALF+60,HALF-60),clamp(p.y-120,-HALF+60,HALF-60));announce(t('notice.guardian'),4);
+      }
+      updateHud();
+    } else if(action==='enemy') {
+      if(!value||!Object.hasOwn(TYPES,value.type)||['elite','boss'].includes(value.type))return invalid();
+      const count=typeof value.count==='number'?value.count:typeof value.count==='string'&&value.count.trim()?Number(value.count):NaN;
+      if(!Number.isInteger(count)||count<1||count>DEBUG_BATCH_LIMIT)return invalid();
+      if(run.enemies.filter(e=>!e.dead).length+count>DEBUG_ENEMY_LIMIT)return {key:'debug.enemyMax',params:{total:DEBUG_ENEMY_LIMIT}};
+      const p=run.player,margin=TYPES[value.type].r+8;
+      for(let i=0;i<count;i++){const angle=i/count*TAU+p.aim,radius=160+(i%3)*35;spawnEnemy(value.type,clamp(p.x+Math.cos(angle)*radius,-HALF+margin,HALF-margin),clamp(p.y+Math.sin(angle)*radius,-HALF+margin,HALF-margin));}
+    } else if(action==='invincible')debugInvincible=!debugInvincible;
+    else return invalid();
+    debugUI?.refresh();return {key:'debug.applied'};
+  }
+  if(debugEnabled)debugUI=globalThis.AshfallDebugUI.create({snapshot:debugSnapshot,open:openDebug,close:closeDebug,act:debugAct});
   globalThis.AshfallInput.install({canvas,keys,mouse,getState:()=>state,getRun:()=>run,pause,chooseUpgrade,toggleSound,initAudio,announce,
     closeOverlay(){state=state==='relics'?'title':run?'paused':'title';screen(state==='paused'?'pause':'title');},resetClock(){last=performance.now();},updateFullscreenLabels});
   $('startButton').onclick=start;$('restartButton').onclick=start;$('titleButton').onclick=goTitle;$('quitButton').onclick=goTitle;
@@ -771,10 +843,11 @@
   $('relicButton').onclick=showRelics;$('closeRelics').onclick=()=>{state='title';screen('title');};
   $('versionLabel').textContent=`v${globalThis.AshfallRelease.version}`;
   $('languageJa').onclick=()=>globalThis.AshfallI18n.setLanguage('ja');$('languageEn').onclick=()=>globalThis.AshfallI18n.setLanguage('en');
-  globalThis.AshfallI18n.subscribe(()=>ui.refresh());
+  globalThis.AshfallI18n.subscribe(()=>{ui.refresh();debugUI?.refresh();});
   titleRecord();ui.refresh();requestAnimationFrame(loop);
   // Explicit test mode exposes mechanics for deterministic verification, never used in normal play.
   if(new URLSearchParams(location.search).has('test'))window.AshfallTest={
+    debug:debugEnabled?{open:openDebug,close:closeDebug,act:debugAct,snapshot:debugSnapshot}:undefined,
     start,update,spawnEnemy,hurtEnemy,hurtPlayer,startDash,endDash,seedEnemy,predictLeap,stitchDamage,addXp,chooseUpgrade,rollUpgrades,finish,goTitle,pause,resume,
     segmentDistance,UPGRADES,TYPES,keys,mouse,drawGame,drawTitle,updateHud,wardSpec,denseSpec,pressureMultiplier,lineDamage,feedbackSpec,blastSound,stitchNodeSound,frontCrossing,weight,eligible,scatterShards,assistedAngle,showRelics,selectRelic,showStitchHelp,upgradeCard,
     get run(){return run;},get state(){return state;},get meta(){return meta;},get audioState(){return sfx.state;},seed(v){seed=v||1;},
