@@ -24,3 +24,16 @@ html[lang="en"] #announcement{letter-spacing:1px;font-size:19px;padding:0 24px}
 html[lang="en"] .panel h2{letter-spacing:.5px}
 html[lang="en"] .title-aside{max-width:350px;margin-left:26px}
 @media(max-height:700px){.language-choice{margin-bottom:12px}.language-choice button{padding:4px 10px}html[lang="en"] .tagline{font-size:19px}}
+/* The developer entry is populated only for explicit ?debug startup. */
+#debugStatus { position:fixed; right:16px; top:96px; z-index:12; display:flex; flex-direction:column; align-items:flex-end; gap:4px; max-width:260px; pointer-events:none; }
+#debugBadge { background:#182b31; color:#b9eadf; padding:5px 9px; font-size:12px; }
+#debugOpen { pointer-events:auto; padding:7px 12px; font-size:13px; }
+#debugAvailability { color:#c7d2d2; background:#10171bdd; font-size:11px; }
+#debugAvailability:empty { display:none; }
+#debugPanel { z-index:20; }
+.debug-panel { width:min(580px,calc(100vw - 32px)); max-height:calc(100vh - 32px); overflow:auto; padding:24px; }
+.debug-panel label { display:block; margin-top:16px; font-weight:bold; }
+.debug-panel select,.debug-panel input { width:100%; min-width:0; padding:9px; color:#edf6f2; background:#18252c; border:1px solid #496064; font:inherit; }
+.debug-panel p { overflow-wrap:anywhere; margin:8px 0; font-size:13px; }
+.debug-panel button { width:100%; margin-top:8px; }
+#debugMessage { color:#ffcb98; min-height:20px; }

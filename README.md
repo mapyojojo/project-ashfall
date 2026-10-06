@@ -4,7 +4,7 @@
 
 カーソルで敵を狙い、灰紋のある敵を直線の経路へまとめて縫います。青い残火を集めて強化を選び、群れに広げる「拡散」、少数に積む「濃縮」、何度も縫う「連続」を組み合わせて育てます。3・6・9分に番人、12分後に最終ボスの炉心が登場。1ランの目安は約12〜16分です。
 
-現在のバージョンは **v0.8.0**、**Japanese / English** 対応の開発中の試作版です。バージョンはタイトル右下に表示され、[version.js](version.js)で管理しています。
+現在のバージョンは **v0.8.1**、**Japanese / English** 対応の開発中の試作版です。バージョンはタイトル右下に表示され、[version.js](version.js)で管理しています。
 
 ![English title screen](docs/screenshots/v0.8.0-en-1440-title.png)
 
@@ -28,9 +28,13 @@ Windows PowerShell 5.1以降で、リポジトリのルートから実行しま�
 
 `version.js` の版番号を使い、`dist/project-ashfall-v<version>-itch.zip` を生成します。`index.html` がZIPルートに入り、HTMLのローカル参照とCSSのimport/urlから必要な実行時ファイルを集めます。日英辞書も含まれ、開発文書・テスト・検証JSON・サーバーは同梱しません。生成内容を検証してから同名ZIPを置き換えます。`dist/` はGit管理対象外です。
 
+公開ZIPの `game.js` は内部の開発用フラグだけを `false` に固定します。`?debug`、`?test`、両方を指定してもデバッグUI・5操作・テストAPIは有効にならず、通常のランと保存を使います。itch.io・ローカルHTTP・直接fileで共通です。正本ソースは変更しません。ほかのruntime fileはソースとbyte一致、`game.js` はこの1か所の変換後のbytesと一致することを検証します。必要なフラグ・両モードの入口ガード・game.js同梱が欠けた場合は生成を失敗させ、既存ZIPを保持します。
+
+Public ZIPs disable both developer modes regardless of URL parameters, including `?debug`, `?test` and their combination. This applies on itch.io, local HTTP and offline file URLs. Gameplay and normal saving remain available; development source files retain both modes.
+
 生成後に出力フォルダを開く場合は `.\scripts\build-itch.ps1 -OpenFolder` を使います。実行ポリシーで拒否される環境では `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-itch.ps1` で、この実行だけ許可できます。展開して `index.html` を開けば、ローカルでも起動できます。itch.ioへのアップロード・公開は手動です。
 
-配布スクリプトの回帰検証は `powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\build-itch.ps1`。構成・バージョン・置き換え・欠落ファイル時の動作を確認します。
+配布スクリプトの回帰検証は `powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\build-itch.ps1`。構成・バージョン・公開用変換・ソース不変・置き換え・必要なファイル／ガード欠落時の動作を確認します。
 
 ## 操作
 
@@ -91,6 +95,34 @@ Windows PowerShell 5.1以降で、リポジトリのルートから実行しま�
 描画はCanvas、効果音はWeb Audioで生成します。実行時の外部ライブラリ・配布素材・音源への依存はありません。詳細は [CREDITS.md](CREDITS.md) を参照してください。
 
 ソースコードはGitHubで参照目的で公開する方針です。**現時点ではオープンソースライセンスを設定していません。** 再利用・改変・再配布・商用利用などの許諾方針は今後検討します。初回公開時はLICENSEファイルを追加せず、将来のライセンス設定は未定です。決定事項とクレジットの確認事項は [ライセンスとクレジットの準備](docs/V0.7-LICENSE-AND-CREDITS.md) に記録しています。
+
+## 開発者向けデバッグ / Developer debug
+
+開発用ソースのブラウザ版のURLに `?debug` を付けます。HTTPなら `http://localhost:4173/?debug`、オフラインならブラウザのアドレス欄で `file:///D:/.../index.html?debug` のように指定してください。公開ZIPでは両方の開発用モードを無効に固定するため、この操作は利用できません。通常起動には入口も操作もありません。タイトル・ラン・結果の右上に「開発デバッグ」と無敵状態を表示します。自動検証用の `?test` APIとは別の機能です。
+
+ラン開始後、右上の「デバッグを開く」をクリックします。戦闘は停止します。閉じてもポーズを維持し、Pか「戦闘へ戻る」で再開します。パネル内のキーはゲームへ伝わりません。Escでもパネルを閉じられます（全画面中はブラウザの退出を優先）。強化カード選択中、結果、ランなしでは操作できず、理由を表示します。
+
+- **強化**：全23種から選び、1ランクずつ付与。通常の上限・前提・排他条件を守ります。連環縫いは先に返し縫いを付与してください。尽きない残火には取得可能な通常強化の最大ランクが必要です。XP・レベル・保留カードを消費せず、取得数とHUD／ビルドへ反映します。
+- **経過時刻**：正の秒数だけ進め、上限は最終ボス出現時刻の12:00。飛ばした移動・攻撃・被弾・XP・回復・クールダウンは再現しません。再開後に現在時刻で出現判定を行い、中間のwaveを全部再演しません。時刻変更だけでは勝利や報酬を確定しません。
+- **ボス**：守護者か最終ボスを呼び出します。生存中のボス類がいれば拒否します。手動の守護者は次の予定枠を消費し、生存中に時刻を飛ばしても守護者を重ねません。最終ボスは通常と同じ移行（既存敵・敵弾・地面攻撃の整理）と撃破終了を使います。呼出しで時計は進みません。
+- **敵**：ボス類を除く全6種を、1回1〜25体、生存敵の合計100体まで追加できます。現在時刻の能力を使い、自機の周辺160〜230の距離をアリーナ内へ収めて配置します。100体はデバッグ追加の上限で、戦闘中の通常生成・分裂等のルールは維持します。
+- **無敵**：ON中は敵接触・敵弾・地面攻撃によるHP減少を防ぎます。移動・射撃・灰縫い・回復は通常どおりです。OFFで通常の被弾へ戻り、新ラン・リトライではOFFになります。
+
+デバッグ起動中の成績・残火印・解放・装備変更はセッション内だけです。開始、結果、リトライ、タイトル復帰、装備補正を含め、通常metaへ書き戻しません。再読込ではデバッグの取得強化・設定・成果を持ち越しません。言語設定だけは通常どおり保存します。通常ランへ戻すには、URLから `debug` を外して再読込してください。デバッグの勝利や強さは通常のバランス評価と区別してください。
+
+Append `?debug` to the development source's HTTP or offline file URL. Public ZIPs disable both `debug` and `test`. Start a run and click **Open debug panel**. Combat stops; closing leaves the run paused. Resume with P or the usual resume button. The panel grants one upgrade rank with normal prerequisites and exclusions, advances elapsed time only (up to 12:00), summons an existing guardian/final boss, spawns 1–25 regular enemies per action (100 living enemies total), and toggles invincibility. Skipped combat and cooldowns are not simulated. Scheduled spawns are checked after resuming; manual guardians occupy the next scheduled slot, and the final boss uses the normal encounter transition. Invincibility resets on a new run/retry. Records, sigils, unlocks and loadout changes stay in this session; language preferences still persist. Reload without `debug` for a normal run. The `?test` automation API is separate.
+
+自己確認：`npm test` に開発用デバッグ境界10件と公開用モード検証11件を含みます。開発用ソースの実ブラウザは専用CDPプロファイルで `npm run test:debug:browser` を実行します。HTTP／file、日英、1440×900／1024×640／640×480のパネル、実キー／クリック、保存・ボス遷移を確認します。接続先は `ASHFALL_CDP_PORT`（既定9223）。新規証拠は `work/debug-browser/` に出力します。ブラウザ準備は [既存の手順](docs/V0.8-I18N-VALIDATION.md#ブラウザ検証の再実行) を参照。今回の実行結果・未確認事項は [現在のスプリント](plans/current-sprint.md) に記録しています。
+
+公開ZIPはリポジトリ内の新規フォルダ（例：`work/public-check/`）へ展開し、`npm start` と専用CDPブラウザを準備して、PowerShellで次を実行します。旧 `ASHFALL_DEBUG_PACKAGED_DIR` は使用しません。
+
+```powershell
+$env:ASHFALL_PUBLIC_DIR = 'work/public-check'
+npm run test:public:package
+Remove-Item Env:ASHFALL_PUBLIC_DIR
+```
+
+生成物そのもののHTTP／file × 通常／debug／test／test&debug × 日英の16条件で、test API不在、入口／5操作の無効化、通常ラン・保存・言語切替／再読込を確認します。両指定の条件では自然被弾による敗北・リトライとnative fullscreenも確認します。証拠は `work/public-package-browser/`。`ASHFALL_PUBLIC_DIR` を指定して `node tests/public-modes.cjs` を実行すると、展開版のVM検証もできます。テストは既存描画コールバックを捕捉して進めるfixtureとCDP入力を使います。人間の操作感・音の聴感の確認とは区別します。
 
 ## 開発・公開準備の資料
 

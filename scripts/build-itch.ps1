@@ -59,6 +59,28 @@ while ($pending.Count -gt 0) {
     }
 }
 
+# Change only the private development switch in the generated game.js, never the source.
+# Fail closed if either mode's guarded entry or the required runtime is missing.
+if (-not $files.Contains('game.js')) { throw 'Public mode gate requires game.js in the runtime files.' }
+$gameSource = [IO.File]::ReadAllBytes((Join-Path $projectRoot 'game.js'))
+$utf8 = [Text.UTF8Encoding]::new($false, $true)
+$gameText = $utf8.GetString($gameSource)
+$developmentSwitch = 'const DEVELOPMENT_MODES_ENABLED = true;'
+$requiredGates = @(
+    $developmentSwitch,
+    "const debugEnabled = DEVELOPMENT_MODES_ENABLED && new URLSearchParams(location.search).has('debug');",
+    "if(DEVELOPMENT_MODES_ENABLED && new URLSearchParams(location.search).has('test'))window.AshfallTest={"
+)
+foreach ($gate in $requiredGates) {
+    if ([regex]::Matches($gameText, [regex]::Escape($gate)).Count -ne 1) {
+        throw "Missing or ambiguous public mode gate: $gate"
+    }
+}
+$publicGame = $utf8.GetBytes($gameText.Replace($developmentSwitch, 'const DEVELOPMENT_MODES_ENABLED = false;'))
+$hash = [Security.Cryptography.SHA256]::Create()
+try { $publicGameHash = [BitConverter]::ToString($hash.ComputeHash($publicGame)).Replace('-', '') }
+finally { $hash.Dispose() }
+
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $dist = Join-Path $projectRoot 'dist'
@@ -69,6 +91,13 @@ try {
     $archive = [IO.Compression.ZipFile]::Open($temporaryZip, [IO.Compression.ZipArchiveMode]::Create)
     try {
         foreach ($relative in ($files | Sort-Object)) {
+            if ($relative -eq 'game.js') {
+                $entry = $archive.CreateEntry($relative, [IO.Compression.CompressionLevel]::Optimal)
+                $stream = $entry.Open()
+                try { $stream.Write($publicGame, 0, $publicGame.Length) }
+                finally { $stream.Dispose() }
+                continue
+            }
             [void][IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
                 $archive, (Join-Path $projectRoot $relative), $relative, [IO.Compression.CompressionLevel]::Optimal)
         }
@@ -86,7 +115,8 @@ try {
             $hash = [Security.Cryptography.SHA256]::Create()
             try { $actualHash = [BitConverter]::ToString($hash.ComputeHash($inputStream)) }
             finally { $hash.Dispose(); $inputStream.Dispose() }
-            $expectedHash = (Get-FileHash -LiteralPath (Join-Path $projectRoot $entry.FullName) -Algorithm SHA256).Hash
+            $expectedHash = if ($entry.FullName -eq 'game.js') { $publicGameHash }
+                else { (Get-FileHash -LiteralPath (Join-Path $projectRoot $entry.FullName) -Algorithm SHA256).Hash }
             if ($actualHash.Replace('-', '') -ne $expectedHash) { throw "ZIP content differs: $($entry.FullName)" }
         }
         $versionEntry = $archive.GetEntry('version.js')
@@ -106,6 +136,6 @@ try {
     if ([IO.File]::Exists($temporaryZip)) { [IO.File]::Delete($temporaryZip) }
 }
 
-Write-Host "Verified $($files.Count) runtime files; index.html is at the ZIP root; version $version."
+Write-Host "Verified $($files.Count) runtime files; development modes disabled; index.html is at the ZIP root; version $version."
 Write-Output $zipPath
 if ($OpenFolder) { Invoke-Item -LiteralPath $dist }

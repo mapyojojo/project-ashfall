@@ -42,6 +42,17 @@
   <section id="upgrade" class="screen overlay" hidden><div class="upgrade-panel"><span class="eyebrow accent">THE FIRE CHANGES YOU</span><h2 data-i18n="upgrade.title"></h2><p id="upgradeSub" class="muted"></p><div id="upgradeCards"></div><p class="muted keyboard-note" data-i18n="upgrade.controls"></p></div></section>
   <section id="pause" class="screen overlay" hidden><div class="panel"><span class="eyebrow accent">A MOMENT IN THE ASH</span><h2 data-i18n="pause.title"></h2><button id="resumeButton" class="primary" data-i18n="ui.resume"></button><button id="pauseSound" class="secondary"></button><button id="pauseFullscreen" class="secondary"></button><button id="pauseHelp" class="text-button" data-i18n="ui.help"></button><button id="quitButton" class="text-button" data-i18n="ui.quit"></button></div></section>
   <section id="result" class="screen overlay" hidden><div class="panel result-panel"><span class="eyebrow accent" id="resultEyebrow">THE FIRE FADES</span><h2 id="resultTitle"></h2><p id="resultCopy" class="muted"></p><div id="resultStats"></div><div id="resultBuild"></div><p class="muted" id="metaText"></p><button id="restartButton" class="primary" data-i18n-html="ui.retry"></button><button id="titleButton" class="text-button" data-i18n="ui.title"></button></div></section>
+  <aside id="debugStatus"><strong id="debugBadge" hidden></strong><button id="debugOpen" hidden></button><small id="debugAvailability"></small></aside>
+  <section id="debugPanel" class="screen overlay" role="dialog" aria-modal="true" aria-labelledby="debugTitle" hidden>
+    <div class="panel debug-panel">
+      <h2 id="debugTitle"></h2><p id="debugSessionHelp" class="muted"></p><p id="debugTime"></p>
+      <label id="debugUpgradeLabel" for="debugUpgrade"></label><select id="debugUpgrade"></select><p id="debugUpgradeDetail"></p><button id="debugGrant" class="secondary"></button>
+      <label id="debugSecondsLabel" for="debugSeconds"></label><input id="debugSeconds" type="number" min="0.01" step="any" value="60"><p id="debugTimeHelp" class="muted"></p><button id="debugAdvance" class="secondary"></button>
+      <label id="debugBossLabel" for="debugBoss"></label><select id="debugBoss"></select><button id="debugBossSpawn" class="secondary"></button>
+      <label id="debugEnemyLabel" for="debugEnemy"></label><select id="debugEnemy"></select><label id="debugCountLabel" for="debugCount"></label><input id="debugCount" type="number" min="1" step="1" value="3"><p id="debugLimits" class="muted"></p><button id="debugEnemySpawn" class="secondary"></button>
+      <button id="debugInvincible" class="secondary"></button><p id="debugMessage" role="status" aria-live="polite"></p><button id="debugClose" class="primary"></button>
+    </div>
+  </section>
   <script src="version.js"></script>
   <script src="storage.js"></script>
   <script src="i18n/ja.js"></script>
@@ -52,6 +63,7 @@
   <script src="audio.js"></script>
   <script src="ui.js"></script>
   <script src="input.js"></script>
+  <script src="debug-ui.js"></script>
   <script src="game.js"></script>
 </body>
 </html>

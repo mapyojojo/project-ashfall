@@ -8,7 +8,7 @@ test('both dictionaries have identical keys and interpolation names; all referen
   const params=text=>[...text.matchAll(/\{(\w+)\}/g)].map(m=>m[1]).sort();
   for(const key of Object.keys(ja)){assert.ok(ja[key]&&en[key],key);assert.deepEqual(params(ja[key]),params(en[key]),key);if(key!=='language.ja')assert.ok(!japanese.test(en[key]),key);}
   const root=path.resolve(__dirname,'..');
-  for(const file of ['index.html','game.js','ui.js','input.js','upgrades.js','relics.js']){
+  for(const file of ['index.html','game.js','ui.js','input.js','debug-ui.js','upgrades.js','relics.js']){
     const source=fs.readFileSync(path.join(root,file),'utf8');
     assert.ok(!japanese.test(source),file+' has no embedded Japanese copy');
     for(const match of source.matchAll(/(?:\bt\('([^']+)'(?=[,)])|data-i18n(?:-html|-title|-aria)?="([^"]+)")/g))assert.ok((match[1]||match[2]) in ja,match[1]||match[2]);
