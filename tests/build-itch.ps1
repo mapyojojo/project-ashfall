@@ -41,7 +41,19 @@ function Assert-Archive([string]$Zip, [string]$SourceRoot, [string[]]$Files) {
             $hash = [Security.Cryptography.SHA256]::Create()
             try { $actual = [BitConverter]::ToString($hash.ComputeHash($stream)).Replace('-', '') }
             finally { $hash.Dispose(); $stream.Dispose() }
-            $original = (Get-FileHash -LiteralPath (Join-Path $SourceRoot $entry.FullName) -Algorithm SHA256).Hash
+            if ($entry.FullName -eq 'game.js') {
+                # All bytes must match the source except this one required public switch.
+                $utf8 = [Text.UTF8Encoding]::new($false, $true)
+                $text = $utf8.GetString([IO.File]::ReadAllBytes((Join-Path $SourceRoot 'game.js')))
+                $switch = 'const DEVELOPMENT_MODES_ENABLED = true;'
+                Assert-That ([regex]::Matches($text, [regex]::Escape($switch)).Count -eq 1) 'Source development switch is missing or duplicated.'
+                $publicBytes = $utf8.GetBytes($text.Replace($switch, 'const DEVELOPMENT_MODES_ENABLED = false;'))
+                $hash = [Security.Cryptography.SHA256]::Create()
+                try { $original = [BitConverter]::ToString($hash.ComputeHash($publicBytes)).Replace('-', '') }
+                finally { $hash.Dispose() }
+            } else {
+                $original = (Get-FileHash -LiteralPath (Join-Path $SourceRoot $entry.FullName) -Algorithm SHA256).Hash
+            }
             Assert-That ($actual -eq $original) "Changed archive content: $($entry.FullName)"
         }
     } finally { $archive.Dispose() }
@@ -50,11 +62,13 @@ function Pass([string]$Name) { $script:passed++; Write-Host "PASS $Name" }
 
 try {
     [void][IO.Directory]::CreateDirectory($fixtureRoot)
+    $sourceHashes = @{}
+    foreach ($file in $expected) { $sourceHashes[$file] = (Get-FileHash -LiteralPath (Join-Path $projectRoot $file)).Hash }
     $result = Invoke-Build $buildScript $projectRoot
     Assert-That ($result.ExitCode -eq 0) $result.Output
     $zip = Join-Path $projectRoot "dist/project-ashfall-v$version-itch.zip"
     Assert-Archive $zip $projectRoot $expected
-    Pass 'current version, exact 14 runtime files, root entry, content hashes and no development files'
+    Pass 'current version, exact 14 runtime files, root entry, exact public game transformation and unchanged other runtime bytes'
 
     # Exercise an existing output and independence from the caller's working directory.
     $result = Invoke-Build $buildScript $fixtureRoot
@@ -98,6 +112,34 @@ try {
     Pass 'same-name replacement contains updated runtime bytes'
 
     $goodHash = (Get-FileHash -LiteralPath $fixtureZip).Hash
+    $gameFile = Join-Path $fixtureRoot 'game.js'
+    $originalGame = [IO.File]::ReadAllBytes($gameFile)
+    $gameText = [IO.File]::ReadAllText($gameFile)
+    $switch = 'const DEVELOPMENT_MODES_ENABLED = true;'
+    $mutations = @(
+        $gameText.Replace($switch, ''),
+        $gameText.Replace($switch, $switch + $switch),
+        $gameText.Replace("DEVELOPMENT_MODES_ENABLED && new URLSearchParams(location.search).has('debug')", "new URLSearchParams(location.search).has('debug')"),
+        $gameText.Replace("DEVELOPMENT_MODES_ENABLED && new URLSearchParams(location.search).has('test')", "new URLSearchParams(location.search).has('test')")
+    )
+    foreach ($mutation in $mutations) {
+        [IO.File]::WriteAllText($gameFile, $mutation)
+        $result = Invoke-Build $fixtureScript $projectRoot
+        Assert-That ($result.ExitCode -ne 0 -and $result.Output.Contains('public mode gate')) 'Missing or ambiguous production safeguard was accepted.'
+        Assert-That ((Get-FileHash -LiteralPath $fixtureZip).Hash -eq $goodHash) 'Invalid mode gate damaged the previous ZIP.'
+        Assert-That (@(Get-ChildItem -LiteralPath (Join-Path $fixtureRoot 'dist') -Force -Filter '*.tmp').Count -eq 0) 'Invalid mode gate left a temporary ZIP.'
+    }
+    [IO.File]::WriteAllBytes($gameFile, $originalGame)
+    Pass 'missing/duplicate development switch and unguarded debug/test each fail and preserve the previous ZIP'
+
+    $originalHtml = [IO.File]::ReadAllBytes($htmlFile)
+    [IO.File]::WriteAllText($htmlFile, [IO.File]::ReadAllText($htmlFile).Replace('<script src="game.js"></script>', ''))
+    $result = Invoke-Build $fixtureScript $projectRoot
+    Assert-That ($result.ExitCode -ne 0 -and $result.Output.Contains('Public mode gate requires game.js')) 'Omitted game runtime did not fail.'
+    Assert-That ((Get-FileHash -LiteralPath $fixtureZip).Hash -eq $goodHash) 'Omitted game damaged the previous ZIP.'
+    [IO.File]::WriteAllBytes($htmlFile, $originalHtml)
+    Pass 'missing game runtime fails before replacing the ZIP'
+
     [IO.File]::Delete((Join-Path $fixtureRoot 'audio.js'))
     $result = Invoke-Build $fixtureScript $projectRoot
     Assert-That ($result.ExitCode -ne 0 -and $result.Output.Contains('Missing runtime file: audio.js')) 'Missing runtime file did not fail clearly.'
@@ -111,6 +153,10 @@ try {
     Assert-That ($result.ExitCode -ne 0 -and $result.Output.Contains('leaves the project')) 'Reference outside the project was not rejected.'
     Assert-That ((Get-FileHash -LiteralPath $fixtureZip).Hash -eq $goodHash) 'Rejected reference damaged the existing ZIP.'
     Pass 'references outside the project are rejected before replacement'
+    foreach ($file in $expected) {
+        Assert-That ((Get-FileHash -LiteralPath (Join-Path $projectRoot $file)).Hash -eq $sourceHashes[$file]) "Build modified source: $file"
+    }
+    Pass 'all development runtime source bytes remain unchanged after builds'
 } finally {
     $workPrefix = [IO.Path]::GetFullPath((Join-Path $projectRoot 'work')) + [IO.Path]::DirectorySeparatorChar
     $resolvedFixture = [IO.Path]::GetFullPath($fixtureRoot)

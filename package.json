@@ -4,8 +4,9 @@
   "description": "Prime enemies with ash, leap through danger, detonate the stitch.",
   "scripts": {
     "start": "node server.js",
-    "test": "node tests/smoke.cjs && node tests/builds.cjs && node tests/feedback.cjs && node tests/stitch-timing.cjs && node tests/chain-parity.cjs && node tests/public-readiness.cjs && node tests/fullscreen-pause.cjs && node tests/i18n.cjs && node tests/v08-parity.cjs && node tests/debug.cjs",
+    "test": "node tests/smoke.cjs && node tests/builds.cjs && node tests/feedback.cjs && node tests/stitch-timing.cjs && node tests/chain-parity.cjs && node tests/public-readiness.cjs && node tests/fullscreen-pause.cjs && node tests/i18n.cjs && node tests/v08-parity.cjs && node tests/debug.cjs && node tests/public-modes.cjs",
     "test:debug:browser": "node tests/debug-browser.cjs",
+    "test:public:package": "node tests/public-package-browser.cjs",
     "test:balance": "node tests/balance.cjs",
     "test:browser": "node tests/browser-check.cjs",
     "test:feedback": "node tests/feedback-browser.cjs",

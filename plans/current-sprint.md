@@ -4,7 +4,7 @@
 
 in-progress
 
-開発用デバッグUIの実装・P2修正・修正後の独立QA再確認は完了。Producerは提示した実プレイ10項目をすべてPASSと報告し、目的のビルド／戦闘を待たずに用意できることを確認した。強化プルダウンの分かりづらさは開発者向けとして許容。ただし「itch.io上ではデバッグモードを使えないこと」が採用条件として追加された。現行公開ZIPにはdebug／testを有効にできる経路が残るため、公開配布物での開発用モード無効化を追加ScopeとしてImplementerへ引き継ぐ。追加対応・検証・独立QA待ちで、スプリント全体のdoneにはしない。mainへは統合していない。
+開発用デバッグUIの実装・P2修正・修正後の独立QA再確認は完了。Producerは提示した実プレイ10項目をすべてPASSと報告し、目的のビルド／戦闘を待たずに用意できることを確認した。強化プルダウンの分かりづらさは開発者向けとして許容。追加の採用条件「itch.io上ではデバッグモードを使えないこと」に対し、Implementerが公開ZIPのdebug／test無効化を実装し、新規ZIPのHTTP／file・日英16条件と関連回帰を自己検証した。追加差分の独立QA待ちで、スプリント全体のdoneにはしない。mainへは統合していない。
 
 計画作成時の記録（2026-10-06、Asia/Tokyo）：Producerが開発者向けデバッグUIの5機能を指定し、時間送りは経過時刻だけを進める方式と回答。DirectorがScopeをreadyとして引き継いだ。当時の依頼は計画記載までで実装は未着手だった。現在の実装・レビュー・Producer結果と追加Scopeは以下の最新記録を参照する。
 
@@ -79,7 +79,7 @@ Producerが指定した5機能をDirectorが以下の動作として具体化し
 - [x] 既存実装の通常モードの灰縫い・成長・結果・保存・入力・日英に回帰を検出せず、`npm test`と関連検証の結果／制限を記録した。追加の配布変更後は関係する回帰を再確認する。
 - [x] 既存実装の必要なブラウザ確認（通常／debug、HTTP／file、日英、入力・保存）、`npm run test:public`、`npm run test:i18n:browser`、`tests/build-itch.ps1` と展開後直接起動を独立QAが実行し記録した。公開用無効化の検証は下記の追加条件へ分離する。
 - [x] READMEの手順でProducerが開発用起動し、任意ビルド・敵／ボス・経過時刻・無敵を短時間で設定して戦闘確認できた。
-- [ ] 新規公開ZIPのHTTP／直接fileで、通常・debug・test・test&debug指定の全条件でデバッグUI／操作とテストAPIが無効で、通常ラン・保存・日英が動く。開発用ソースのdebug／testは引き続き動く。
+- [x] 新規公開ZIPのHTTP／直接fileで、通常・debug・test・test&debug指定の全条件でデバッグUI／操作とテストAPIが無効で、通常ラン・保存・日英が動く。開発用ソースのdebug／testは引き続き動く。追加ScopeのImplementer自己確認済み、独立QAは下項へ残す。
 - [ ] 公開ZIP生成の無効化処理・欠落時の失敗・生成物内容と挙動を検証し、`npm test`・配布検証・関連ブラウザ回帰を記録。追加差分の独立QAを完了した。
 - [ ] Required ReviewsとProducer Playtestの必要な工程が完了、または不要理由を記録済み。実装自己確認と独立QAを区別した。
 - [ ] 変更ファイル・実行環境・検証結果・未確認事項・branch／commit／worktree状態を報告した。
@@ -88,7 +88,7 @@ Producerが指定した5機能をDirectorが以下の動作として具体化し
 
 - Game Design Review：現Scopeでは原則不要。通常の戦闘・バランス・成長仕様を変更せず、開発用操作だけを追加するため。デバッグ結果を通常ランの面白さ・強弱の評価と混同しない。通常プレイの理解・操作感に変更が必要になった場合は、Scope拡大前に対象を限定して必要性を判断する。
 - QA / Engineering Review：必要、実装後に別会話・コンテキストで実施。基準コミット・差分・本計画・検証証拠を手動で渡し、[QA Guide](../docs/ai/REVIEW-GUIDE-QA.md)に沿って有効化条件・保存分離・状態遷移・入力・時間／ボス・上限・日英と通常モードの回帰を確認する。前SprintのQAや実装担当の自己確認で代替しない。
-- 現在の結果：5機能とP2修正の独立QA再確認は完了、重大な懸念なし。今回追加した公開ZIPの無効化は未実装・未レビューで、Implementer対応後に追加差分と新しい配布物を独立QAへ渡す。以前の展開ZIPでdebugが動くPASSは、新しい採用条件の証拠にしない。
+- 現在の結果：5機能とP2修正の独立QA再確認は完了、重大な懸念なし。今回追加した公開ZIPの無効化は実装・自己検証済み、独立レビューは未実施。追加差分と新しい配布物を独立QAへ渡す。以前の展開ZIPでdebugが動くPASSは、新しい採用条件の証拠にしない。
 
 ## Producer Playtest
 
@@ -146,6 +146,29 @@ Producerが指定した5機能をDirectorが以下の動作として具体化し
 - 現状確認：`game.js:9` はURLのdebug指定だけで有効化、末尾のtest指定で `AshfallTest` を公開する。[build-itch.ps1](../scripts/build-itch.ps1)はHTML参照から `debug-ui.js` を含むruntimeを無変更でZIPへ入れ、全ファイルの正本とのhash一致を検証している。既存独立QAはこの展開ZIPでdebugが動くことをPASSとしている。この構成では公開配布物での無効化を担保できない。今回の確認はソース／既存証拠の読取で、itch.io上の実行検証はしていない。
 - Directorは実装せず、追加の公開用生成・無効化・テスト／README更新をImplementerへ引き継ぐ。新しい配布物の対応と独立QAが残る。プルダウン改善、ポータブル版再開、アップロード・外部公開は実行しない。
 - 今回の変更は本currentのみ。開始branch `codex/developer-debug-ui`、HEAD `3a6c6d9092446fdfa3867155a6ec2504808b3bf2`、開始時は追跡ファイルclean、worktree登録追加なし。ローカルリンク23件、雛形と同じ15節の構成・文書整合、独立QA本文のSHA-256不変、`git diff --check`を確認しPASS。終了時は本currentのみ未ステージ・未コミット。コード変更・ゲームテスト・ZIP生成・commit／merge／push／公開は行っていない。
+
+### 公開ZIPでの開発用モード無効化（Implementer、2026-10-06、Asia/Tokyo）
+
+- 着手状態：`codex/developer-debug-ui`、HEAD `dc8feb1`（追加Scope承認記録）、追跡ファイルclean、登録worktreeは元リポジトリ1件。main基準は `fda91afc6024e3bad677a5874ded6200402530c9`。既存の独立QA原文・Producerの採否・検証証拠は保持した。
+- 実装：`game.js` のIIFE内にprivateな `DEVELOPMENT_MODES_ENABLED = true` を置き、debug有効化とtest API公開の両入口で参照する。正本ソースは従来どおり両モードを使える。`scripts/build-itch.ps1` はZIPへ書き込むgame.jsだけを `false` に変換し、ホスト・親ページ・URL・グローバル設定に依存せず公開モードを固定する。debug UIのcreate／イベント接続・5操作・無敵・debug保存抑制は有効にならず、test APIも公開しない。通常のmeta保存・言語設定・戦闘ロジックは維持する。手修正のゲームコピー・追加依存はない。
+- 配布の期待内容：同梱14ファイルのうち13ファイルは正本とbyte一致。game.jsだけは上記の `true` → `false` 1か所以外をbyte一致とし、実ZIPの全entryをSHA-256で検証してから置換する。必要な宣言の欠落／重複、debug／test入口ガードの欠落、game.js非同梱は生成FAIL。既存ZIPを保持し、正本ソースも変更しない。
+- テスト更新：既存debugブラウザの開発用HTTP／fileの全assert・5操作・保存・ボス・入力／全画面・JA／EN起動直後を維持した。公開ZIPでdebug可能だった3ケースは新しい独立の公開ZIPブラウザ16条件へ置き換え、単なるassert削除にはしていない。旧 `ASHFALL_DEBUG_PACKAGED_DIR` の指定は明示エラーにし、公開確認を `ASHFALL_PUBLIC_DIR` + `test:public:package` へ分けた。公開VM起動11件をnpm testへ追加し、READMEの日英説明と再実行手順を更新した。
+- 実行環境：Windows PowerShell、Node.js v22.23.1、専用headless Edge `154.0.4258.53` / CDP 9223、HTTP 4173。専用profileと新規成果物は `work/public-modes-off-20261006/`。元distを上書きせず、変更後のruntime・配布スクリプト／テストをhash一致の新規コピーへ移してZIPを生成・展開した。
+
+| 追加Scopeの自己検証 | 結果 |
+| --- | --- |
+| `npm test` | **PASS：190項目**。従来179項目を維持し、公開用モード11件を追加。通常戦闘／将来乱数・保存互換／拒否・日英・開発用debug10件を含む。 |
+| `tests/build-itch.ps1`（新規コピー上） | **PASS：9項目**。全entry・公開用変換のbytes・依存探索／version／置換、宣言欠落／重複・両入口のガード欠落・game.js非同梱・欠落ファイル／経路逸脱時のFAILと旧ZIP保持、全正本runtimeの不変を確認。 |
+| `ASHFALL_PUBLIC_DIR=展開先 node tests/public-modes.cjs` | **PASS：11項目**。実際の展開版を通常／debug／test／両指定×JA／ENで起動し、test APIとdebugハンドラ不在、通常保存／装備補正・開始／ポーズ／タイトル・言語保存を確認。開発用ソースの両モードも確認。 |
+| `npm run test:debug:browser` | **PASS：全7ケース、例外0、fullscreen=true**。開発用HTTP／file×JA／ENの起動直後4条件、日英×3サイズ×2方式の12パネル条件、既存の5操作・入力／保存・ボス／結果／リトライ・全画面の全ケース。 |
+| `ASHFALL_PUBLIC_DIR=展開先 npm run test:public:package` | **PASS：全16条件、例外0**。展開ZIPのHTTP／file×通常／debug／test／test&debug×JA／EN。操作前のAPI不在と入口／パネル／表示非公開、5操作のハンドラ不在と有効な値でのprogrammatic click無効、通常の装備補正／選択保存・新ラン／時計／ポーズ／再開・言語切替／再読込を確認。両指定4条件ではnative fullscreen／退出、通常戦闘による自然被弾／敗北・成績保存（未知フィールド維持）・リトライも確認。 |
+| `npm run test:public` / `npm run test:i18n:browser` | **PASS：9項目／5項目、例外0**。開発用ソースの通常画面／入力／保存／全画面、日英・全23強化・1440×900／1024×640、HTTP／fileの回帰。 |
+| 構文・diff・文書リンク・既存記録保護 | **PASS**。既存Review Results本文をそのまま保持し、既存QA／P2自己検証・dist／画像／追跡JSONの3716ファイルが検証前hashと一致。元runtimeと生成コピーの一致、展開13ファイルと変換game.jsの正確な一致を確認。 |
+
+- 証拠：[追加Scopeの検証領域](../work/public-modes-off-20261006/) の `test.txt`、`packaging.txt`、`test-packed-vm.txt`、`test-debug-browser.txt`、`test-public-package.txt`、`test-public.txt`、`test-i18n-browser.txt`、`runtime-hashes.json`、`final-check.txt`。新規ZIPは同領域の `packaging-source/dist/project-ashfall-v0.8.0-itch.zip`、展開先は `packaged/`。`generated/work/debug-browser/report.json`、`generated/work/public-package-browser/report.json` とPNGにブラウザ版・全条件・例外数を記録した。公開版のHTTP日英タイトル画像も目視確認した。
+- テスト作成時の失敗も保存：起動ボタンのinnerTextがCSSレイアウトで改行されたため、正確なtextContentを検証するよう修正。時計は181 frameで3秒を確定させる。全画面退出の遅延イベントでfixtureがポーズした件は、既存テストと同じく退出イベント完了を待ってから再開し、予期しないポーズをassertするようにした。ゲーム側の動作や既存assertを弱めて解消していない。最終版で全16条件を完走した。
+- 未確認・次の担当：本追加差分はImplementerの自己確認で、独立QAは未実施。新規ZIPと `dc8feb1` 以降の追加差分を独立QAへ渡す。実itch.ioアップロード／iframe上の確認、Chrome／Firefox／Safari、headedの物理入力・実OSフォーカス／タブ切替、音の聴感は未検証。公開テストは既存描画コールバックの捕捉とCDP入力を使い、test API／debugヘルパーを使わず通常戦闘を進めるfixtureで、自然な実時間の人間プレイや面白さの評価とは区別する。Producerの既存全項目PASSを追加配布条件の人間確認へ流用しない。
+- 変更対象：`game.js`、`scripts/build-itch.ps1`、`tests/build-itch.ps1`、`tests/harness.cjs`、`tests/public-modes.cjs`、`tests/debug-browser.cjs`、`tests/public-package-browser.cjs`、`package.json`、`README.md`、本計画の10ファイル。レビュー用コミットとして提出する。branchとworktree構成・main基準は維持し、merge／push／tag／外部公開は行わない。今回起動した専用ブラウザとHTTPサーバーは検証後に終了する。
 
 ## Review Results
 

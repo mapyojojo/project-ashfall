@@ -20,7 +20,7 @@ const root=path.resolve(__dirname,'..'),out=path.join(root,'work/debug-browser')
   await send('Runtime.enable');await send('Page.enable');
   freezeScript=(await send('Page.addScriptToEvaluateOnNewDocument',{source:'window.requestAnimationFrame=()=>0;'})).identifier;
   const bases=['http://localhost:4173/','file:///'+root.replaceAll('\\','/')+'/index.html'];
-  if(process.env.ASHFALL_DEBUG_PACKAGED_DIR)bases.push('file:///'+path.resolve(process.env.ASHFALL_DEBUG_PACKAGED_DIR).replaceAll('\\','/')+'/index.html');
+  assert.ok(!process.env.ASHFALL_DEBUG_PACKAGED_DIR,'Public ZIPs disable debug/test. Use test:public:package with ASHFALL_PUBLIC_DIR instead.');
   for(const [mode,base] of bases.entries()){
    await navigate(base+'?test');
    const bytes=JSON.stringify({marks:100,best:741,wins:2,runs:8,relic:2,unknown:{keep:true}});

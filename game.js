@@ -6,7 +6,9 @@
   const TAU = Math.PI * 2, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
   const ARENA = 1560, HALF = ARENA / 2, END_TIME = 720;
-  const debugEnabled = new URLSearchParams(location.search).has('debug');
+  // The public ZIP builder fixes this private flag to false; source QA keeps both modes.
+  const DEVELOPMENT_MODES_ENABLED = true;
+  const debugEnabled = DEVELOPMENT_MODES_ENABLED && new URLSearchParams(location.search).has('debug');
   let debugUI = null, debugInvincible = false;
   let W = 1280, H = 720, dpr = 1, state = 'title', run = null, last = 0, ambient = 0;
   let seed = 0, frame = 0;
@@ -846,7 +848,7 @@
   globalThis.AshfallI18n.subscribe(()=>{ui.refresh();debugUI?.refresh();});
   titleRecord();ui.refresh();debugUI?.refresh();requestAnimationFrame(loop);
   // Explicit test mode exposes mechanics for deterministic verification, never used in normal play.
-  if(new URLSearchParams(location.search).has('test'))window.AshfallTest={
+  if(DEVELOPMENT_MODES_ENABLED && new URLSearchParams(location.search).has('test'))window.AshfallTest={
     debug:debugEnabled?{open:openDebug,close:closeDebug,act:debugAct,snapshot:debugSnapshot}:undefined,
     start,update,spawnEnemy,hurtEnemy,hurtPlayer,startDash,endDash,seedEnemy,predictLeap,stitchDamage,addXp,chooseUpgrade,rollUpgrades,finish,goTitle,pause,resume,
     segmentDistance,UPGRADES,TYPES,keys,mouse,drawGame,drawTitle,updateHud,wardSpec,denseSpec,pressureMultiplier,lineDamage,feedbackSpec,blastSound,stitchNodeSound,frontCrossing,weight,eligible,scatterShards,assistedAngle,showRelics,selectRelic,showStitchHelp,upgradeCard,
