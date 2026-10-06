@@ -158,6 +158,30 @@ Producerが指定した5機能をDirectorが以下の動作として具体化し
 - **証拠・保存状態**：新規証拠は [今回のQA領域](../work/qa-debug-ui-20261006/) 内の `test.txt`、`test-debug-browser.txt`、`test-public.txt`、`test-i18n-browser.txt`、`probe-report.json`／`probe.txt`／PNG、`packaging.txt`、`packaged-probe/probe-report.json`。テストの検証JSON・画像出力だけを同領域の `generated/` へ振り向け、既存の追跡JSON・画像・実装側証拠を保護した（ゲーム・テストのassertは変更なし）。追跡変更は本計画のみ、未ステージ・未コミット。branch・HEAD・worktree構成は開始時と同じ。実装・修正・merge・push・tag・外部公開は行っていない。
 - **追記後確認**：`git diff --check`、本計画のローカルリンク19件、持込実装16ファイルのSHA-256不変を確認しPASS（`final-check.txt`）。今回起動した専用ブラウザとHTTPサーバーは終了した。既存の作業ツリーへコード差分は追加していない。
 
+### P2修正後の独立QA再レビュー（2026-10-06、Asia/Tokyo）
+
+- **Reviewer**：Codex、QA / Engineering Reviewer。Implementerの修正会話・自己検証とは独立して、このレビュー会話で再確認した。実装・テストの修正は行っていない。初回QAのFAIL・指摘・証拠は履歴として保持する。
+- **Target**：Sprint 3、初回QA記録 `19312ea97a45c426bc58d1551355217b2903db99` → 修正commit `04f4254a29064d86a73029c3bf0b6b19be5fdd2e` の3ファイル差分（`game.js`、`tests/debug-browser.cjs`、本計画）。main基準は従来の `fda91afc6024e3bad677a5874ded6200402530c9`。開始時は `codex/developer-debug-ui` / HEAD `04f4254`、clean、登録worktreeは元リポジトリ1件。
+- **Evidence**：現行AGENTS・本計画・QA Guide・ROLES、初回QA、修正差分、初期化／debug UIの実コード、更新されたブラウザテストとImplementer証拠を確認。修正は `game.js:847` の初期 `ui.refresh()` 直後に `debugUI?.refresh()` を1回追加するもの。通常起動でdebug UIが作られない条件を維持し、戦闘・乱数・保存・言語設定を変更するコードは追加されていない。テストは既存assertと後続ケースを維持し、起動前の保存済みJA／EN設定から、操作を挟まず初期タイトルを確認するassertを強化している。今回の専用headless Edge `154.0.4258.53` / CDP 9223、HTTP 4173、Windows PowerShell、Node.js v22.23.1で以下を独立再実行した。
+
+| 今回の独立再検証 | 結果 |
+| --- | --- |
+| `npm test` | **PASS：179項目**。通常戦闘／ボス時刻／将来乱数、入力・状態・保存拒否／未知フィールド／relic番号・日英、debug境界10項目を含む。 |
+| `npm run test:debug:browser`（今回生成した展開ZIPを指定） | **PASS：全10ケース、ブラウザ例外0、fullscreen=true**。HTTP／ソースfile／展開ZIP × 起動前JA／ENの6条件で、開始・言語切替なしの初期タイトル表示、正確なバッジ文言と画面内可視性、操作入口の無効化、閉じたパネル、test API不在、meta bytes／言語設定の維持を確認。3起動方式×日英×3サイズの18パネル条件、5操作・入力隔離、保存、ボス／勝敗／リトライ／通常再読込、native fullscreen退出・blur／visibilityの後続ケースも完走。今回のHTTP初期JA／EN画像を目視確認した。 |
+| `npm run test:public` | **PASS：9項目、ブラウザ例外0**。通常画面・実クリック／キー、native fullscreen／退出／ポーズ、HTTP／file起動の回帰。 |
+| `npm run test:i18n:browser` | **PASS：5項目、ブラウザ例外0**。日英切替・再読込・保存、全23強化／各画面、1440×900／1024×640、HTTP／fileの回帰。 |
+| `tests/build-itch.ps1`、展開版の直接起動 | **PASS：6項目**。修正後の現ソースとhash一致の新規コピー上で実行し、14 runtime filesの同梱・内容と置換／失敗時保護を確認。新規ZIPを別領域へ展開して上記debugテスト全ケースを実行。元dist／ZIPは変更していない。 |
+
+- **Verdict：重大な懸念なし**。前回P2「デバッグ起動直後のタイトルに開発モード表示がない」は**解消確認済み**。初回に停止したdebugブラウザテストも今回全ケースPASS。修正差分に追加の不具合は見つからなかった。
+- **Regression risks**：追加の必須修正なし。初期表示更新だけの変更で、通常起動の無効化条件と既存ロジックを維持している。初回QAで見つかったVMだけでは初期タイトルを検証できない不足は、今回のブラウザ起動回帰ケースが補っている。
+- **Bugs found**：なし（前回P2は上記のとおり解消）。
+- **Browser/save/i18n concerns**：今回確認済みのEdgeでは、日英6起動条件の初期表示・保存分離と通常画面回帰はPASS。保存キー・format・upgrade ID／relic番号に修正差分はない。通常の保存拒否／未知フィールドはVM検証、debug中のmeta bytes維持と独立言語は実ブラウザ検証で確認した。
+- **Untested areas**：Chrome／Firefox／Safari、headedの物理Esc／長押し／OSフォーカス移動、実タブ非表示、長時間の自然入力ラン、ブラウザ設定での実保存拒否、音の聴感、Producerによる操作感・QA準備の有用性は未検証。debugブラウザ検証は描画ループを止めたfixtureとCDP入力で、実プレイや面白さの保証ではない。初回QAの未確認事項を確認済みへ変更していない。
+- **Required tests**：本P2修正に対する追加の必須自動検証はなし。残る物理入力・実フォーカス移動と、任意ビルド／時刻／敵／ボス／無敵を短時間に設定できるかは、既定のProducer Playtestで確認する。
+- **Release recommendation：技術面でProducer Playtestへ進行可**。独立QAの修正再確認は完了。Producer Playtestと最終採否は未実施のため、Sprint全体のDoneやmainへのmerge／push／tag／外部公開を承認したものではない。
+- **証拠・Git状態**：新規証拠は [今回の独立再QA領域](../work/qa-debug-title-recheck-20261006/) の `test.txt`、`test-debug-browser.txt`、`test-public.txt`、`test-i18n-browser.txt`、`packaging.txt`、`generated/work/debug-browser/report.json` と初期6枚／パネル18枚のPNG。検証JSON・画像の出力だけを新規領域へ振り向け、実装／テストのassert・既存記録・ZIPを変更していない。追跡変更は本Review Resultsへの追記のみ、未ステージ・未コミット。branch・HEAD・worktree構成は開始時と同じ。実装・修正・merge・push・tag・公開は行っていない。
+- **追記後確認**：`git diff --check`、本計画／READMEのローカルリンク39件、現ソース／展開版14ファイルのhash一致、既存証拠1617ファイルのhash維持、本計画の追記以外の不変を確認しPASS（`final-check.txt`）。今回起動した専用ブラウザとHTTPサーバーは終了した。
+
 ## Decisions
 
 - Producer（2026-10-06）：次スプリントは開発者向けデバッグUI。任意のアップグレード付与・時間送り・ボス呼び出し・敵スポーン・無敵化を挙げ、current-sprintへの記載を指示した。
