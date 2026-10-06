@@ -113,6 +113,31 @@ Producerが指定した5機能をDirectorが以下の動作として具体化し
 
 未実施（待ち）。Implementer自己確認を独立QAへ数えない。Reviewerへ元リポジトリ・main基準commit・`codex/developer-debug-ui` のHEADまでの差分・本計画・`work/debug-ui-import` と隔離checkoutの `work/evidence` を渡し、実ブラウザ未確認範囲を補完する。Producer Playtestも未実施。Scope変更や追加要望はDecisionsへ記録する。
 
+### 独立QAレビュー（2026-10-06、Asia/Tokyo）
+
+- **Reviewer**：Codex、今回の別会話でQA / Engineering Reviewerとして実施。実装担当の自己確認とは独立したレビュー。実装・修正は行わず、本Review Resultsのみ追記した。上記の「未実施」は本レビュー前の引き継ぎ記録。
+- **Target**：Sprint 3。main基準 `fda91afc6024e3bad677a5874ded6200402530c9` → `codex/developer-debug-ui` / HEAD `77fca439eb6ec3e00dc5c7c1f334b13cbde9e3c5` の17ファイル差分。開始時はclean、登録worktreeは元リポジトリ1件。
+- **Evidence**：AGENTS・本計画・ROLES・WORKFLOW・QA Guide、実装差分、ゲーム／UI／入力／保存／カタログ連携、既存テストと引き継ぎ証拠を確認。Windows PowerShell、Node.js v22.23.1、npm 10.2.1、専用のheadless Edge `154.0.4258.53` / CDP 9223とローカルHTTP 4173を使用。今回は専用ブラウザの起動・接続に成功し、実装時の接続不能を引き継いだままにはしていない。
+
+| 今回実行した検証 | 結果と範囲 |
+| --- | --- |
+| `npm test` | **PASS：179項目**。デバッグ境界10件、通常戦闘・ボス時刻閾値／将来乱数、保存拒否・未知フィールド／relic番号、日英と状態の回帰を含む。 |
+| `npm run test:public` | **PASS：9項目**。実クリック／キー、通常画面、native fullscreen／退出・自動ポーズ、直接file起動、ブラウザ例外0。 |
+| `npm run test:i18n:browser` | **PASS：5項目**。日英切替・再読込・保存、全23強化と各画面の1440×900／1024×640、HTTP／file、ブラウザ例外0。 |
+| `npm run test:debug:browser` | **FAIL**。`tests/debug-browser.cjs:30` の起動直後のバッジ表示assertで停止（実際 `hidden=true`、期待 `false`）。後続ケースはこのコマンドでは未実行。下記P2として記録し、assertを変更してPASSにはしていない。 |
+| 独立の追加ブラウザプローブ | HTTP／ソース直接fileで**5項目PASS**、同じ初期タイトル不具合を両方で確認。`?debug`単独でtest APIなしの操作・入力隔離、日英1440×900／1024×640／640×480、縦スクロールで全操作項目へ到達・横溢れなし、強化／時間／敵／無敵の実ボタン操作を確認。`?test&debug`の明示fixtureで守護者の手動／時刻出現重複拒否、最終ボス撃破／勝利、敗北・リトライ・タイトル復帰、無敵リセット、通常再読込時の分離を確認。native fullscreen退出・blur／visibilityイベント・言語変更でdebug状態とラン内容を維持。通常metaの保存bytes一致、ブラウザ例外0。 |
+| `tests/build-itch.ps1`、展開後直接file | **PASS：6項目**。現ソースとSHA-256一致のコピー上で実行し、14 runtime files・内容・既存出力置換・失敗時保護を確認。元のdist／ZIPを上書きせず、新規ZIPを別領域へ展開。展開版にも追加プローブを実行し、日英3画面サイズ・操作／保存／ボス／リトライ／通常再読込を確認（3項目PASS）。初期タイトル不具合は展開版でも再現。 |
+
+- **Verdict：要修正**。確認できた不具合はP2の1件。確認済みの保存分離・通常モード・5操作のロジックに、これ以外の重大な懸念は見つからなかった。
+- **Bugs found — [P2] デバッグ起動直後のタイトルに開発モード表示がない**：専用プロファイルで `http://localhost:4173/?debug` または `file:///D:/develop/project-ashfall/index.html?debug` を開き、開始・言語切替等を操作せずタイトルを見る。期待はタイトル時点から「開発デバッグ」と通常保存へ反映しないセッションだと判別できること。実際は `debugBadge.hidden=true`、`debugOpen.hidden=true`、`debugAvailability.textContent=''` のまま、通常タイトルと見分けられない。開始または言語切替後は表示される。原因は `game.js:836` でdebug UIを作成した後、`game.js:847` の初期更新が `ui.refresh()` のみで、`debug-ui.js:61` のcreateもrefreshを実行しないこと。`index.html:45` の初期hiddenが解除されない。Scope／DoDの「タイトル・ラン・結果でデバッグ中と分かる表示」に違反し、保存されない起動を通常起動と誤認させる。HTTP／ソースfile／展開ZIPで再現済み。提案は初期タイトルのdebug表示更新を保証すること。修正は未実施。
+- **Regression risks**：今回の通常モードparity・入力／画面／保存／日英回帰はPASS。VM harnessは生成直後に `start()` を呼ぶため、起動直後のタイトル表示漏れを検出できない。実ブラウザ検証を省略すると本件が残ることが今回確認された。追加プローブの成功は既存debugブラウザテスト全体のPASSを意味しない。
+- **Browser/save/i18n concerns**：保存呼出はgameの `saveMeta()` でdebug時に遮断され、言語保存は独立経路。VMで装備選択／補正・保存拒否・未知フィールド／装備番号を、実ブラウザで開始・勝敗・リトライ・タイトル・再読込のbytes維持を確認した。日英キー／補間と実レイアウトはPASS。ブラウザの確認済み環境は上記Edgeのみ。
+- **Untested areas**：Chrome／Firefox／Safari、headedブラウザの物理Esc・長押し／OSフォーカス移動、実ウィンドウ切替に伴うvisibility、長時間の自然入力ラン、音の聴感、Producerによる操作感・QA準備の有用性は未検証。デバッグ専用の追加プローブは描画ループを止めたfixtureとCDP入力であり、ゲームの面白さや実プレイ品質の保証ではない。保存拒否はVM確認に限り、ブラウザ設定で実際に拒否する確認は未実施。
+- **Required tests**：ImplementerがP2を修正後、初期タイトルが言語切替なしでJA／EN双方に表示されることをHTTP／file／展開ZIPで再確認し、停止した `npm run test:debug:browser` を全ケース再実行する。コード修正時の `npm test` と関連回帰確認も必要。物理Esc／長押し・実フォーカス移動、UIで場面を短時間に用意できるかはProducer Playtestへ残す。
+- **Release recommendation：修正後に再確認**。独立QAレビュー自体は実施済みだが、P2修正・debugブラウザテストの完走・Producer Playtestが残る。スプリント完了、mainへの統合／push／tag／公開の承認とはしない。
+- **証拠・保存状態**：新規証拠は [今回のQA領域](../work/qa-debug-ui-20261006/) 内の `test.txt`、`test-debug-browser.txt`、`test-public.txt`、`test-i18n-browser.txt`、`probe-report.json`／`probe.txt`／PNG、`packaging.txt`、`packaged-probe/probe-report.json`。テストの検証JSON・画像出力だけを同領域の `generated/` へ振り向け、既存の追跡JSON・画像・実装側証拠を保護した（ゲーム・テストのassertは変更なし）。追跡変更は本計画のみ、未ステージ・未コミット。branch・HEAD・worktree構成は開始時と同じ。実装・修正・merge・push・tag・外部公開は行っていない。
+- **追記後確認**：`git diff --check`、本計画のローカルリンク19件、持込実装16ファイルのSHA-256不変を確認しPASS（`final-check.txt`）。今回起動した専用ブラウザとHTTPサーバーは終了した。既存の作業ツリーへコード差分は追加していない。
+
 ## Decisions
 
 - Producer（2026-10-06）：次スプリントは開発者向けデバッグUI。任意のアップグレード付与・時間送り・ボス呼び出し・敵スポーン・無敵化を挙げ、current-sprintへの記載を指示した。
