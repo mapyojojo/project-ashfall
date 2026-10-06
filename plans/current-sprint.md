@@ -2,9 +2,9 @@
 
 ## Status
 
-in-progress
+done
 
-開発用デバッグUIの実装・P2修正・修正後の独立QA再確認は完了。Producerは提示した実プレイ10項目をすべてPASSと報告し、目的のビルド／戦闘を待たずに用意できることを確認した。強化プルダウンの分かりづらさは開発者向けとして許容。追加の採用条件「itch.io上ではデバッグモードを使えないこと」に対し、Implementerが公開ZIPのdebug／test無効化を実装し、新規ZIPのHTTP／file・日英16条件と関連回帰を自己検証した。追加差分の独立QA待ちで、スプリント全体のdoneにはしない。mainへは統合していない。
+2026-10-06（Asia/Tokyo）、Producerの「残件がなければ閉じてコミット」の指示に基づき、DirectorがDefinition of Doneと最新の独立QAを照合してSprint 3を終了した。開発用5機能・P2修正・Producerの実プレイ10項目PASSに加え、公開ZIPのdebug／test無効化も独立QAで確認済み（重大な懸念なし、必須修正なし）。公開ZIPのHTTP／file・日英16条件と関連回帰はPASS。強化プルダウンは現状許容。スプリント内の必須残件はなし。実itch.io上の確認は公開時の工程へ残し、未実施のまま保持する。mainへの統合・push・tag・外部公開は行っていない。
 
 計画作成時の記録（2026-10-06、Asia/Tokyo）：Producerが開発者向けデバッグUIの5機能を指定し、時間送りは経過時刻だけを進める方式と回答。DirectorがScopeをreadyとして引き継いだ。当時の依頼は計画記載までで実装は未着手だった。現在の実装・レビュー・Producer結果と追加Scopeは以下の最新記録を参照する。
 
@@ -79,16 +79,16 @@ Producerが指定した5機能をDirectorが以下の動作として具体化し
 - [x] 既存実装の通常モードの灰縫い・成長・結果・保存・入力・日英に回帰を検出せず、`npm test`と関連検証の結果／制限を記録した。追加の配布変更後は関係する回帰を再確認する。
 - [x] 既存実装の必要なブラウザ確認（通常／debug、HTTP／file、日英、入力・保存）、`npm run test:public`、`npm run test:i18n:browser`、`tests/build-itch.ps1` と展開後直接起動を独立QAが実行し記録した。公開用無効化の検証は下記の追加条件へ分離する。
 - [x] READMEの手順でProducerが開発用起動し、任意ビルド・敵／ボス・経過時刻・無敵を短時間で設定して戦闘確認できた。
-- [x] 新規公開ZIPのHTTP／直接fileで、通常・debug・test・test&debug指定の全条件でデバッグUI／操作とテストAPIが無効で、通常ラン・保存・日英が動く。開発用ソースのdebug／testは引き続き動く。追加ScopeのImplementer自己確認済み、独立QAは下項へ残す。
-- [ ] 公開ZIP生成の無効化処理・欠落時の失敗・生成物内容と挙動を検証し、`npm test`・配布検証・関連ブラウザ回帰を記録。追加差分の独立QAを完了した。
-- [ ] Required ReviewsとProducer Playtestの必要な工程が完了、または不要理由を記録済み。実装自己確認と独立QAを区別した。
-- [ ] 変更ファイル・実行環境・検証結果・未確認事項・branch／commit／worktree状態を報告した。
+- [x] 新規公開ZIPのHTTP／直接fileで、通常・debug・test・test&debug指定の全条件でデバッグUI／操作とテストAPIが無効で、通常ラン・保存・日英が動く。開発用ソースのdebug／testは引き続き動く。Implementer自己確認と追加Scopeの独立QAで確認済み。
+- [x] 公開ZIP生成の無効化処理・欠落時の失敗・生成物内容と挙動を検証し、`npm test`・配布検証・関連ブラウザ回帰を記録。追加差分の独立QAを完了した。最新QAの190項目・配布9項目・公開ブラウザ16条件と開発用回帰はPASS、追加の必須修正なし。
+- [x] Required ReviewsとProducer Playtestの必要な工程が完了、または不要理由を記録済み。実装自己確認と独立QAを区別した。公開向け変更による開発用UIの操作変更はなく、回帰QAもPASSのためProducerの再プレイは不要。
+- [x] 変更ファイル・実行環境・検証結果・未確認事項・branch／commit／worktree状態を報告した。終了判断と文書コミットの対象・確認結果はExecution Resultsに記録。
 
 ## Required Reviews
 
 - Game Design Review：現Scopeでは原則不要。通常の戦闘・バランス・成長仕様を変更せず、開発用操作だけを追加するため。デバッグ結果を通常ランの面白さ・強弱の評価と混同しない。通常プレイの理解・操作感に変更が必要になった場合は、Scope拡大前に対象を限定して必要性を判断する。
 - QA / Engineering Review：必要、実装後に別会話・コンテキストで実施。基準コミット・差分・本計画・検証証拠を手動で渡し、[QA Guide](../docs/ai/REVIEW-GUIDE-QA.md)に沿って有効化条件・保存分離・状態遷移・入力・時間／ボス・上限・日英と通常モードの回帰を確認する。前SprintのQAや実装担当の自己確認で代替しない。
-- 現在の結果：5機能とP2修正の独立QA再確認は完了、重大な懸念なし。今回追加した公開ZIPの無効化は実装・自己検証済み、独立レビューは未実施。追加差分と新しい配布物を独立QAへ渡す。以前の展開ZIPでdebugが動くPASSは、新しい採用条件の証拠にしない。
+- 現在の結果：5機能・P2修正再確認・追加の公開ZIP無効化の独立QAがすべて完了、重大な懸念なし。公開用の判定には最新の新規ZIPを対象としたQAを使用し、以前の展開ZIPでdebugが動くPASSとは区別した。必須のレビュー・修正待ちはない。
 
 ## Producer Playtest
 
@@ -96,13 +96,13 @@ Producerが指定した5機能をDirectorが以下の動作として具体化し
 - Scenarios：通常起動でUIが無効なことを確認後、明示的なdebug起動でラン開始。UIを開いて拡散／濃縮／連続の任意ビルドを付与し、敵生成・無敵切替・再開で灰縫いを試す。守護者／最終ボスを呼び出し、重複拒否と撃破・終了を確認。経過時刻を進めて後半の出現を確認。日英・全画面／退出・ポーズ・リトライ・再読込を試し、通常の記録が保持されることを確認する。
 - Observations：目的の場面を作るまでの手数、操作／無効理由の分かりやすさ、現在のビルド・時刻・無敵状態、開閉と入力のストレス。デバッグ時に成立した強さや勝利を通常のバランス評価の証拠にしない。
 - Result / Decision（2026-10-06）：Producerが提示された確認10項目をすべてPASSと報告。通常／debug起動・初期表示、開閉／入力、強化付与、敵スポーン、無敵、時間送り、ボス、実入力／音、日英／小画面、リトライ／保存を確認したとの報告を記録する。目的のビルドと敵との戦闘を待たずに用意できた：YES。操作や説明で迷った点：YES、強化プルダウンは名前だけで内容が一覧から分かりにくいが、開発者向けなので許容範囲。
-- 採否：開発用UIの実用性と現状の操作を受け入れる。ただしitch.io上でデバッグモードが使えないことが条件。公開用無効化は未確認のため、Sprint全体のDone／公開承認にはしない。確認時のOS・ブラウザ・起動方式の個別情報は未報告で、QAのEdge環境と同一だったとは推測しない。プルダウン改善は今回不要。追加変更が開発用操作へ影響する場合は、その範囲だけProducerへ再確認する。
+- 採否：開発用UIの実用性と現状の操作を受け入れる。条件の公開用無効化は、ホストに依存しない生成物側の固定と新規ZIPの独立QAで確認済み。Directorは本条件を満たしたと判断し、Producerの今回の終了指示に従ってSprintをDoneとする。実itch.ioへのアップロード／iframe確認は未実施であり、外部公開時の確認として残す。Producer実プレイ時のOS・ブラウザ・起動方式の個別情報は未報告で、QAのEdge環境と同一だったとは推測しない。プルダウン改善は今回不要。追加対応は配布物の無効化のみで開発用操作を維持し、回帰QAもPASSのため、Producerの実プレイ全項目の再実施は不要。
 
 ## Open Questions
 
-- 現Scopeの実装を止める未決事項はなし。敵の生成数上限・配置とUIの具体的な構成・責務分割は、Scope内の実装方法としてImplementerが調査・記録する。前提無視・ランク戻し・戦闘全体の高速化等が必要になった場合は、理由と追加範囲をProducerへ戻す。
+- 本Sprintの未決事項・必須残件はなし。敵生成の上限・配置、UI構成、公開用生成方法は実装結果へ記録済み。前提無視・ランク戻し・戦闘全体の高速化等の追加機能は、必要になった時点でProducerが別Scopeとして判断する。
 - ポータブル版の再開時期・方式・容量／環境要件は未決定。前Sprintの不具合・未検証事項はGit履歴の終了記録に保持し、本Sprintでは解決しない。
-- 公開ZIP無効化は未決の採用方針ではなく、Producerが指定した残作業。実装方法はImplementerがScope内で決める。itch.ioへの実アップロードは未承認・未実施で、配布物側でホストに依存せず無効化することを先に確認する。
+- 公開ZIPの無効化は完了。実itch.ioのiframe上の起動・無効化確認は、公開作業を別途承認された際に実施する。その他ブラウザ・実保存拒否・公開版の自然な長時間プレイ等の未検証範囲は最新QAのUntested areasに保持し、今回の必須残件には含めない。未実施をPASSへ変えない。
 
 ## Execution Results
 
@@ -170,9 +170,19 @@ Producerが指定した5機能をDirectorが以下の動作として具体化し
 - 未確認・次の担当：本追加差分はImplementerの自己確認で、独立QAは未実施。新規ZIPと `dc8feb1` 以降の追加差分を独立QAへ渡す。実itch.ioアップロード／iframe上の確認、Chrome／Firefox／Safari、headedの物理入力・実OSフォーカス／タブ切替、音の聴感は未検証。公開テストは既存描画コールバックの捕捉とCDP入力を使い、test API／debugヘルパーを使わず通常戦闘を進めるfixtureで、自然な実時間の人間プレイや面白さの評価とは区別する。Producerの既存全項目PASSを追加配布条件の人間確認へ流用しない。
 - 変更対象：`game.js`、`scripts/build-itch.ps1`、`tests/build-itch.ps1`、`tests/harness.cjs`、`tests/public-modes.cjs`、`tests/debug-browser.cjs`、`tests/public-package-browser.cjs`、`package.json`、`README.md`、本計画の10ファイル。レビュー用コミットとして提出する。branchとworktree構成・main基準は維持し、merge／push／tag／外部公開は行わない。今回起動した専用ブラウザとHTTPサーバーは検証後に終了する。
 
+### Sprint 3終了判断（Director、2026-10-06、Asia/Tokyo）
+
+- Producerの終了・コミット指示に基づき、実装・独立QA・Producerの報告と全12項目のDoDを照合。5機能の実用性はProducerの全10項目PASS、P2は修正後QAで解消、追加の公開ZIP無効化は最新独立QAで確認済み。必須修正・レビュー・人間確認の残件はなく、Statusをdoneとした。
+- 対象実装：`5b185b92ba8d162805f084efdd07b1e4f9cb4285`、最新QA記録：`1780c8798c6fa0ee220c2ddad20af0dae46dd0ce`。両commit間の差分は本計画のみで、QA後にゲーム・配布スクリプト・テストの変更はない。最新QAは `npm test` 190項目、配布9項目、公開ブラウザ16条件、開発用debug7ケース、通常9項目、i18n5項目をPASSと記録。初回ブラウザ検証のFAILと環境変更後のPASSは独立QA原文・証拠に保持した。
+- 公開ZIPではprivateフラグをfalseに固定し、debug／test両入口と同等操作を停止する。開発用ソースは両モードを維持し、通常保存・日英・戦闘の回帰QAもPASS。Producerの条件を満たしたと判断するが、実itch.io上の確認を実施済みとはしない。配布自動化の変更で操作仕様を変えていないため、Producer再プレイとGame Design Reviewは不要。
+- 未検証の実itch環境・その他ブラウザ等はOpen Questionsと独立QAの記録に保持。実itch確認は公開時の工程であり、今回の終了指示はmerge／push／tag／外部公開の許可には含めない。強化プルダウン改善・ポータブル版再開・次Sprintの実装は開始しない。
+- 今回の変更・コミット対象は本計画のみ。開始branchは `codex/developer-debug-ui`、HEADは上記QA記録commit、作業ツリーはclean、登録worktreeは本リポジトリ1件。ローカルリンク25件、雛形と同じ15節の構成・内容整合、DoD全12項目完了、独立QA本文のSHA-256不変、`git diff --check`、意図しないコード差分がないことを確認しPASS。文書のみのためゲームテスト／ZIP生成は再実行せず、既存証拠を読み取って判断した。Producerの指示どおり終了文書をコミットし、commitと最終Git状態を報告する。
+
 ## Review Results
 
-未実施（待ち）。Implementer自己確認を独立QAへ数えない。Reviewerへ元リポジトリ・main基準commit・`codex/developer-debug-ui` のHEADまでの差分・本計画・`work/debug-ui-import` と隔離checkoutの `work/evidence` を渡し、実ブラウザ未確認範囲を補完する。Producer Playtestも未実施。Scope変更や追加要望はDecisionsへ記録する。
+現在の統合結果：独立QAは5機能・P2修正再確認・公開ZIP無効化の全対象で完了し、必須修正の残件なし。Producerの実プレイも完了。以下の各レビュー本文は実施時点の記録として保持し、初回のFAIL・当時の未確認事項と最新の確認結果を区別する。Implementer自己確認を独立QAへ数えない。
+
+初回レビュー前の引き継ぎ記録：未実施（待ち）。Implementer自己確認を独立QAへ数えない。Reviewerへ元リポジトリ・main基準commit・`codex/developer-debug-ui` のHEADまでの差分・本計画・`work/debug-ui-import` と隔離checkoutの `work/evidence` を渡し、実ブラウザ未確認範囲を補完する。Producer Playtestも未実施。Scope変更や追加要望はDecisionsへ記録する。
 
 ### 独立QAレビュー（2026-10-06、Asia/Tokyo）
 
@@ -250,6 +260,8 @@ Producerが指定した5機能をDirectorが以下の動作として具体化し
 
 ## Decisions
 
+- Producer（終了指示、2026-10-06）：QAレビューまで完了したためcurrent-sprintから残件を確認し、残件がなければSprintを閉じてコミットする。
+- Director（終了判断、同日）：最新独立QA・Producer全項目PASS・全DoDの充足を確認しSprint 3をdoneとした。追加の採用条件はホストに依存しない公開ZIPの無効化と独立QAで満たしている。実itch環境の確認は公開時の工程へ、その他未検証範囲は既存QAの記録へ保持。公開ZIP対応による開発用操作の変更がないためProducer再プレイは不要。今回の終了文書コミットはProducerの明示指示で実施し、main統合・push・tag・公開とは分ける。
 - Producer（実プレイ報告、2026-10-06）：提示された10項目はすべてPASS。目的の場面をすぐ用意できた。強化プルダウンの理解しづらさは開発者向けとして許容。itch.io上でデバッグモードが使えないことを条件に問題なし。
 - Director（同日）：上記の条件を公開配布物の無効化として追加ScopeとDone条件へ反映し、Statusをin-progressへ戻した。開発用5機能の実プレイは完了、残作業は公開用無効化・関連検証・独立QA。公開ZIPでのdebugと同等操作が可能なtest APIも無効化する。これはProducer条件を満たすための配布対応で、ゲーム仕様変更や公開の承認ではない。
 - Producer（2026-10-06）：次スプリントは開発者向けデバッグUI。任意のアップグレード付与・時間送り・ボス呼び出し・敵スポーン・無敵化を挙げ、current-sprintへの記載を指示した。
